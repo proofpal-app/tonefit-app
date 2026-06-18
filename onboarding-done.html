@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>You're All Set! | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--blue-dark:#1D4ED8;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F0F4FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;background:transparent}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:#fff;border:none;padding:12px 14px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.10)}
+.hamburger span{width:20px;height:2px;background:#1a1a2e;border-radius:2px;display:block}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 24px 60px;background:linear-gradient(160deg,#E8EEF8 0%,#EEF3FB 30%,#F5F8FF 60%,#ffffff 100%)}
+.wrap{max-width:520px;width:100%;text-align:center}
+
+.check-circle{width:72px;height:72px;background:#DCFCE7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 28px}
+.check-circle svg{width:32px;height:32px;stroke:#22C55E;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+.page-title{font-size:clamp(26px,4vw,34px);font-weight:900;letter-spacing:-1px;color:#0D1117;margin-bottom:12px}
+.page-sub{font-size:16px;color:#6B7280;margin-bottom:32px}
+
+/* preset box */
+.preset-box{
+  background:white;
+  border:1.5px solid #E5E7EB;
+  border-radius:14px;
+  padding:18px 24px;
+  margin-bottom:24px;
+  font-size:16px;
+  font-weight:700;
+  color:#0D1117;
+  letter-spacing:-0.3px;
+}
+
+.instruction{
+  font-size:15px;
+  color:#6B7280;
+  line-height:1.7;
+  max-width:400px;
+  margin:0 auto 36px;
+}
+
+.cta-btn{width:100%;background:#2563EB;color:white;border:none;padding:17px;border-radius:100px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s;display:block;text-align:center;text-decoration:none}
+.cta-btn:hover{background:#1D4ED8}
+</style>
+</head>
+<body>
+<nav><button class="hamburger"><span></span><span></span><span></span></button></nav>
+
+<main>
+<div class="wrap">
+
+  <div class="check-circle">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+
+  <h1 class="page-title">You're all set!</h1>
+  <p class="page-sub">We automatically created a gear preset for you:</p>
+
+  <div class="preset-box" id="presetBox">Squier Stratocaster + Helix LT</div>
+
+  <p class="instruction">Your presets are ready to use on the main page. Just select one from the preset dropdown and start matching tones.</p>
+
+  <a href="/app" class="cta-btn">Start Matching Tones</a>
+
+</div>
+</main>
+
+<script>
+// Build preset name from saved selections
+const guitars = JSON.parse(localStorage.getItem('tonefit_guitars') || '["Squier Stratocaster"]');
+const multifx = JSON.parse(localStorage.getItem('tonefit_multifx') || '["Helix LT"]');
+const amps = JSON.parse(localStorage.getItem('tonefit_amps') || '[]');
+
+const primary = guitars[0] || 'Your Guitar';
+const secondary = multifx[0] || amps[0] || null;
+
+document.getElementById('presetBox').textContent = secondary
+  ? `${primary} + ${secondary}`
+  : primary;
+</script>
+</body></html>

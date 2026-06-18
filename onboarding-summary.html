@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Your Rig Summary | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--blue-dark:#1D4ED8;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F0F4FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+.progress-bar{position:fixed;top:0;left:0;width:100%;height:3px;background:#2563EB;z-index:300}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;background:transparent}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:#fff;border:none;padding:12px 14px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.10)}
+.hamburger span{width:20px;height:2px;background:#1a1a2e;border-radius:2px;display:block}
+main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:80px 24px 60px;background:linear-gradient(160deg,#E8EEF8 0%,#EEF3FB 30%,#F5F8FF 60%,#ffffff 100%)}
+.wrap{max-width:560px;width:100%;padding-top:20px}
+
+.page-title{font-size:clamp(22px,4vw,30px);font-weight:900;letter-spacing:-1px;color:#0D1117;margin-bottom:6px;text-align:center}
+.page-sub{font-size:14px;color:#6B7280;text-align:center;margin-bottom:32px}
+
+/* section cards */
+.section-card{
+  background:white;
+  border:1.5px solid #E5E7EB;
+  border-radius:16px;
+  padding:20px 22px;
+  margin-bottom:16px;
+}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-left{display:flex;align-items:center;gap:10px}
+.section-icon svg{width:18px;height:18px;stroke:#2563EB;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.section-name{font-size:16px;font-weight:800;color:#0D1117;letter-spacing:-0.3px}
+.section-count{font-size:14px;color:#9CA3AF;font-weight:500;margin-left:4px}
+.edit-btn{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:#2563EB;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.edit-btn svg{width:14px;height:14px;stroke:#2563EB;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.edit-btn:hover{opacity:0.75}
+
+/* item pills */
+.item-pills{display:flex;flex-wrap:wrap;gap:8px}
+.item-pill{background:#F3F4F6;border-radius:100px;padding:6px 14px;font-size:13px;font-weight:500;color:#374151}
+
+.cta-btn{width:100%;background:#2563EB;color:white;border:none;padding:17px;border-radius:100px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s;margin-bottom:16px;margin-top:8px;display:block;text-align:center;text-decoration:none}
+.cta-btn:hover{background:#1D4ED8}
+.back-btn{display:block;text-align:center;font-size:14px;color:#9CA3AF;font-weight:500;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;width:100%}
+.back-btn:hover{color:#6B7280}
+</style>
+</head>
+<body>
+<div class="progress-bar"></div>
+<nav><button class="hamburger"><span></span><span></span><span></span></button></nav>
+
+<main>
+<div class="wrap">
+
+  <h1 class="page-title">Your Rig Summary</h1>
+  <p class="page-sub" id="gearCount">4 pieces of gear selected</p>
+
+  <div id="summaryCards"></div>
+
+  <a href="/onboarding-done" class="cta-btn">Looks good! Let's go</a>
+  <button class="back-btn" onclick="history.back()">Back</button>
+
+</div>
+</main>
+
+<script>
+const guitars = JSON.parse(localStorage.getItem('tonefit_guitars') || '["Squier Stratocaster"]');
+const amps = JSON.parse(localStorage.getItem('tonefit_amps') || '[]');
+const multifx = JSON.parse(localStorage.getItem('tonefit_multifx') || '["Helix LT","HX Stomp"]');
+const extrasRaw = JSON.parse(localStorage.getItem('tonefit_extras') || '{}');
+const pedals = extrasRaw.pedals || ['Amp Academy Stomp'];
+const bass = extrasRaw.bass || [];
+const bassamp = extrasRaw.bassamp || [];
+
+const sections = [
+  {name:'Guitars', icon:`<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`, items:guitars, href:'onboarding-gear.html'},
+  {name:'Amps', icon:`<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`, items:amps, href:'onboarding-amp.html'},
+  {name:'Multi-FX', icon:`<svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg>`, items:multifx, href:'onboarding-amp.html'},
+  {name:'Pedals', icon:`<svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg>`, items:pedals, href:'onboarding-extras.html'},
+  {name:'Bass', icon:`<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`, items:bass, href:'onboarding-extras.html'},
+  {name:'Bass Amps', icon:`<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`, items:bassamp, href:'onboarding-extras.html'},
+].filter(s => s.items.length > 0);
+
+const total = sections.reduce((a,s)=>a+s.items.length,0);
+document.getElementById('gearCount').textContent = `${total} piece${total!==1?'s':''} of gear selected`;
+
+document.getElementById('summaryCards').innerHTML = sections.map(s=>`
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-left">
+        <div class="section-icon">${s.icon}</div>
+        <span class="section-name">${s.name}</span>
+        <span class="section-count">(${s.items.length})</span>
+      </div>
+      <button class="edit-btn" onclick="location.href='${s.href}'">
+        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit
+      </button>
+    </div>
+    <div class="item-pills">
+      ${s.items.map(i=>`<span class="item-pill">${i}</span>`).join('')}
+    </div>
+  </div>`).join('');
+</script>
+</body></html>

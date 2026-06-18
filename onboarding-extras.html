@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Extras | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--blue-dark:#1D4ED8;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F0F4FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.progress-bar{position:fixed;top:0;left:0;width:85%;height:3px;background:#2563EB;z-index:300}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;background:transparent}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:#fff;border:none;padding:12px 14px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.10)}
+.hamburger span{width:20px;height:2px;background:#1a1a2e;border-radius:2px;display:block}
+main{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:80px 24px 60px;background:linear-gradient(160deg,#E8EEF8 0%,#EEF3FB 30%,#F5F8FF 60%,#ffffff 100%)}
+.page-wrap{max-width:620px;width:100%;padding-top:20px}
+
+/* header */
+.page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.icon-circle{width:52px;height:52px;background:#EEF4FF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-circle svg{width:22px;height:22px;stroke:#2563EB;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.header-title{font-size:22px;font-weight:900;letter-spacing:-0.5px;color:#0D1117}
+.header-sub{font-size:13px;color:#6B7280;margin-top:2px}
+
+/* 4-tab toggle */
+.tab-wrap{background:#F1F4FA;border-radius:16px;padding:5px;display:flex;gap:2px;margin-bottom:20px}
+.tab-btn{flex:1;padding:11px 8px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#94A3B8;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s,color 0.2s,box-shadow 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.tab-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.tab-btn.active{background:white;color:#1E3A8A;box-shadow:0 2px 8px rgba(0,0,0,0.10)}
+
+/* selected tags */
+.selected-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;min-height:0}
+.sel-tag{display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:100px;padding:7px 14px;font-size:13px;font-weight:600;color:#1E3A8A}
+.sel-tag-x{background:none;border:none;cursor:pointer;color:#93C5FD;font-size:15px;line-height:1;padding:0;font-family:'Plus Jakarta Sans',sans-serif}
+.sel-tag-x:hover{color:#2563EB}
+
+/* search */
+.search-box{width:100%;display:flex;align-items:center;justify-content:space-between;background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:14px 18px;cursor:pointer;transition:border-color 0.2s}
+.search-box.open{border-color:#2563EB;border-radius:14px 14px 0 0;border-bottom-color:transparent}
+.search-box-left{display:flex;align-items:center;gap:10px;color:#9CA3AF;font-size:15px}
+.search-box-left svg{width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:1.8;stroke-linecap:round}
+.search-chevron{width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:2;stroke-linecap:round;transition:transform 0.2s}
+.search-box.open .search-chevron{transform:rotate(180deg)}
+.dropdown{background:white;border:1.5px solid #2563EB;border-top:none;border-radius:0 0 16px 16px;margin-bottom:0;overflow:hidden;display:none}
+.dropdown.open{display:block}
+.dropdown-search{width:100%;border:none;border-bottom:1px solid #E5E7EB;padding:14px 18px;font-size:14px;color:#0D1117;font-family:'Plus Jakarta Sans',sans-serif;outline:none;background:#FAFBFD}
+.dropdown-search::placeholder{color:#9CA3AF}
+.brand-pills{display:flex;gap:6px;padding:10px 14px;overflow-x:auto;border-bottom:1px solid #F3F4F6}
+.brand-pills::-webkit-scrollbar{display:none}
+.brand-pill{white-space:nowrap;background:none;border:1.5px solid #E5E7EB;border-radius:100px;padding:4px 12px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s;flex-shrink:0}
+.brand-pill:hover{background:#F3F4F6}
+.brand-pill.active{background:#EFF6FF;border-color:#BFDBFE;color:#2563EB}
+.section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;padding:10px 16px 4px}
+.item-list{max-height:200px;overflow-y:auto}
+.item-row{display:flex;align-items:flex-start;gap:14px;padding:12px 16px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid #F9FAFB}
+.item-row:hover{background:#F8FAFF}
+.item-row.selected-row{background:#EFF6FF}
+.item-checkbox{width:20px;height:20px;border-radius:5px;border:1.5px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background 0.15s,border-color 0.15s;margin-top:2px}
+.item-row.selected-row .item-checkbox{background:#2563EB;border-color:#2563EB}
+.item-checkbox svg{width:11px;height:11px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;display:none}
+.item-row.selected-row .item-checkbox svg{display:block}
+.item-name{font-size:14px;font-weight:700;color:#0D1117}
+.item-row.selected-row .item-name{color:#2563EB}
+.item-desc{font-size:12px;color:#9CA3AF;margin-top:1px}
+.cant-find{padding:12px 16px;border-top:1px solid #F3F4F6}
+.cant-find-label{font-size:13px;font-weight:700;color:#0D1117;margin-bottom:3px}
+.cant-find-sub{font-size:12px;color:#9CA3AF;margin-bottom:8px}
+.cant-find-row{display:flex;gap:8px}
+.cant-find-input{flex:1;border:1.5px solid #E5E7EB;border-radius:10px;padding:9px 12px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;background:#FAFBFD}
+.cant-find-input:focus{border-color:#2563EB}
+.cant-find-add{background:#E5E7EB;color:#9CA3AF;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* quick select */
+.quick-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin:18px 0 10px}
+.quick-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.quick-pill{background:white;border:1.5px solid #E5E7EB;border-radius:100px;padding:7px 14px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.15s,border-color 0.15s,color 0.15s}
+.quick-pill:hover{background:#F3F4F6}
+.quick-pill.selected{background:#EFF6FF;border-color:#BFDBFE;color:#2563EB}
+
+/* divider */
+.section-divider{height:1px;background:#E5E7EB;margin:20px 0}
+
+/* CTA */
+.cta-btn{width:100%;background:#2563EB;color:white;border:none;padding:17px;border-radius:100px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s;margin-bottom:16px}
+.cta-btn:hover{background:#1D4ED8}
+.cta-btn:disabled{background:#E5E7EB;color:#9CA3AF;cursor:not-allowed}
+.bottom-row{display:flex;justify-content:space-between;align-items:center}
+.back-btn{font-size:14px;color:#9CA3AF;font-weight:600;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.back-btn:hover{color:#6B7280}
+.skip-btn{font-size:14px;color:#9CA3AF;font-weight:500;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+</style>
+</head>
+<body>
+<div class="progress-bar"></div>
+<nav><button class="hamburger"><span></span><span></span><span></span></button></nav>
+
+<main>
+<div class="page-wrap">
+
+  <div class="page-header">
+    <div class="icon-circle">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg>
+    </div>
+    <div>
+      <div class="header-title">Extras</div>
+      <div class="header-sub">Add pedals, effects, and bass gear</div>
+    </div>
+  </div>
+
+  <!-- 4 TABS -->
+  <div class="tab-wrap">
+    <button class="tab-btn active" id="tabPedals" onclick="setTab('pedals')">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg>
+      Pedals
+    </button>
+    <button class="tab-btn" id="tabMultiFX" onclick="setTab('multifx')">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg>
+      Multi-FX
+    </button>
+    <button class="tab-btn" id="tabBass" onclick="setTab('bass')">
+      <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      Bass
+    </button>
+    <button class="tab-btn" id="tabBassAmp" onclick="setTab('bassamp')">
+      <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      Bass Amp
+    </button>
+  </div>
+
+  <!-- SELECTED TAGS -->
+  <div class="selected-tags" id="selectedTags"></div>
+
+  <!-- SEARCH BOX -->
+  <div class="search-box" id="searchBox" onclick="toggleDropdown()">
+    <div class="search-box-left">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span id="searchPlaceholder">Search pedals...</span>
+    </div>
+    <svg class="search-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+
+  <!-- DROPDOWN -->
+  <div class="dropdown" id="dropdown">
+    <input class="dropdown-search" id="dropdownSearch" placeholder="Search pedals..." oninput="filterItems(this.value)"/>
+    <div class="brand-pills" id="brandPills"></div>
+    <div class="section-label">POPULAR</div>
+    <div class="item-list" id="itemList"></div>
+    <div class="cant-find">
+      <div class="cant-find-label" id="cantFindLabel">Can't find your pedal?</div>
+      <div class="cant-find-sub" id="cantFindSub">Include brand and model (e.g. "Boss DS-1")</div>
+      <div class="cant-find-row">
+        <input class="cant-find-input" placeholder="Brand + Model..."/>
+        <button class="cant-find-add">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK SELECT -->
+  <div class="quick-label">QUICK SELECT</div>
+  <div class="quick-pills" id="quickPills"></div>
+
+  <div class="section-divider"></div>
+
+  <button class="cta-btn" id="ctaBtn" disabled>Skip for now</button>
+  <div class="bottom-row">
+    <button class="back-btn">Back</button>
+    <button class="skip-btn">Skip for now</button>
+  </div>
+
+</div>
+</main>
+
+<script>
+// ── DATA ──
+const db = {
+  pedals: {
+    brands: ['Boss','Ibanez','MXR','Electro-Harmonix','TC Electronic','Strymon','JHS','Walrus Audio','Fulltone','Way Huge','Keeley','ProCo','Wampler','Earthquaker','Fender','Dunlop','Ernie Ball','Chase Bliss','Empress'],
+    quick: ['Boss DS-1','Boss BD-2','Ibanez TS9','MXR Phase 90','Electro-Harmonix Big Muff','TC Electronic Hall of Fame','Boss DD-8','Dunlop Cry Baby','Boss TU-3','MXR Carbon Copy'],
+    items: [
+      // BOSS
+      {n:'Boss DS-1 Distortion',d:'The iconic orange distortion pedal used on countless recordings worldwide.',b:'Boss'},
+      {n:'Boss BD-2 Blues Driver',d:'A smooth overdrive with amp-like response beloved for blues and rock.',b:'Boss'},
+      {n:'Boss SD-1 Super Overdrive',d:'Asymmetric clipping overdrive with a warm harmonically rich tone.',b:'Boss'},
+      {n:'Boss OD-1X Overdrive',d:'Modern overdrive with MDP technology for transparent dynamic response.',b:'Boss'},
+      {n:'Boss MT-2 Metal Zone',d:'High-gain metal distortion with a powerful 3-band parametric EQ.',b:'Boss'},
+      {n:'Boss HM-2 Heavy Metal',d:'The Swedish chainsaw distortion beloved for death metal tones.',b:'Boss'},
+      {n:'Boss MD-500 Modulation',d:'Premium modulation processor with 28 types and deep editing.',b:'Boss'},
+      {n:'Boss DD-8 Digital Delay',d:'Advanced digital delay with 11 delay types and loop function.',b:'Boss'},
+      {n:'Boss DD-3T Digital Delay',d:'Classic digital delay with tap tempo and multiple time modes.',b:'Boss'},
+      {n:'Boss RV-6 Reverb',d:'Premium reverb pedal with 8 modes including shimmer and dynamic.',b:'Boss'},
+      {n:'Boss RV-500 Reverb',d:'Flagship reverb processor with 21 reverb types and deep editing.',b:'Boss'},
+      {n:'Boss CE-2W Chorus',d:'Waza Craft version of the vintage CE-1 and CE-2 chorus pedals.',b:'Boss'},
+      {n:'Boss BF-3 Flanger',d:'Stereo flanger with classic and ultra modes for extreme effects.',b:'Boss'},
+      {n:'Boss PH-3 Phase Shifter',d:'Versatile phaser with 4/8/10/12 stage modes and rise/fall effects.',b:'Boss'},
+      {n:'Boss TU-3 Chromatic Tuner',d:'Industry-standard stage tuner with bright LED display and bypass.',b:'Boss'},
+      {n:'Boss RC-5 Loop Station',d:'Compact looper with 99 memory slots and rhythm guide.',b:'Boss'},
+      {n:'Boss RC-10R Loop Station',d:'Premium looper with integrated rhythm patterns and 32 hours memory.',b:'Boss'},
+      {n:'Boss NS-2 Noise Suppressor',d:'Efficient noise gate that eliminates hum and noise without tone loss.',b:'Boss'},
+      {n:'Boss GE-7 Graphic EQ',d:'7-band graphic EQ for precise tone shaping on stage and in studio.',b:'Boss'},
+      // IBANEZ
+      {n:'Ibanez TS9 Tube Screamer',d:'The legendary green overdrive that defined blues and rock tone.',b:'Ibanez'},
+      {n:'Ibanez TS808 Tube Screamer',d:'The original reissue Tube Screamer with the classic JRC4558 chip.',b:'Ibanez'},
+      {n:'Ibanez TS-Mini Tube Screamer',d:'Compact version of the TS9 for tight pedalboard setups.',b:'Ibanez'},
+      {n:'Ibanez DE7 Delay/Echo',d:'Affordable delay with echo and delay modes and 2600ms max time.',b:'Ibanez'},
+      {n:'Ibanez CS9 Stereo Chorus',d:'Reissue of the classic 80s chorus beloved for warm lush tones.',b:'Ibanez'},
+      // MXR
+      {n:'MXR Phase 90',d:'The classic orange phaser used by Eddie Van Halen and countless others.',b:'MXR'},
+      {n:'MXR Carbon Copy Analog Delay',d:'Warm analog delay with up to 600ms of echo and modulation.',b:'MXR'},
+      {n:'MXR M169 Carbon Copy Bright',d:'Brighter voiced Carbon Copy with extended 1200ms delay time.',b:'MXR'},
+      {n:'MXR Dyna Comp',d:'Studio-quality compressor in a compact pedal format.',b:'MXR'},
+      {n:'MXR M75 Super Badass Distortion',d:'High-gain 3-channel distortion with a wide EQ range.',b:'MXR'},
+      {n:'MXR M116 Fullbore Metal',d:'Brutal high-gain metal distortion with scoop switch and noise gate.',b:'MXR'},
+      {n:'MXR EVH Phase 90',d:'Eddie Van Halen signature Phase 90 with script/block mode switch.',b:'MXR'},
+      {n:'MXR M234 Analog Chorus',d:'Rich analog chorus with bass and treble controls for full range.',b:'MXR'},
+      {n:'MXR M300 Reverb',d:'Six premium reverb modes from room to epic in a compact unit.',b:'MXR'},
+      {n:'MXR M87 Bass Compressor',d:'Studio-quality compressor designed specifically for bass guitar.',b:'MXR'},
+      // ELECTRO-HARMONIX
+      {n:'Electro-Harmonix Big Muff Pi',d:'The iconic fuzz/distortion used by Hendrix Gilmour and Smashing Pumpkins.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix Ram\'s Head Big Muff',d:'Reissue of the rare 70s Ram\'s Head version with scooped mids.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix Soul Food',d:'Transparent overdrive inspired by the Klon Centaur.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix Holy Grail',d:'Classic digital reverb with spring hall and flerb modes.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix Nano Clone',d:'Compact chorus pedal with warm analog sound.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix Memory Man',d:'Classic analog delay with modulation and warmth.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix Oceans 11',d:'11 reverb types in a single pedal with extensive control.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix Canyon Delay',d:'Feature-packed delay with 10 modes including looper and reverse.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix Pitchfork',d:'Polyphonic pitch shifter with ±3 octave range.',b:'Electro-Harmonix'},
+      {n:'Electro-Harmonix POG2',d:'Polyphonic octave generator with sub octave and filter control.',b:'Electro-Harmonix'},
+      // TC ELECTRONIC
+      {n:'TC Electronic Hall of Fame 2 Reverb',d:'Premium reverb with TonePrint for artist-loaded presets.',b:'TC Electronic'},
+      {n:'TC Electronic Flashback 2 Delay',d:'Versatile delay with TonePrint and Mash footswitch expression.',b:'TC Electronic'},
+      {n:'TC Electronic Corona Chorus',d:'Rich stereo chorus with TonePrint and multiple modes.',b:'TC Electronic'},
+      {n:'TC Electronic Sentry Noise Gate',d:'Intelligent noise gate with TonePrint and hard/soft modes.',b:'TC Electronic'},
+      {n:'TC Electronic PolyTune 3',d:'Industry-standard polyphonic tuner with buffered/true bypass.',b:'TC Electronic'},
+      {n:'TC Electronic Sub\'N\'Up Octaver',d:'Polyphonic octave pedal with sub dry and up octave signals.',b:'TC Electronic'},
+      {n:'TC Electronic Ditto Looper',d:'Compact stereo looper with unlimited overdubs.',b:'TC Electronic'},
+      // STRYMON
+      {n:'Strymon BigSky',d:'Premium studio-quality reverb with 12 machine types and MIDI.',b:'Strymon'},
+      {n:'Strymon Timeline',d:'Flagship delay with 12 delay types and deep programmability.',b:'Strymon'},
+      {n:'Strymon Mobius',d:'Premium modulation with 12 effect types and deep editing.',b:'Strymon'},
+      {n:'Strymon El Capistan',d:'dTape Echo that emulates three classic tape echo machines.',b:'Strymon'},
+      {n:'Strymon Flint',d:'Tremolo and reverb combo inspired by classic blackface Fender amps.',b:'Strymon'},
+      {n:'Strymon Iridium',d:'Amp and IR cab simulator for studio-quality tones direct to desk.',b:'Strymon'},
+      {n:'Strymon Riverside',d:'Multi-stage overdrive and distortion with six distinct drive modes.',b:'Strymon'},
+      // JHS PEDALS
+      {n:'JHS Morning Glory',d:'Transparent low-to-mid gain overdrive loved for its dynamic response.',b:'JHS'},
+      {n:'JHS Angry Charlie',d:'Marshall-in-a-box distortion with preamp gain staging.',b:'JHS'},
+      {n:'JHS Colour Box V2',d:'Custom preamp based on classic SSL console circuitry.',b:'JHS'},
+      {n:'JHS 3 Series Overdrive',d:'Simple affordable overdrive with a warm organic character.',b:'JHS'},
+      {n:'JHS Bonsai',d:'9-in-1 Tube Screamer mode selector covering the full TS lineage.',b:'JHS'},
+      // WALRUS AUDIO
+      {n:'Walrus Audio Slö Multi Texture Reverb',d:'Dream reverb with dark rise and swell modes.',b:'Walrus Audio'},
+      {n:'Walrus Audio Fathom Reverb',d:'Four reverb modes with a freeze function and x/y mix.',b:'Walrus Audio'},
+      {n:'Walrus Audio Mako D1',d:'High-fidelity stereo delay with analog warm mode.',b:'Walrus Audio'},
+      {n:'Walrus Audio Julia Analog Chorus/Vibrato',d:'Analog chorus/vibrato with lag and chorus blend controls.',b:'Walrus Audio'},
+      // KEELEY
+      {n:'Keeley Compressor Plus',d:'Studio-quality 4-in-1 compressor with blend and tone controls.',b:'Keeley'},
+      {n:'Keeley Caverns Delay Reverb V2',d:'Dual delay and reverb with shimmer and modulation.',b:'Keeley'},
+      {n:'Keeley Katana Boost',d:'Clean boost up to 20dB for pushing amps into natural breakup.',b:'Keeley'},
+      // DUNLOP
+      {n:'Dunlop Cry Baby GCB95',d:'The original Cry Baby wah used by countless legendary guitarists.',b:'Dunlop'},
+      {n:'Dunlop Zakk Wylde Cry Baby',d:'Signature wah with custom voicing designed for heavy playing.',b:'Dunlop'},
+      {n:'Dunlop Jimi Hendrix Cry Baby',d:'Signature wah based on the VOX clyde mccoy used by Hendrix.',b:'Dunlop'},
+      {n:'Dunlop Uni-Vibe Chorus/Vibrato',d:'Reissue of the iconic Uni-Vibe used by Hendrix and SRV.',b:'Dunlop'},
+      // WAMPLER
+      {n:'Wampler Tumnus Deluxe',d:'Premium Klon-inspired overdrive with 3-band EQ.',b:'Wampler'},
+      {n:'Wampler Plexi-Drive',d:'Marshall Plexi-in-a-box with gain bias and treble controls.',b:'Wampler'},
+      {n:'Wampler Pinnacle Deluxe',d:'Premium high-gain distortion inspired by EVH Brown Sound.',b:'Wampler'},
+      // EARTHQUAKER
+      {n:'Earthquaker Devices Afterneath',d:'Otherworldly reverb with particle dispersion and drag controls.',b:'Earthquaker'},
+      {n:'Earthquaker Devices Westwood',d:'Translucent drive for lead and rhythm with soft clipping.',b:'Earthquaker'},
+      {n:'Earthquaker Devices Plumes',d:'Small signal shredder overdrive with three clipping modes.',b:'Earthquaker'},
+      // FULLTONE
+      {n:'Fulltone OCD V2',d:'High-headroom overdrive/distortion with HP/LP voicing switch.',b:'Fulltone'},
+      {n:'Fulltone Full-Drive 2',d:'Dual overdrive with a boost mode for solo push.',b:'Fulltone'},
+      // KLON / KLONES
+      {n:'Klon Centaur',d:'The holy grail transparent overdrive used by countless pros.',b:'Klon'},
+      {n:'Electro-Harmonix Crayon',d:'Full range overdrive inspired by the Klon Centaur circuit.',b:'Electro-Harmonix'},
+      // CHASE BLISS
+      {n:'Chase Bliss Audio Blooper',d:'Bottomless looper with experimental modifiers and MIDI.',b:'Chase Bliss'},
+      {n:'Chase Bliss Audio Thermae',d:'Analog pitch shifting delay with harmonic intervals.',b:'Chase Bliss'},
+      // EMPRESS
+      {n:'Empress Effects Reverb',d:'Massive reverb with 35 different reverb algorithms.',b:'Empress'},
+      {n:'Empress Effects Compressor MKII',d:'Studio-grade compressor with parallel mix and sidechain.',b:'Empress'},
+      // WAY HUGE
+      {n:'Way Huge Smalls Pork Loin',d:'Soft-clipping overdrive with parallel clean blend.',b:'Way Huge'},
+      {n:'Way Huge Green Rhino Overdrive MkIV',d:'Extended Tube Screamer variant with 100Hz and Q controls.',b:'Way Huge'},
+      // PROCO
+      {n:'ProCo RAT2',d:'The legendary distortion pedal used by Radiohead and many others.',b:'ProCo'},
+    ]
+  },
+  multifx: {
+    brands: ['Line 6','Boss','Fractal Audio','Neural DSP','HeadRush','Zoom','Mooer','DigiTech','NUX','Kemper','Valeton','TC Electronic'],
+    quick: ['Helix Floor','Helix LT','HX Stomp','POD Go','Boss GT-1000','Fractal Audio Axe-Fx III','Neural DSP Quad Cortex','Boss GX-100'],
+    items: [
+      {n:'Helix Floor',d:'Flagship Line 6 multi-effects with 32 simultaneous blocks and full I/O.',b:'Line 6'},
+      {n:'Helix LT',d:'Lighter version of the Helix Floor with slightly fewer I/O options.',b:'Line 6'},
+      {n:'HX Stomp',d:'Compact Helix processor with 6 blocks in a small form factor.',b:'Line 6'},
+      {n:'HX Stomp XL',d:'Expanded HX Stomp with more footswitches and a larger display.',b:'Line 6'},
+      {n:'POD Go',d:'Streamlined floor processor with Helix sounds at an accessible price.',b:'Line 6'},
+      {n:'POD Go Wireless',d:'POD Go with integrated wireless guitar system built in.',b:'Line 6'},
+      {n:'Helix Native',d:'The full Helix experience as a DAW plugin for recording.',b:'Line 6'},
+      {n:'Boss GT-1000',d:'Flagship Boss multi-effects with AIRD amp modeling technology.',b:'Boss'},
+      {n:'Boss GT-1000CORE',d:'Compact version of the GT-1000 for pedalboard integration.',b:'Boss'},
+      {n:'Boss GX-100',d:'Mid-range Boss multi-effects with 140 effects and wireless option.',b:'Boss'},
+      {n:'Boss GT-100',d:'Previous flagship Boss processor with Tube Logic amp modeling.',b:'Boss'},
+      {n:'Boss MS-3',d:'Compact multi-effects switcher integrating pedals with amp switching.',b:'Boss'},
+      {n:'Boss GT-1',d:'Compact floor processor with GT-100 sounds in a lightweight unit.',b:'Boss'},
+      {n:'Fractal Audio Axe-Fx III',d:'The pinnacle of amp modeling with ultra-realistic simulation.',b:'Fractal Audio'},
+      {n:'Fractal Audio FM9',d:'Standalone floor unit with full Axe-Fx III processing power.',b:'Fractal Audio'},
+      {n:'Fractal Audio FM3',d:'Compact floor unit with full Fractal Audio signal processing.',b:'Fractal Audio'},
+      {n:'Neural DSP Quad Cortex',d:'Floor modeler with neural capture technology for amp cloning.',b:'Neural DSP'},
+      {n:'HeadRush Pedalboard',d:'Touchscreen multi-effects with 33 amp models and 40 effects.',b:'HeadRush'},
+      {n:'HeadRush MX5',d:'Compact floor processor with HeadRush amp modeling.',b:'HeadRush'},
+      {n:'HeadRush Prime',d:'Premium HeadRush with improved processing and expanded connectivity.',b:'HeadRush'},
+      {n:'Zoom G3Xn',d:'Multi-effects with built-in expression pedal and amp models.',b:'Zoom'},
+      {n:'Zoom G6',d:'Premium Zoom with 80 effects types and expression pedal.',b:'Zoom'},
+      {n:'Zoom G11',d:'Flagship Zoom with color touchscreen and extensive routing.',b:'Zoom'},
+      {n:'Zoom G5n',d:'Mid-range Zoom with 100+ effects and 15 amp models.',b:'Zoom'},
+      {n:'Mooer GE300',d:'Flagship Mooer with amp modeling laser IR capture and expression.',b:'Mooer'},
+      {n:'Mooer GE200',d:'Mid-range Mooer with amp models and built-in expression pedal.',b:'Mooer'},
+      {n:'Mooer GE250',d:'Expanded GE250 with more routing options and improved display.',b:'Mooer'},
+      {n:'Kemper Profiler Stage',d:'Floor-based Kemper Profiler with full expression and switching.',b:'Kemper'},
+      {n:'Kemper Profiler PowerHead',d:'Profiler with built-in power amp for driving a guitar cabinet.',b:'Kemper'},
+      {n:'NUX MG-400',d:'Compact multi-effects with amp modeling and IR loading.',b:'NUX'},
+      {n:'NUX MG-300',d:'Entry-level multi-effects with amp simulation and built-in tuner.',b:'NUX'},
+      {n:'DigiTech RP360XP',d:'Multi-effects with expression pedal looper and 100+ amp models.',b:'DigiTech'},
+      {n:'TC Electronic Nova System',d:'Dual-channel effects system with programmable loop switching.',b:'TC Electronic'},
+      {n:'Valeton GP-200',d:'Affordable multi-effects with over 200 presets and amp models.',b:'Valeton'},
+    ]
+  },
+  bass: {
+    brands: ['Fender','Squier','Gibson','Epiphone','Ibanez','Music Man','Warwick','Rickenbacker','Yamaha','Schecter','ESP','Sterling'],
+    quick: ['Fender Precision Bass','Fender Jazz Bass','Squier Affinity Precision Bass','Ibanez SR300E','Music Man StingRay','Gibson SG Bass'],
+    items: [
+      {n:'Fender Precision Bass',d:'The original electric bass that defined the instrument.',b:'Fender'},
+      {n:'Fender Jazz Bass',d:'The versatile twin-pickup bass beloved across all genres.',b:'Fender'},
+      {n:'Fender American Professional II Precision Bass',d:'Modern P-Bass with V-Mod II pickup and rolled fingerboard.',b:'Fender'},
+      {n:'Fender American Professional II Jazz Bass',d:'Modern J-Bass with V-Mod II pickups and tapered neck heel.',b:'Fender'},
+      {n:'Fender Player Precision Bass',d:'Mexican-made P-Bass offering excellent quality at an accessible price.',b:'Fender'},
+      {n:'Fender Player Jazz Bass',d:'Mexican-made J-Bass with alnico pickups and modern C neck.',b:'Fender'},
+      {n:'Fender Mustang Bass PJ',d:'Short-scale PJ bass perfect for smaller hands and warm tone.',b:'Fender'},
+      {n:'Squier Affinity Precision Bass PJ',d:'Affordable PJ bass great for beginner to intermediate players.',b:'Squier'},
+      {n:'Squier Classic Vibe 60s Precision Bass',d:'Vintage-spec P-Bass with a round-lam rosewood fretboard.',b:'Squier'},
+      {n:'Squier Classic Vibe 70s Jazz Bass',d:'Vintage 70s J-Bass with a maple fretboard and natural finish.',b:'Squier'},
+      {n:'Gibson SG Bass',d:'Short-scale SG-style bass with warm humbucker tone.',b:'Gibson'},
+      {n:'Epiphone Thunderbird Classic',d:'Classic Thunderbird bass with split-coil pickups.',b:'Epiphone'},
+      {n:'Ibanez SR300E',d:'Versatile active bass with Bartolini MK1 pickup system.',b:'Ibanez'},
+      {n:'Ibanez SR500E',d:'Mid-range SR with Nordstrand Big Singles and 3-band EQ.',b:'Ibanez'},
+      {n:'Ibanez SR600E',d:'Premium SR with Bartolini BH2 pickups and mahogany/ash body.',b:'Ibanez'},
+      {n:'Ibanez BTB845',d:'5-string premium bass with mono-rail bridge and Nordstrand pickups.',b:'Ibanez'},
+      {n:'Music Man StingRay',d:'The legendary active bass with a powerful humbucker and preamp.',b:'Music Man'},
+      {n:'Music Man StingRay Special',d:'Upgraded StingRay with noiseless pickups and roasted maple neck.',b:'Music Man'},
+      {n:'Music Man Bongo',d:'Futuristic-looking bass with quad-coil or dual humbucker options.',b:'Music Man'},
+      {n:'Warwick Rockbass Corvette',d:'Affordable German-inspired bass with MEC pickups.',b:'Warwick'},
+      {n:'Warwick Pro Series Thumb BO',d:'Premium Warwick with a rich deep tone from ovangkol body.',b:'Warwick'},
+      {n:'Rickenbacker 4003',d:'The iconic Chris Squire and Paul McCartney bass with signature jangle.',b:'Rickenbacker'},
+      {n:'Rickenbacker 4003S',d:'Stripped-down version of the 4003 without binding.',b:'Rickenbacker'},
+      {n:'Yamaha TRBX304',d:'Active 4-string bass with YGD custom pickups and 3-band EQ.',b:'Yamaha'},
+      {n:'Yamaha TRBX505',d:'5-string active bass with sweepable mid EQ and RW body.',b:'Yamaha'},
+      {n:'Schecter Stiletto Stealth',d:'Active bass with EMG 35HZ pickups and sleek black finish.',b:'Schecter'},
+      {n:'ESP LTD B-204SM',d:'Spalted maple topped bass with active EMG pickups.',b:'ESP'},
+      {n:'Sterling by Music Man StingRay Ray4',d:'Affordable StingRay-inspired bass with active 2-band EQ.',b:'Sterling'},
+    ]
+  },
+  bassamp: {
+    brands: ['Ampeg','Fender','Hartke','Markbass','Gallien-Krueger','Orange','TC Electronic','Aguilar','Darkglass','Trace Elliot','Peavey','Eden'],
+    quick: ['Ampeg SVT-CL','Ampeg BA-108','Fender Rumble 25','Hartke HD15','Gallien-Krueger MB200','Markbass CMD 121H'],
+    items: [
+      {n:'Ampeg SVT-CL',d:'The classic 300-watt all-tube bass head that defined the SVT sound.',b:'Ampeg'},
+      {n:'Ampeg SVT-3PRO',d:'450-watt hybrid head with tube preamp and solid-state power.',b:'Ampeg'},
+      {n:'Ampeg BA-108',d:'Compact 25-watt practice combo perfect for home use.',b:'Ampeg'},
+      {n:'Ampeg BA-115',d:'150-watt 15-inch combo for rehearsal and small gigs.',b:'Ampeg'},
+      {n:'Ampeg BA-210',d:'450-watt 2x10 combo with a full feature set for gigging.',b:'Ampeg'},
+      {n:'Ampeg PF-500 Portaflex',d:'500-watt head with flip-top design and vintage Ampeg styling.',b:'Ampeg'},
+      {n:'Ampeg PF-800',d:'800-watt lightweight Portaflex head with premium tone.',b:'Ampeg'},
+      {n:'Fender Rumble 25',d:'25-watt compact combo with vintage-style voicing and overdrive.',b:'Fender'},
+      {n:'Fender Rumble 40',d:'40-watt combo with four voicing switches and overdrive circuit.',b:'Fender'},
+      {n:'Fender Rumble 100',d:'100-watt combo with a 12-inch speaker and full tone controls.',b:'Fender'},
+      {n:'Fender Rumble 500',d:'500-watt 2x10 combo with lightweight class D design.',b:'Fender'},
+      {n:'Hartke HD15',d:'15-watt practice combo with an aluminum cone speaker.',b:'Hartke'},
+      {n:'Hartke HD75',d:'75-watt combo with hydrive speaker and powerful preamp.',b:'Hartke'},
+      {n:'Markbass CMD 121H',d:'300-watt combo with a neo 12-inch speaker and lightweight design.',b:'Markbass'},
+      {n:'Markbass Little Mark III',d:'500-watt ultra-lightweight head with VPF and VLE filters.',b:'Markbass'},
+      {n:'Gallien-Krueger MB200',d:'200-watt micro bass head in an ultra-compact form factor.',b:'Gallien-Krueger'},
+      {n:'Gallien-Krueger MB500',d:'500-watt micro head with full tone control and contour.',b:'Gallien-Krueger'},
+      {n:'Gallien-Krueger 800RB',d:'The classic 300/100-watt biamp head beloved for its punchy tone.',b:'Gallien-Krueger'},
+      {n:'Orange OB1-300',d:'300-watt solid-state bass head with a simple gain and tone setup.',b:'Orange'},
+      {n:'Orange Terror Bass 500',d:'500-watt hybrid head with tube preamp and class D power amp.',b:'Orange'},
+      {n:'Orange Crush Bass 25',d:'25-watt solid-state practice combo with a warm orange tone.',b:'Orange'},
+      {n:'TC Electronic BQ250',d:'250-watt lightweight head with SpectraComp compressor built in.',b:'TC Electronic'},
+      {n:'TC Electronic BH550',d:'550-watt powerful head with TonePrint effects and USB audio.',b:'TC Electronic'},
+      {n:'Aguilar Tone Hammer 500',d:'500-watt head with the famous Tone Hammer preamp circuit.',b:'Aguilar'},
+      {n:'Aguilar DB 750',d:'750-watt hybrid head with tube preamp for massive headroom.',b:'Aguilar'},
+      {n:'Darkglass Microtubes 900',d:'900-watt head with dual distortion circuits and parametric EQ.',b:'Darkglass'},
+      {n:'Darkglass Alpha Omega Ultra',d:'Premium 900-watt head with Alpha and Omega distortion modes.',b:'Darkglass'},
+      {n:'Trace Elliot ELF',d:'Ultra-compact 200-watt head in a tiny form factor.',b:'Trace Elliot'},
+      {n:'Trace Elliot 1200W',d:'1200-watt powerful head for large stages and venues.',b:'Trace Elliot'},
+      {n:'Peavey Max 115',d:'300-watt combo with a 15-inch speaker and DDT limiter.',b:'Peavey'},
+      {n:'Eden WT-800',d:'800-watt stereo/mono head with a parametric EQ and enhance circuit.',b:'Eden'},
+    ]
+  }
+};
+
+let currentTab = 'pedals';
+let currentBrand = 'all';
+// Store selections per tab (multifx inherits from amp page via localStorage simulation)
+const selections = {pedals:[],multifx:[],bass:[],bassamp:[]};
+
+// Simulate inheriting Multi-FX from previous amp page
+// In real app this would come from state/localStorage
+const inheritedMultiFX = []; // empty unless passed from amp page
+
+function setTab(tab) {
+  currentTab = tab;
+  currentBrand = 'all';
+  ['pedals','multifx','bass','bassamp'].forEach(t => {
+    const idMap = {pedals:'tabPedals',multifx:'tabMultiFX',bass:'tabBass',bassamp:'tabBassAmp'};
+    document.getElementById(idMap[t]).classList.remove('active');
+  });
+  const tabMap = {pedals:'tabPedals',multifx:'tabMultiFX',bass:'tabBass',bassamp:'tabBassAmp'};
+  document.getElementById(tabMap[tab]).classList.add('active');
+  const cfg = db[tab];
+  const placeholders = {pedals:'Search pedals...',multifx:'Search multi-FX units...',bass:'Search bass guitars...',bassamp:'Search bass amps...'};
+  const cantFind = {pedals:['Can\'t find your pedal?','Include brand and model (e.g. "Boss DS-1")'],multifx:['Can\'t find your multi-FX unit?','Include brand and model (e.g. "Line 6 Helix")'],bass:['Can\'t find your bass?','Include brand and model (e.g. "Fender Jazz Bass")'],bassamp:['Can\'t find your bass amp?','Include brand and model (e.g. "Ampeg SVT")']};
+  document.getElementById('searchPlaceholder').textContent = placeholders[tab];
+  document.getElementById('dropdownSearch').placeholder = placeholders[tab];
+  document.getElementById('cantFindLabel').textContent = cantFind[tab][0];
+  document.getElementById('cantFindSub').textContent = cantFind[tab][1];
+  document.getElementById('searchBox').classList.remove('open');
+  document.getElementById('dropdown').classList.remove('open');
+  renderBrandPills();
+  renderQuickPills();
+  updateUI();
+}
+
+function renderBrandPills() {
+  const brands = db[currentTab].brands;
+  document.getElementById('brandPills').innerHTML =
+    `<button class="brand-pill active" onclick="filterBrand('all',this)">All</button>` +
+    brands.map(b=>`<button class="brand-pill" onclick="filterBrand('${b.replace(/'/g,"\\'")}',this)">${b}</button>`).join('');
+}
+
+function renderQuickPills() {
+  const pills = db[currentTab].quick;
+  const sel = selections[currentTab];
+  document.getElementById('quickPills').innerHTML = pills.map(p=>
+    `<button class="quick-pill ${sel.includes(p)?'selected':''}" onclick="quickSelect(this,'${p.replace(/'/g,"\\'")}')">${p}</button>`
+  ).join('');
+}
+
+function filterBrand(brand, el) {
+  currentBrand = brand;
+  document.querySelectorAll('.brand-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  filterItems(document.getElementById('dropdownSearch').value);
+}
+
+function filterItems(q) {
+  const items = db[currentTab].items.filter(i=>
+    i.n.toLowerCase().includes(q.toLowerCase()) &&
+    (currentBrand==='all' || i.b===currentBrand)
+  );
+  renderItemList(items);
+}
+
+function renderItemList(items) {
+  const sel = selections[currentTab];
+  document.getElementById('itemList').innerHTML = items.map(i=>`
+    <div class="item-row ${sel.includes(i.n)?'selected-row':''}" onclick="toggleItem('${i.n.replace(/'/g,"\\'")}')">
+      <div class="item-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="item-name">${i.n}</div><div class="item-desc">${i.d}</div></div>
+    </div>`).join('');
+}
+
+function toggleDropdown() {
+  document.getElementById('searchBox').classList.toggle('open');
+  document.getElementById('dropdown').classList.toggle('open');
+  if(document.getElementById('dropdown').classList.contains('open')) {
+    renderItemList(db[currentTab].items);
+  }
+}
+
+function toggleItem(name) {
+  const sel = selections[currentTab];
+  if(sel.includes(name)) selections[currentTab]=sel.filter(s=>s!==name);
+  else selections[currentTab].push(name);
+  localStorage.setItem('tonefit_extras', JSON.stringify(selections));
+  renderItemList(db[currentTab].items.filter(i=>currentBrand==='all'||i.b===currentBrand));
+  renderQuickPills();
+  updateUI();
+}
+
+function quickSelect(el,name) {
+  el.classList.toggle('selected');
+  const sel = selections[currentTab];
+  if(sel.includes(name)) selections[currentTab]=sel.filter(s=>s!==name);
+  else selections[currentTab].push(name);
+  localStorage.setItem('tonefit_extras', JSON.stringify(selections));
+  updateUI();
+}
+
+function removeTag(name) {
+  selections[currentTab]=selections[currentTab].filter(s=>s!==name);
+  localStorage.setItem('tonefit_extras', JSON.stringify(selections));
+  renderQuickPills();
+  renderItemList(db[currentTab].items);
+  updateUI();
+}
+
+function getTotalSelected() {
+  return Object.values(selections).flat().length;
+}
+
+function updateUI() {
+  const sel = selections[currentTab];
+  document.getElementById('selectedTags').innerHTML = sel.map(n=>
+    `<div class="sel-tag">${n}<button class="sel-tag-x" onclick="removeTag('${n.replace(/'/g,"\\'")}')">×</button></div>`
+  ).join('');
+  const total = getTotalSelected();
+  const btn = document.getElementById('ctaBtn');
+  if(total===0){btn.disabled=true;btn.textContent='Skip for now';}
+  else{btn.disabled=false;btn.textContent=`Continue with ${total} extra${total>1?'s':''}`;}
+}
+
+// Load inherited Multi-FX selections from amp page via localStorage
+try {
+  const saved = localStorage.getItem('tonefit_multifx');
+  if(saved) {
+    const parsed = JSON.parse(saved);
+    if(Array.isArray(parsed)) selections.multifx = parsed;
+  }
+} catch(e) {}
+
+// Load inherited Multi-FX selections from amp page
+const savedMultiFX = localStorage.getItem('tonefit_multifx');
+if(savedMultiFX) {
+  selections.multifx = JSON.parse(savedMultiFX);
+}
+
+// Init
+renderBrandPills();
+renderQuickPills();
+updateUI();
+</script>
+</body></html>

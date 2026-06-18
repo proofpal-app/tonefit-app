@@ -1,0 +1,19 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/app", "destination": "/app.html" },
+    { "source": "/plans", "destination": "/plans.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/status", "destination": "/status.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/gear-setup", "destination": "/gear-setup.html" },
+    { "source": "/onboarding-amp", "destination": "/onboarding-amp.html" },
+    { "source": "/onboarding-extras", "destination": "/onboarding-extras.html" },
+    { "source": "/onboarding-gear", "destination": "/onboarding-gear.html" },
+    { "source": "/onboarding-confirm", "destination": "/onboarding-confirm.html" },
+    { "source": "/onboarding-summary", "destination": "/onboarding-summary.html" },
+    { "source": "/onboarding-done", "destination": "/onboarding-done.html" }
+  ]
+}

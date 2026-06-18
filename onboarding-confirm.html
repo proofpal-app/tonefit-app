@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Great Choices! | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--blue-dark:#1D4ED8;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F0F4FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+.progress-bar{position:fixed;top:0;left:0;width:100%;height:3px;background:#2563EB;z-index:300}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;background:transparent}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:#fff;border:none;padding:12px 14px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.10)}
+.hamburger span{width:20px;height:2px;background:#1a1a2e;border-radius:2px;display:block}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 24px 60px;background:linear-gradient(160deg,#E8EEF8 0%,#EEF3FB 30%,#F5F8FF 60%,#ffffff 100%)}
+.wrap{max-width:520px;width:100%;text-align:center}
+
+/* green check circle */
+.check-circle{
+  width:72px;height:72px;
+  background:#DCFCE7;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;
+}
+.check-circle svg{width:32px;height:32px;stroke:#22C55E;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+.page-title{font-size:clamp(24px,4vw,32px);font-weight:900;letter-spacing:-1px;color:#0D1117;margin-bottom:12px}
+.page-sub{font-size:16px;color:#6B7280;line-height:1.6;margin-bottom:32px;max-width:440px;margin-left:auto;margin-right:auto}
+
+/* gear card */
+.gear-card{
+  background:white;
+  border:1.5px solid #E5E7EB;
+  border-radius:16px;
+  padding:18px 20px;
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:20px;
+  text-align:left;
+}
+.gear-icon{width:44px;height:44px;background:#EEF4FF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gear-icon svg{width:20px;height:20px;stroke:#2563EB;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gear-name{font-size:15px;font-weight:700;color:#0D1117;margin-bottom:3px}
+.gear-desc{font-size:12px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px}
+.gear-check{margin-left:auto;flex-shrink:0}
+.gear-check svg{width:22px;height:22px;stroke:#22C55E;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.tailor-note{font-size:13px;color:#9CA3AF;margin-bottom:32px}
+
+.cta-btn{width:100%;background:#2563EB;color:white;border:none;padding:17px;border-radius:100px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s;margin-bottom:16px;display:block;text-decoration:none;text-align:center}
+.cta-btn:hover{background:#1D4ED8}
+.back-btn{display:block;text-align:center;font-size:14px;color:#9CA3AF;font-weight:500;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;width:100%}
+.back-btn:hover{color:#6B7280}
+</style>
+</head>
+<body>
+<div class="progress-bar"></div>
+<nav><button class="hamburger"><span></span><span></span><span></span></button></nav>
+
+<main>
+<div class="wrap">
+
+  <div class="check-circle">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+
+  <h1 class="page-title">Great choices!</h1>
+  <p class="page-sub">We have detailed tone profiles for your gear — you're all set to get perfect tones.</p>
+
+  <!-- dynamically populated from localStorage -->
+  <div id="gearCards"></div>
+
+  <p class="tailor-note">Tone adaptations will be tailored to your exact gear</p>
+
+  <a href="/onboarding-summary" class="cta-btn">Continue to Summary</a>
+  <button class="back-btn" onclick="history.back()">Back</button>
+
+</div>
+</main>
+
+<script>
+// Load all selections from localStorage
+const guitars = JSON.parse(localStorage.getItem('tonefit_guitars') || '[]');
+const amps = JSON.parse(localStorage.getItem('tonefit_amps') || '[]');
+const multifx = JSON.parse(localStorage.getItem('tonefit_multifx') || '[]');
+const extras = JSON.parse(localStorage.getItem('tonefit_extras') || '{}');
+
+// Combine all gear
+const allGear = [
+  ...guitars.map(n => ({name:n, desc:'Standard configuration of the world\'s most popular electric guitar, offering cle...', type:'guitar'})),
+  ...amps.map(n => ({name:n, desc:'Amp selected for your rig setup.', type:'amp'})),
+  ...multifx.map(n => ({name:n, desc:'Multi-FX unit for your signal chain.', type:'multifx'})),
+  ...(extras.pedals||[]).map(n => ({name:n, desc:'Pedal selected for your extras.', type:'pedal'})),
+];
+
+const icons = {
+  guitar: `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+  amp: `<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`,
+  multifx: `<svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg>`,
+  pedal: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+};
+
+const container = document.getElementById('gearCards');
+if(allGear.length === 0) {
+  // Demo fallback
+  container.innerHTML = `
+    <div class="gear-card">
+      <div class="gear-icon">${icons.guitar}</div>
+      <div>
+        <div class="gear-name">Squier Stratocaster</div>
+        <div class="gear-desc">Standard configuration of the world's most popular electric guitar, offering cle...</div>
+      </div>
+      <div class="gear-check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg></div>
+    </div>`;
+} else {
+  container.innerHTML = allGear.map(g => `
+    <div class="gear-card">
+      <div class="gear-icon">${icons[g.type]||icons.guitar}</div>
+      <div style="flex:1;min-width:0">
+        <div class="gear-name">${g.name}</div>
+        <div class="gear-desc">${g.desc}</div>
+      </div>
+      <div class="gear-check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg></div>
+    </div>`).join('');
+}
+</script>
+</body></html>

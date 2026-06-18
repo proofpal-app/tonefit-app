@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Your Guitars | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--blue-dark:#1D4ED8;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F0F4FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* NAVBAR */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;background:transparent}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:#fff;border:none;padding:12px 14px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.10)}
+.hamburger span{width:20px;height:2px;background:#1a1a2e;border-radius:2px;display:block}
+
+/* PROGRESS BAR */
+.progress-bar{position:fixed;top:0;left:0;width:35%;height:3px;background:#2563EB;z-index:300;transition:width 0.4s}
+
+/* MAIN */
+main{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:80px 24px 60px;background:linear-gradient(160deg,#E8EEF8 0%,#EEF3FB 30%,#F5F8FF 60%,#ffffff 100%)}
+
+.page-wrap{max-width:540px;width:100%;padding-top:20px}
+
+/* header */
+.page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.guitar-circle{width:52px;height:52px;background:#EEF4FF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.guitar-circle svg{width:24px;height:24px;stroke:#2563EB;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.header-text-title{font-size:22px;font-weight:900;letter-spacing:-0.5px;color:#0D1117}
+.header-text-sub{font-size:13px;color:#6B7280;font-weight:400;margin-top:2px}
+
+/* selected tags */
+.selected-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;min-height:0}
+.sel-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#EFF6FF;border:1.5px solid #BFDBFE;
+  border-radius:100px;padding:7px 14px;
+  font-size:13px;font-weight:600;color:#1E3A8A;
+}
+.sel-tag-x{background:none;border:none;cursor:pointer;color:#93C5FD;font-size:14px;line-height:1;padding:0;font-family:'Plus Jakarta Sans',sans-serif}
+.sel-tag-x:hover{color:#2563EB}
+
+/* search box */
+.search-box{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  background:white;border:1.5px solid #E5E7EB;border-radius:14px;
+  padding:14px 18px;cursor:pointer;
+  transition:border-color 0.2s;
+  margin-bottom:0;
+}
+.search-box.open{border-color:#2563EB;border-radius:14px 14px 0 0;border-bottom-color:transparent}
+.search-box-left{display:flex;align-items:center;gap:10px;color:#9CA3AF;font-size:15px}
+.search-box-left svg{width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:1.8;stroke-linecap:round}
+.search-chevron{width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:2;stroke-linecap:round;transition:transform 0.2s}
+.search-box.open .search-chevron{transform:rotate(180deg)}
+
+/* dropdown */
+.dropdown{
+  background:white;border:1.5px solid #2563EB;
+  border-top:none;border-radius:0 0 16px 16px;
+  margin-bottom:20px;overflow:hidden;
+  display:none;
+}
+.dropdown.open{display:block}
+.dropdown-search{
+  width:100%;border:none;border-bottom:1px solid #E5E7EB;
+  padding:14px 18px;font-size:14px;color:#0D1117;
+  font-family:'Plus Jakarta Sans',sans-serif;outline:none;
+  background:#FAFBFD;
+}
+.dropdown-search::placeholder{color:#9CA3AF}
+
+/* brand filter pills */
+.brand-pills{display:flex;gap:6px;padding:12px 16px;overflow-x:auto;border-bottom:1px solid #F3F4F6}
+.brand-pills::-webkit-scrollbar{display:none}
+.brand-pill{
+  white-space:nowrap;background:none;border:1.5px solid #E5E7EB;
+  border-radius:100px;padding:5px 14px;
+  font-size:12px;font-weight:600;color:#374151;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  transition:background 0.2s,border-color 0.2s;flex-shrink:0;
+}
+.brand-pill:hover{background:#F3F4F6}
+.brand-pill.active{background:#EFF6FF;border-color:#BFDBFE;color:#2563EB}
+
+/* guitar list */
+.guitar-section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;padding:12px 18px 6px}
+.guitar-list{max-height:220px;overflow-y:auto}
+.guitar-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;cursor:pointer;
+  transition:background 0.15s;
+  border-bottom:1px solid #F9FAFB;
+}
+.guitar-row:hover{background:#F8FAFF}
+.guitar-row.selected-row{background:#EFF6FF}
+.guitar-checkbox{
+  width:22px;height:22px;border-radius:6px;
+  border:1.5px solid #D1D5DB;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.15s,border-color 0.15s;
+}
+.guitar-row.selected-row .guitar-checkbox{background:#2563EB;border-color:#2563EB}
+.guitar-checkbox svg{width:13px;height:13px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;display:none}
+.guitar-row.selected-row .guitar-checkbox svg{display:block}
+.guitar-row-name{font-size:14px;font-weight:700;color:#0D1117;transition:color 0.15s}
+.guitar-row.selected-row .guitar-row-name{color:#2563EB}
+.guitar-row-desc{font-size:12px;color:#9CA3AF;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px}
+
+/* can't find */
+.cant-find{padding:14px 18px;border-top:1px solid #F3F4F6}
+.cant-find-label{font-size:13px;font-weight:700;color:#0D1117;margin-bottom:4px}
+.cant-find-sub{font-size:12px;color:#9CA3AF;margin-bottom:10px}
+.cant-find-row{display:flex;gap:8px}
+.cant-find-input{
+  flex:1;border:1.5px solid #E5E7EB;border-radius:10px;
+  padding:10px 14px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;
+  outline:none;color:#0D1117;background:#FAFBFD;
+}
+.cant-find-input:focus{border-color:#2563EB}
+.cant-find-add{
+  background:#E5E7EB;color:#9CA3AF;border:none;
+  border-radius:10px;padding:10px 18px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+
+/* quick select */
+.quick-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin:20px 0 10px}
+.quick-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.quick-pill{
+  background:white;border:1.5px solid #E5E7EB;
+  border-radius:100px;padding:8px 16px;
+  font-size:13px;font-weight:600;color:#374151;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  transition:background 0.15s,border-color 0.15s,color 0.15s;
+}
+.quick-pill:hover{background:#F3F4F6}
+.quick-pill.selected{background:#EFF6FF;border-color:#BFDBFE;color:#2563EB}
+
+/* CTA button */
+.cta-btn{
+  width:100%;background:#2563EB;color:white;
+  border:none;padding:17px;border-radius:100px;
+  font-size:16px;font-weight:700;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:background 0.2s;margin-bottom:16px;
+}
+.cta-btn:hover{background:#1D4ED8}
+.cta-btn:disabled{background:#E5E7EB;color:#9CA3AF;cursor:not-allowed}
+
+/* bottom row */
+.bottom-row{display:flex;justify-content:space-between;align-items:center}
+.back-btn{font-size:14px;color:#9CA3AF;font-weight:600;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.back-btn:hover{color:#6B7280}
+.add-later{font-size:14px;color:#9CA3AF;font-weight:500;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.add-later:hover{color:#6B7280}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<nav><button class="hamburger"><span></span><span></span><span></span></button></nav>
+
+<main>
+  <div class="page-wrap">
+
+    <div class="page-header">
+      <div class="guitar-circle">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </div>
+      <div>
+        <div class="header-text-title">Your Guitars</div>
+        <div class="header-text-sub" id="selectedCount">Search and tap to select your guitar</div>
+      </div>
+    </div>
+
+    <!-- selected tags -->
+    <div class="selected-tags" id="selectedTags"></div>
+
+    <!-- search box -->
+    <div class="search-box" id="searchBox" onclick="toggleDropdown()">
+      <div class="search-box-left">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search guitars...
+      </div>
+      <svg class="search-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <!-- dropdown -->
+    <div class="dropdown" id="dropdown">
+      <input class="dropdown-search" placeholder="Search guitars..." oninput="filterGuitars(this.value)"/>
+      <div class="brand-pills" id="brandPills">
+        <button class="brand-pill active" onclick="filterBrand('all',this)">All</button>
+        <button class="brand-pill" onclick="filterBrand('Fender',this)">Fender</button>
+        <button class="brand-pill" onclick="filterBrand('Squier',this)">Squier</button>
+        <button class="brand-pill" onclick="filterBrand('Gibson',this)">Gibson</button>
+        <button class="brand-pill" onclick="filterBrand('Epiphone',this)">Epiphone</button>
+        <button class="brand-pill" onclick="filterBrand('Ibanez',this)">Ibanez</button>
+        <button class="brand-pill" onclick="filterBrand('PRS',this)">PRS</button>
+        <button class="brand-pill" onclick="filterBrand('Yamaha',this)">Yamaha</button>
+        <button class="brand-pill" onclick="filterBrand('Schecter',this)">Schecter</button>
+        <button class="brand-pill" onclick="filterBrand('Jackson',this)">Jackson</button>
+        <button class="brand-pill" onclick="filterBrand('ESP',this)">ESP</button>
+        <button class="brand-pill" onclick="filterBrand('Gretsch',this)">Gretsch</button>
+        <button class="brand-pill" onclick="filterBrand('Charvel',this)">Charvel</button>
+        <button class="brand-pill" onclick="filterBrand('Music Man',this)">Music Man</button>
+        <button class="brand-pill" onclick="filterBrand('EVH',this)">EVH</button>
+        <button class="brand-pill" onclick="filterBrand('Rickenbacker',this)">Rickenbacker</button>
+        <button class="brand-pill" onclick="filterBrand('Guild',this)">Guild</button>
+        <button class="brand-pill" onclick="filterBrand('Reverend',this)">Reverend</button>
+        <button class="brand-pill" onclick="filterBrand('Danelectro',this)">Danelectro</button>
+        <button class="brand-pill" onclick="filterBrand('Parker',this)">Parker</button>
+      </div>
+      <div class="guitar-section-label">POPULAR</div>
+      <div class="guitar-list" id="guitarList"></div>
+      <div class="cant-find">
+        <div class="cant-find-label">Can't find your guitar?</div>
+        <div class="cant-find-sub">Include brand and model (e.g. "Fender Stratocaster")</div>
+        <div class="cant-find-row">
+          <input class="cant-find-input" placeholder="Brand + Model..."/>
+          <button class="cant-find-add">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- quick select -->
+    <div class="quick-label">QUICK SELECT</div>
+    <div class="quick-pills" id="quickPills">
+      <button class="quick-pill" onclick="quickSelect(this,'Fender Stratocaster')">Fender Stratocaster</button>
+      <button class="quick-pill" onclick="quickSelect(this,'Squier Stratocaster')">Squier Stratocaster</button>
+      <button class="quick-pill" onclick="quickSelect(this,'Epiphone Les Paul')">Epiphone Les Paul</button>
+      <button class="quick-pill" onclick="quickSelect(this,'Gibson Les Paul')">Gibson Les Paul</button>
+      <button class="quick-pill" onclick="quickSelect(this,'Fender Telecaster')">Fender Telecaster</button>
+      <button class="quick-pill" onclick="quickSelect(this,'Squier Telecaster')">Squier Telecaster</button>
+    </div>
+
+    <button class="cta-btn" id="ctaBtn" disabled>Select a guitar to continue</button>
+
+    <div class="bottom-row">
+      <button class="back-btn" onclick="history.back()">Back</button>
+      <button class="add-later">I'll add my gear later</button>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const guitars = [
+  {name:'Fender Stratocaster',desc:'Classic three single-coil electric renowned for bright articulate tone',brand:'Fender'},
+  {name:'Fender Telecaster',desc:'Bright twangy single-coil beloved for simplicity and versatility',brand:'Fender'},
+  {name:'Fender Jazzmaster',desc:'Offset-body electric with rich warm tone and unique tremolo system',brand:'Fender'},
+  {name:'Fender Jaguar',desc:'Shorter-scale offset with bright cutting tone and unique switching',brand:'Fender'},
+  {name:'Fender Mustang',desc:'Short-scale student model that became iconic in alternative rock',brand:'Fender'},
+  {name:'Fender American Professional II Stratocaster',desc:'Modern evolution of the classic Strat with refined playability',brand:'Fender'},
+  {name:'Fender American Professional II Telecaster',desc:'Modern Tele with refined V-Mod II pickups and rolled fretboard edges',brand:'Fender'},
+  {name:'Fender American Ultra Stratocaster',desc:'High-end Strat with noiseless pickups and compound radius neck',brand:'Fender'},
+  {name:'Fender American Ultra Telecaster',desc:'Premium Tele with Ultra Noiseless pickups and modern D neck profile',brand:'Fender'},
+  {name:'Fender American Vintage II 1961 Stratocaster',desc:'Faithful recreation of a 1961 Strat with period-correct specs',brand:'Fender'},
+  {name:'Fender American Vintage II 1972 Telecaster Thinline',desc:'Semi-hollow Tele with vintage Wide Range humbuckers',brand:'Fender'},
+  {name:'Fender Player Stratocaster',desc:'Mexican-made Strat offering excellent quality at an accessible price',brand:'Fender'},
+  {name:'Fender Player Telecaster',desc:'Mexican-made Tele with alnico pickups and modern playability',brand:'Fender'},
+  {name:'Fender Player Plus Stratocaster',desc:'Upgraded Player with noiseless pickups and push-pull coil split',brand:'Fender'},
+  {name:'Fender Player Plus Telecaster',desc:'Enhanced Player Tele with noiseless pickups and treble bleed circuit',brand:'Fender'},
+  {name:'Fender Vintera 50s Stratocaster',desc:'Vintage-spec Strat with soft V neck and period-correct pickups',brand:'Fender'},
+  {name:'Fender Vintera 60s Stratocaster',desc:'Mid-60s spec Strat with C neck and three vintage-style pickups',brand:'Fender'},
+  {name:'Fender Vintera 70s Stratocaster',desc:'Large headstock 70s Strat with three vintage-style single coils',brand:'Fender'},
+  {name:'Fender Vintera 50s Telecaster',desc:'Blackguard-style Tele with single-ply pickguard and soft V neck',brand:'Fender'},
+  {name:'Fender Vintera 60s Telecaster',desc:'Vintage-inspired Tele with C-shaped neck and bound body',brand:'Fender'},
+  {name:'Fender Kurt Cobain Jaguar',desc:'Kurt Cobain signature Jaguar with reverse-wound pickups',brand:'Fender'},
+  {name:'Fender Johnny Marr Jaguar',desc:'Johnny Marr signature with custom switching and strung-through body',brand:'Fender'},
+  {name:'Fender Eric Clapton Stratocaster',desc:'Clapton signature with active mid-boost and blocked tremolo',brand:'Fender'},
+  {name:'Fender Jeff Beck Stratocaster',desc:'Jeff Beck signature with LSR roller nut and hot Noiseless pickups',brand:'Fender'},
+  {name:'Fender Stevie Ray Vaughan Stratocaster',desc:'SRV signature with gold hardware and three-ply pickguard',brand:'Fender'},
+  {name:'Fender John Mayer Stratocaster',desc:'Big Dipper pickup signature used by Mayer on countless recordings',brand:'Fender'},
+  {name:'Squier Classic Vibe 50s Stratocaster',desc:'Vintage-inspired Strat offering premium feel at budget price',brand:'Squier'},
+  {name:'Squier Classic Vibe 60s Stratocaster',desc:'60s spec Strat with C neck and three alnico single coils',brand:'Squier'},
+  {name:'Squier Classic Vibe 70s Stratocaster',desc:'Large headstock 70s Strat with three single-coil pickups',brand:'Squier'},
+  {name:'Squier Classic Vibe 50s Telecaster',desc:'Vintage Tele with single-ply pickguard and soft V neck',brand:'Squier'},
+  {name:'Squier Classic Vibe 60s Telecaster',desc:'Vintage vibe Tele with bound body and period-correct appointments',brand:'Squier'},
+  {name:'Squier Affinity Stratocaster',desc:'Entry-level Strat perfect for beginners with reliable performance',brand:'Squier'},
+  {name:'Squier Affinity Telecaster',desc:'Entry-level Tele ideal for new guitarists learning the ropes',brand:'Squier'},
+  {name:'Squier Bullet Stratocaster',desc:'Ultra-affordable Strat for absolute beginners',brand:'Squier'},
+  {name:'Squier Paranormal Super-Sonic',desc:'Unusual offset body with Stratocaster-style electronics',brand:'Squier'},
+  {name:'Squier 40th Anniversary Stratocaster',desc:'Anniversary model celebrating decades of the iconic Squier lineup',brand:'Squier'},
+  {name:'Squier Mini Stratocaster',desc:'3/4 scale Strat perfect for young beginners and travel',brand:'Squier'},
+  {name:'Gibson Les Paul Standard 50s',desc:'50s spec Les Paul with a rounded C neck profile and burstbucker pickups',brand:'Gibson'},
+  {name:'Gibson Les Paul Standard 60s',desc:'60s spec Les Paul with slimmer taper neck and burstbucker 61 pickups',brand:'Gibson'},
+  {name:'Gibson Les Paul Custom',desc:'Top-of-the-line Les Paul with ebony fretboard and premium appointments',brand:'Gibson'},
+  {name:'Gibson Les Paul Junior',desc:'Stripped-down single-pickup Les Paul with raw punchy tone',brand:'Gibson'},
+  {name:'Gibson Les Paul Special',desc:'Flat-top Les Paul with P-90 pickups and no-frills approach',brand:'Gibson'},
+  {name:'Gibson Les Paul Studio',desc:'Stripped-down studio workhorse with full Les Paul tone and thinner body',brand:'Gibson'},
+  {name:'Gibson Les Paul Traditional',desc:'Traditional Les Paul with historic truss rod cover and burstbucker pickups',brand:'Gibson'},
+  {name:'Gibson 1959 Les Paul Standard Reissue',desc:'Faithful recreation of the holy grail Les Paul with hand-selected tonewoods',brand:'Gibson'},
+  {name:'Gibson SG Standard',desc:'Lightweight double-cutaway with aggressive humbuckers and easy upper fret access',brand:'Gibson'},
+  {name:'Gibson SG Special',desc:'Stripped-down SG with P-90 pickups for a rawer grittier tone',brand:'Gibson'},
+  {name:'Gibson SG Classic',desc:'SG body with P-90 pickups and a slim taper neck profile',brand:'Gibson'},
+  {name:'Gibson SG Junior',desc:'Single-pickup SG Junior with raw P-90 tone in a lightweight package',brand:'Gibson'},
+  {name:'Gibson ES-335',desc:'Semi-hollow body combining warmth of hollow body with solid sustain',brand:'Gibson'},
+  {name:'Gibson ES-339',desc:'Smaller semi-hollow for players who want ES-335 tone in compact package',brand:'Gibson'},
+  {name:'Gibson ES-355',desc:'Premium ES-335 variant with Varitone switch and gold hardware',brand:'Gibson'},
+  {name:'Gibson Flying V',desc:'Iconic angular-bodied electric with powerful humbuckers and striking looks',brand:'Gibson'},
+  {name:'Gibson Explorer',desc:'Bold angular guitar with massive humbuckers loved by hard rock players',brand:'Gibson'},
+  {name:'Gibson Firebird',desc:'Reverse-body guitar with mini-humbuckers and banjo-style tuners',brand:'Gibson'},
+  {name:'Gibson L-6S',desc:'Solid body 6-string with high output pickups used by Carlos Santana',brand:'Gibson'},
+  {name:'Gibson Dave Grohl DG-335',desc:'Dave Grohl signature semi-hollow with Trini Lopez-style diamond soundholes',brand:'Gibson'},
+  {name:'Epiphone Les Paul Standard 50s',desc:'50s-inspired Les Paul with ProBucker humbuckers and solid mahogany body',brand:'Epiphone'},
+  {name:'Epiphone Les Paul Standard 60s',desc:'60s-inspired Les Paul with slim taper neck and ProBucker 61 pickups',brand:'Epiphone'},
+  {name:'Epiphone Les Paul Custom',desc:'Premium Epiphone Les Paul with quality hardware and stunning aesthetics',brand:'Epiphone'},
+  {name:'Epiphone Les Paul Junior',desc:'Affordable single-pickup Les Paul great for blues and rock tones',brand:'Epiphone'},
+  {name:'Epiphone Les Paul Special',desc:'Flat-top Les Paul with P-90 style pickups at an affordable price',brand:'Epiphone'},
+  {name:'Epiphone SG Standard',desc:'Affordable take on the classic Gibson SG double-cutaway design',brand:'Epiphone'},
+  {name:'Epiphone SG Custom',desc:'Premium SG variant with three humbuckers and ebony fretboard',brand:'Epiphone'},
+  {name:'Epiphone ES-335',desc:'Semi-hollow body at an accessible price with warm resonant tones',brand:'Epiphone'},
+  {name:'Epiphone Casino',desc:'Fully hollow thinline electric beloved by The Beatles and many others',brand:'Epiphone'},
+  {name:'Epiphone Sheraton II',desc:'Semi-hollow with premium appointments including Frequensator tailpiece',brand:'Epiphone'},
+  {name:'Epiphone Flying V',desc:'Affordable version of the iconic Flying V with strong humbuckers',brand:'Epiphone'},
+  {name:'Epiphone Explorer',desc:'Budget-friendly Explorer with aggressive looks and powerful tone',brand:'Epiphone'},
+  {name:'Epiphone Firebird',desc:'Affordable Firebird with mini-humbucker pickups and banjo tuners',brand:'Epiphone'},
+  {name:'Epiphone Prophecy Les Paul',desc:'High-performance Les Paul with Fishman Fluence pickups',brand:'Epiphone'},
+  {name:'Epiphone Tony Iommi SG Custom',desc:'Black Sabbath legend signature with three custom humbuckers',brand:'Epiphone'},
+  {name:'Ibanez RG550',desc:'High-performance superstrat with fast neck and versatile tone range',brand:'Ibanez'},
+  {name:'Ibanez RG450',desc:'Affordable superstrat with Edge tremolo and hot pickups for shred',brand:'Ibanez'},
+  {name:'Ibanez RG470',desc:'Mid-range RG with Edge II tremolo and solid basswood body',brand:'Ibanez'},
+  {name:'Ibanez RG752',desc:'7-string extended range RG for metal and progressive players',brand:'Ibanez'},
+  {name:'Ibanez AZ2402',desc:'Premium AZ series with Seymour Duncan pickups and Gotoh hardware',brand:'Ibanez'},
+  {name:'Ibanez AZ2204',desc:'AZ with a roasted maple neck and Seymour Duncan Hyperion pickups',brand:'Ibanez'},
+  {name:'Ibanez S670QM',desc:'Super-thin S-series body with quilted maple top and versatile tones',brand:'Ibanez'},
+  {name:'Ibanez S521',desc:'Thin mahogany S-series body with fixed bridge and pickguard',brand:'Ibanez'},
+  {name:'Ibanez AS93',desc:'Artcore semi-hollow with flamed maple top great for jazz and blues',brand:'Ibanez'},
+  {name:'Ibanez AM93',desc:'Artcore Expressionist thinline with premium pickups',brand:'Ibanez'},
+  {name:'Ibanez AF75',desc:'Artcore full-hollow jazz box with a warm vintage tone character',brand:'Ibanez'},
+  {name:'Ibanez JEM777',desc:'Steve Vai signature with vine-of-life inlay and monkey grip handle',brand:'Ibanez'},
+  {name:'Ibanez PGM301',desc:'Paul Gilbert signature with F-holes and high-output pickups',brand:'Ibanez'},
+  {name:'Ibanez JEMJR',desc:'Affordable JEM Jr with Steve Vai signature features at entry price',brand:'Ibanez'},
+  {name:'Ibanez AZES40',desc:'AZ Essentials series entry-level with excellent build quality',brand:'Ibanez'},
+  {name:'Ibanez RGA42FM',desc:'Flame maple topped RGA with fixed bridge and premium humbuckers',brand:'Ibanez'},
+  {name:'Ibanez Prestige RG5320C',desc:'Premium Japanese-made RG with Dimarzio pickups and Prestige fretwork',brand:'Ibanez'},
+  {name:'PRS Custom 24',desc:'Versatile double-cutaway electric with balanced tone and comfortable playability',brand:'PRS'},
+  {name:'PRS Custom 22',desc:'22-fret version of the Custom with slightly warmer tone character',brand:'PRS'},
+  {name:'PRS Custom 24-08',desc:'Custom 24 with 8-way rotary pickup switching for massive tonal variety',brand:'PRS'},
+  {name:'PRS SE Custom 24',desc:'Affordable SE version of the iconic Custom 24 with great playability',brand:'PRS'},
+  {name:'PRS SE Custom 22',desc:'SE version of the Custom 22 with mahogany body and maple top',brand:'PRS'},
+  {name:'PRS McCarty 594',desc:'Vintage-inspired PRS with 24.594 scale and wide-fat neck profile',brand:'PRS'},
+  {name:'PRS McCarty 594 Semi-Hollow',desc:'Semi-hollow version of the McCarty with added warmth and resonance',brand:'PRS'},
+  {name:'PRS Silver Sky',desc:'John Mayer signature combining Strat-inspired design with PRS quality',brand:'PRS'},
+  {name:'PRS SE Silver Sky',desc:'Affordable version of the signature Silver Sky with excellent tone',brand:'PRS'},
+  {name:'PRS Hollowbody II',desc:'Semi-hollow PRS with piezo pickup system for acoustic-electric tones',brand:'PRS'},
+  {name:'PRS S2 Standard 22',desc:'US-made PRS at a mid-range price with simplified appointments',brand:'PRS'},
+  {name:'PRS SE Mark Holcomb',desc:'Prog metal signature with swamp ash body and Holcomb-voiced pickups',brand:'PRS'},
+  {name:'PRS DW CE 24',desc:'Dustie Waring signature with Floyd Rose tremolo and pattern thin neck',brand:'PRS'},
+  {name:'PRS Tremonti SE',desc:'Mark Tremonti signature SE with mahogany body and Tremonti pickups',brand:'PRS'},
+  {name:'PRS SE Santana',desc:'Carlos Santana signature SE with Santana Yellow finish option',brand:'PRS'},
+  {name:'Yamaha Pacifica 112V',desc:'Affordable versatile electric guitar excellent for all playing styles',brand:'Yamaha'},
+  {name:'Yamaha Pacifica 612VIIFM',desc:'High-end Pacifica with flamed maple top and Seymour Duncan pickups',brand:'Yamaha'},
+  {name:'Yamaha Pacifica 510V',desc:'Mid-range Pacifica with alnico V pickups and tremolo bridge',brand:'Yamaha'},
+  {name:'Yamaha Revstar Standard RSS20',desc:'Stylish rock-inspired guitar with dry switch for punchy tones',brand:'Yamaha'},
+  {name:'Yamaha Revstar Element RSE20',desc:'Entry-level Revstar with great build quality and unique styling',brand:'Yamaha'},
+  {name:'Yamaha Revstar Professional RSP02T',desc:'Premium Revstar with chambered body and titanium nut',brand:'Yamaha'},
+  {name:'Yamaha SG1820',desc:'Premium SG-style guitar with mahogany body and set neck construction',brand:'Yamaha'},
+  {name:'Yamaha SG1802',desc:'SG style with multiple binding and gold hardware appointments',brand:'Yamaha'},
+  {name:'Yamaha SA2200',desc:'Semi-hollow archtop with spruce top and premium Yamaha humbuckers',brand:'Yamaha'},
+  {name:'Schecter Hellraiser C-1',desc:'High-gain metal machine with active EMG pickups and sleek design',brand:'Schecter'},
+  {name:'Schecter C-1 Platinum',desc:'Versatile C-1 with sustainiac system for infinite sustain',brand:'Schecter'},
+  {name:'Schecter Omen-6',desc:'Budget Schecter with mahogany body and coil-splitting humbuckers',brand:'Schecter'},
+  {name:'Schecter Reaper-6',desc:'Modern metal guitar with aggressive angular body and EMG pickups',brand:'Schecter'},
+  {name:'Schecter Solo-II Custom',desc:'Les Paul-style guitar with premium hardware and stunning aesthetics',brand:'Schecter'},
+  {name:'Schecter C-7 Hellraiser',desc:'7-string extended range metal machine with active EMG 707 pickups',brand:'Schecter'},
+  {name:'Schecter Banshee-6 FR S',desc:'Superstrat with Floyd Rose sustainer and Seymour Duncan pickups',brand:'Schecter'},
+  {name:'Schecter Nick Johnston Traditional',desc:'Nick Johnston signature with atomic coral finish and HSS config',brand:'Schecter'},
+  {name:'Schecter PT Standard',desc:'Telecaster-style Schecter with mahogany body and passive pickups',brand:'Schecter'},
+  {name:'Jackson Soloist SL2',desc:'USA-made superstrat with compound-radius neck and high-output pickups',brand:'Jackson'},
+  {name:'Jackson Dinky JS11',desc:'Affordable entry-level Dinky for beginners exploring metal tones',brand:'Jackson'},
+  {name:'Jackson JS22 Rhoads',desc:'Randy Rhoads-inspired V shape with poplar body and hot pickups',brand:'Jackson'},
+  {name:'Jackson Pro Series Dinky DK2',desc:'Professional Dinky with Seymour Duncan pickups and slim neck',brand:'Jackson'},
+  {name:'Jackson X Series Soloist SLX',desc:'X Series flagship with basswood body and high-output humbuckers',brand:'Jackson'},
+  {name:'Jackson Pro Series Signature Misha Mansoor',desc:'Juggernaut signature with Fishman Fluence Modern pickups',brand:'Jackson'},
+  {name:'Jackson X Series Rhoads RRX24',desc:'Affordable Rhoads V with alder body and high-output humbuckers',brand:'Jackson'},
+  {name:'ESP LTD EC-1000',desc:'Premium Les Paul-style guitar with active EMGs and excellent build quality',brand:'ESP'},
+  {name:'ESP LTD MH-1000',desc:'Superstrat with EMG pickups loved by metal and hard rock players',brand:'ESP'},
+  {name:'ESP LTD EC-256',desc:'Mid-range EC with passive pickups and set-neck construction',brand:'ESP'},
+  {name:'ESP LTD Viper-400',desc:'SG-inspired guitar with active EMGs and slim fast neck',brand:'ESP'},
+  {name:'ESP E-II Eclipse',desc:'Premium ESP Eclipse with 18V active circuitry and ebony fretboard',brand:'ESP'},
+  {name:'ESP LTD H-1001',desc:'High-output metal machine with Duncan pickups and mahogany body',brand:'ESP'},
+  {name:'ESP LTD TE-1000',desc:'Telecaster-inspired ESP with Seymour Duncan pickups and set neck',brand:'ESP'},
+  {name:'ESP LTD MH-203QM',desc:'Quilted maple topped MH with passive pickups at an accessible price',brand:'ESP'},
+  {name:'ESP LTD M-1000',desc:'Superstrat with flamed maple top and Seymour Duncan TB-4/SH-2 pickups',brand:'ESP'},
+  {name:'Gretsch G2622 Streamliner',desc:'Double-cutaway semi-hollow with BroadTron humbuckers and vintage vibe',brand:'Gretsch'},
+  {name:'Gretsch G5222 Electromatic',desc:'Double-cutaway thinline with laminated maple and Filter Tron pickups',brand:'Gretsch'},
+  {name:'Gretsch G6120T-SW',desc:'Premium Players Edition with signature pickups and Bigsby vibrato',brand:'Gretsch'},
+  {name:'Gretsch G6228 Players Edition Jet',desc:'Classic Jet body with Players Edition appointments',brand:'Gretsch'},
+  {name:'Gretsch G5420T Electromatic',desc:'Full hollow single-cutaway with Filter Tron pickups and Bigsby',brand:'Gretsch'},
+  {name:'Gretsch G6136T White Falcon',desc:'The iconic White Falcon with gold sparkle binding and Bigsby tremolo',brand:'Gretsch'},
+  {name:'Gretsch G6120-1959LTV Chet Atkins',desc:'Vintage-spec Chet Atkins hollowbody with Western Orange finish',brand:'Gretsch'},
+  {name:'Charvel Pro-Mod San Dimas Style 1',desc:'Classic superstrat with compound-radius neck and high-output pickups',brand:'Charvel'},
+  {name:'Charvel Pro-Mod DK24',desc:'Modern Dinky with roasted maple neck and Seymour Duncan pickups',brand:'Charvel'},
+  {name:'Charvel Pro-Mod So-Cal',desc:'Classic Charvel superstrat with alder body and HSS pickup config',brand:'Charvel'},
+  {name:'Charvel Warren DeMartini Signature',desc:'Snake-inlay signature with alder body and Seymour Duncan JB',brand:'Charvel'},
+  {name:'Music Man Majesty',desc:'John Petrucci signature with ergonomic body and DiMarzio pickups',brand:'Music Man'},
+  {name:'Music Man JP15',desc:'John Petrucci signature with flamed maple top and piezo option',brand:'Music Man'},
+  {name:'Music Man Luke III',desc:'Luke Bryan signature featuring swamp ash body and Music Man humbuckers',brand:'Music Man'},
+  {name:'Music Man StingRay HH',desc:'Versatile Music Man with dual humbuckers and contoured body',brand:'Music Man'},
+  {name:'Music Man Cutlass',desc:'Vintage-inspired offset with a smooth neck and modern electronics',brand:'Music Man'},
+  {name:'Music Man Valentine',desc:'James Valentine signature with chambered swamp ash body',brand:'Music Man'},
+  {name:'Reverend Charger HB',desc:'Lightweight offset with mahogany body and humbucker pickups',brand:'Reverend'},
+  {name:'Reverend Double Agent OG',desc:'Versatile guitar with both humbucker and single-coil configurations',brand:'Reverend'},
+  {name:'Reverend Jetstream 390',desc:'Offset with three single coils and boneite nut for smooth tuning',brand:'Reverend'},
+  {name:'Reverend Buckshot',desc:'Telecaster-inspired Reverend with roasted maple neck and humbucker',brand:'Reverend'},
+  {name:'Guild S-100 Polara',desc:'Double-cutaway solidbody with humbuckers inspired by classic rock',brand:'Guild'},
+  {name:'Guild Newark St. S-200 T-Bird',desc:'Thunderbird-inspired offset with a unique tonal character',brand:'Guild'},
+  {name:'EVH Striped Series',desc:'Eddie Van Halen iconic striped guitar with Floyd Rose and single pickup',brand:'EVH'},
+  {name:'EVH Wolfgang Standard',desc:'Wolfgang design with direct-mount humbuckers and compound radius neck',brand:'EVH'},
+  {name:'EVH Wolfgang Special',desc:'Premium Wolfgang with real ebony fretboard and locking Floyd Rose',brand:'EVH'},
+  {name:'Parker Fly Mojo',desc:'Lightweight carbon fibre reinforced guitar with acoustic-electric options',brand:'Parker'},
+  {name:'Rickenbacker 360',desc:'Semi-hollow thinline with classic jangle tone beloved by Beatles fans',brand:'Rickenbacker'},
+  {name:'Rickenbacker 330',desc:'Full hollow body with Toaster pickups and that iconic Rickenbacker sound',brand:'Rickenbacker'},
+  {name:'Rickenbacker 620',desc:'Solid body version of the 600 series with two Toaster pickups',brand:'Rickenbacker'},
+  {name:'Danelectro 59 Original',desc:'Lipstick pickup guitar with masonite body and vintage cool looks',brand:'Danelectro'},
+  {name:'Danelectro 66 Strange',desc:'Semi-hollow with dual lipstick pickups and kidney-shaped body',brand:'Danelectro'},
+  {name:'Fender Toronado',desc:'Offset body with humbuckers and a unique short-scale personality',brand:'Fender'},
+  {name:'Ibanez RGIB6 Iron Label',desc:'Baritone 6-string with extended 28 inch scale and EMG pickups',brand:'Ibanez'},
+];
+
+
+let selected = [];
+let currentBrand = 'all';
+
+function renderGuitarList(list) {
+  const el = document.getElementById('guitarList');
+  el.innerHTML = list.map(g => `
+    <div class="guitar-row ${selected.includes(g.name)?'selected-row':''}" onclick="toggleGuitar('${g.name}',this)">
+      <div class="guitar-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div>
+        <div class="guitar-row-name">${g.name}</div>
+        <div class="guitar-row-desc">${g.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterGuitars(q) {
+  const filtered = guitars.filter(g =>
+    g.name.toLowerCase().includes(q.toLowerCase()) &&
+    (currentBrand === 'all' || g.brand === currentBrand)
+  );
+  renderGuitarList(filtered);
+}
+
+function filterBrand(brand, el) {
+  currentBrand = brand;
+  document.querySelectorAll('.brand-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  filterGuitars(document.querySelector('.dropdown-search').value);
+}
+
+function toggleDropdown() {
+  const box = document.getElementById('searchBox');
+  const drop = document.getElementById('dropdown');
+  box.classList.toggle('open');
+  drop.classList.toggle('open');
+  if(drop.classList.contains('open')) renderGuitarList(guitars);
+}
+
+function toggleGuitar(name, row) {
+  if(selected.includes(name)) {
+    selected = selected.filter(s => s !== name);
+  } else {
+    selected.push(name);
+  }
+  row.classList.toggle('selected-row');
+  row.querySelector('.guitar-checkbox').querySelector('svg').style.display = selected.includes(name) ? 'block' : 'none';
+  row.style.background = selected.includes(name) ? '#EFF6FF' : '';
+  row.querySelector('.guitar-row-name').style.color = selected.includes(name) ? '#2563EB' : '';
+  updateUI();
+}
+
+function quickSelect(el, name) {
+  el.classList.toggle('selected');
+  if(selected.includes(name)) {
+    selected = selected.filter(s => s !== name);
+  } else {
+    selected.push(name);
+  }
+  updateUI();
+}
+
+function removeTag(name) {
+  selected = selected.filter(s => s !== name);
+  // deselect quick pill if exists
+  document.querySelectorAll('.quick-pill').forEach(p => {
+    if(p.textContent.trim() === name) p.classList.remove('selected');
+  });
+  updateUI();
+  renderGuitarList(guitars);
+}
+
+function updateUI() {
+  // tags
+  const tagsEl = document.getElementById('selectedTags');
+  tagsEl.innerHTML = selected.map(n => `
+    <div class="sel-tag">${n}<button class="sel-tag-x" onclick="removeTag('${n}')">×</button></div>
+  `).join('');
+  // subtitle
+  document.getElementById('selectedCount').textContent =
+    selected.length === 0 ? 'Search and tap to select your guitar' :
+    `${selected.length} guitar${selected.length>1?'s':''} selected`;
+  // button
+  const btn = document.getElementById('ctaBtn');
+  if(selected.length === 0) {
+    btn.disabled = true;
+    btn.textContent = 'Select a guitar to continue';
+  } else {
+    btn.disabled = false;
+    btn.textContent = `Continue with ${selected.length} guitar${selected.length>1?'s':''}`;
+  }
+}
+
+renderGuitarList(guitars);
+</script>
+</body></html>

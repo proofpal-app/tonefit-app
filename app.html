@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ToneFit — Guitar Tone Matcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--blue-dark:#1D4ED8;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F0F4FA;--purple:#7C3AED;--green:#16A34A;--orange:#EA580C}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* ── NAVBAR ── */
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.menu-overlay.open{opacity:1;pointer-events:all}
+.slide-menu{position:fixed;top:0;left:0;width:300px;height:100vh;background:white;z-index:400;transform:translateX(-100%);transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;padding:28px 24px 32px;overflow-y:auto}
+.slide-menu.open{transform:translateX(0)}
+.menu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+.menu-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.menu-logo-icon{width:38px;height:38px;border-radius:10px;overflow:hidden;flex-shrink:0}
+.menu-close{background:none;border:none;font-size:22px;color:#9CA3AF;cursor:pointer}
+.menu-section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px;margin-top:20px}
+.menu-item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:10px;text-decoration:none;color:var(--text);font-size:16px;font-weight:500;transition:background 0.18s;margin-bottom:2px}
+.menu-item:hover{background:#F3F4F6}
+.menu-item-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.menu-item-icon svg{width:20px;height:20px;stroke:#6B7280;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke 0.2s}
+.menu-item:hover .menu-item-icon svg{stroke:var(--blue)}
+.menu-divider{height:1px;background:#F3F4F6;margin:18px 0}
+.menu-login{display:block;text-align:center;padding:12px;font-size:16px;font-weight:600;color:var(--text);text-decoration:none;margin-bottom:10px;border-radius:12px}
+.menu-login:hover{background:#F3F4F6}
+.menu-signup{display:block;background:var(--blue);color:white;text-align:center;padding:15px;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;background:transparent;transition:background 0.3s}
+nav.scrolled{background:rgba(240,244,250,0.92);backdrop-filter:blur(14px);box-shadow:0 1px 12px rgba(0,0,0,0.06)}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:#fff;border:none;padding:12px 14px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.10),0 1px 3px rgba(0,0,0,0.06)}
+.hamburger span{width:20px;height:2px;background:#1a1a2e;border-radius:2px;display:block}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(160deg,#E8EEF8 0%,#EEF3FB 30%,#F3F7FF 65%,#ffffff 100%);text-align:center;padding:110px 24px 60px;min-height:auto}
+.gear-pill{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #E5E7EB;border-radius:100px;padding:8px 18px;font-size:13px;font-weight:600;color:var(--text);margin-bottom:28px;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
+.gear-pill svg{width:14px;height:14px;stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round}
+.hero-title{font-size:clamp(72px,10vw,104px);font-weight:900;letter-spacing:-4px;color:#0D1117;margin-bottom:18px;line-height:1}
+.hero-sub{font-size:clamp(18px,2.2vw,24px);color:#6B7280;margin-bottom:40px;font-weight:400;letter-spacing:-0.3px;max-width:700px;margin-left:auto;margin-right:auto;line-height:1.4}
+
+/* guitar/bass toggle */
+.mode-toggle{display:flex;justify-content:center;margin-bottom:56px}
+.mode-box{display:inline-flex;align-items:center;background:white;border:2px solid #BFDBFE;border-radius:20px;padding:6px;box-shadow:0 2px 12px rgba(37,99,235,0.08)}
+.mode-btn{padding:13px 40px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#94A3B8;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:8px}
+.mode-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mode-btn.active{background:var(--blue);color:white;box-shadow:0 2px 10px rgba(37,99,235,0.35)}
+
+/* trending */
+.trending-section{padding:0 24px 60px;max-width:1200px;margin:0 auto}
+.trending-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;justify-content:center}
+.fire-badge{width:52px;height:52px;background:linear-gradient(135deg,#F97316,#EF4444);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.trending-title{font-size:28px;font-weight:900;letter-spacing:-1px;color:#0D1117}
+.trending-sub{text-align:center;font-size:15px;color:#9CA3AF;margin-bottom:28px;font-weight:500}
+.trending-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.trend-card{background:white;border:1.5px solid #E5E7EB;border-radius:16px;padding:16px;cursor:pointer;transition:box-shadow 0.2s,transform 0.2s;display:flex;align-items:flex-start;gap:12px}
+.trend-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.09);transform:translateY(-2px)}
+.rank-badge{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:white;flex-shrink:0;margin-top:2px}
+.rank-1{background:linear-gradient(135deg,#F59E0B,#D97706)}
+.rank-2{background:linear-gradient(135deg,#9CA3AF,#6B7280)}
+.rank-3{background:linear-gradient(135deg,#F97316,#EA580C)}
+.rank-4{background:linear-gradient(135deg,#3B82F6,#2563EB)}
+.rank-5{background:linear-gradient(135deg,#6366F1,#4F46E5)}
+.trend-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;text-align:left}
+.trend-song{font-size:14px;font-weight:800;color:#0D1117;letter-spacing:-0.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.trend-artist{font-size:13px;color:#374151;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.trend-searches{font-size:12px;color:#9CA3AF;display:flex;align-items:center;gap:5px;line-height:1.3;margin-top:2px}
+.trend-searches svg{width:12px;height:12px;stroke:#9CA3AF;fill:none;stroke-width:1.8;flex-shrink:0}
+
+/* ── MAIN APP SECTION ── */
+.app-section{max-width:1100px;margin:0 auto;padding:0 24px 80px}
+
+/* step tracker */
+.step-tracker{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:40px;padding:32px 0 0}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+.step-circle{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;transition:all 0.3s}
+.step-circle.active{background:var(--blue);color:white;box-shadow:0 4px 16px rgba(37,99,235,0.35)}
+.step-circle.done{background:var(--blue);color:white}
+.step-circle.inactive{background:#E5E7EB;color:#9CA3AF}
+.step-label{font-size:13px;font-weight:600;color:#6B7280}
+.step-label.active-label{color:#0D1117}
+.step-line{width:120px;height:4px;background:#E5E7EB;margin:0 8px;margin-bottom:20px;border-radius:2px;overflow:visible;position:relative;display:flex;align-items:center}
+.step-line-fill{height:100%;background:var(--blue);border-radius:2px;transition:width 0.5s}
+.step-line-dot{width:10px;height:10px;border-radius:50%;background:#BFDBFE;position:absolute;left:50%;transform:translateX(-50%);z-index:1;flex-shrink:0}
+
+/* section cards */
+.section-card{background:white;border-radius:20px;border:1.5px solid #E5E7EB;margin-bottom:20px;overflow:hidden}
+.section-card-header{display:flex;align-items:center;gap:14px;padding:24px 28px 20px}
+.step-num{width:40px;height:40px;background:var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:white;flex-shrink:0}
+.section-title{font-size:24px;font-weight:900;letter-spacing:-0.8px;color:#0D1117}
+.card-body{padding:0 28px 28px}
+
+/* subsection labels */
+.sub-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#374151;margin-bottom:14px}
+.sub-label svg{width:14px;height:14px;stroke:#374151;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* preset dropdown */
+.preset-dropdown{width:100%;background:white;border:1.5px solid #BFDBFE;border-radius:14px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:15px;font-weight:500;color:#0D1117;font-family:'Plus Jakarta Sans',sans-serif;transition:border-color 0.2s;margin-bottom:12px}
+.preset-dropdown:focus{outline:none;border-color:var(--blue)}
+.preset-dropdown svg{width:18px;height:18px;stroke:#6B7280;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.preset-active{display:inline-flex;align-items:center;gap:6px;background:#DCFCE7;border-radius:100px;padding:7px 16px;font-size:13px;font-weight:600;color:#16A34A;margin-bottom:24px}
+.preset-active svg{width:16px;height:16px;stroke:#16A34A;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* OR divider */
+.or-divider{display:flex;align-items:center;gap:16px;margin:20px 0;color:#6B7280;font-size:12px;font-weight:700;letter-spacing:2px}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:#E5E7EB}
+
+/* manual gear grid */
+.manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.gear-col-label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px}
+.gear-col-label svg{width:14px;height:14px;stroke:#9CA3AF;fill:none;stroke-width:1.8;stroke-linecap:round}
+.going-direct-row{display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-bottom:10px}
+.going-direct-label{font-size:14px;color:#374151;font-weight:500}
+.toggle-switch{width:40px;height:22px;background:#D1D5DB;border-radius:100px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
+.toggle-switch .thumb{width:16px;height:16px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+.gear-select{width:100%;background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:15px 16px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;color:#0D1117;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;outline:none;transition:border-color 0.2s}
+.gear-select:focus{border-color:var(--blue)}
+.cant-find-link{font-size:13px;color:#6B7280;cursor:pointer;display:flex;align-items:center;gap:6px;margin-top:8px}
+.cant-find-link svg{width:14px;height:14px;stroke:#6B7280;fill:none;stroke-width:1.8;stroke-linecap:round}
+
+/* multi-fx amp info box */
+.multifx-info{background:#FAF5FF;border:1.5px solid #DDD6FE;border-radius:14px;padding:16px 18px;display:flex;align-items:flex-start;gap:10px}
+.multifx-info svg{width:16px;height:16px;stroke:var(--purple);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0;margin-top:2px}
+.multifx-info-title{font-size:15px;font-weight:800;color:var(--purple);margin-bottom:4px;letter-spacing:-0.2px}
+.multifx-info-sub{font-size:13px;color:#7C3AED;font-weight:500}
+
+/* selected gear */
+.selected-gear-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#16A34A;margin-bottom:14px}
+.selected-gear-label svg{width:14px;height:14px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round}
+.gear-info-card{background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:18px;margin-bottom:12px}
+.gear-info-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.gear-icon-sq{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gear-icon-sq svg{width:22px;height:22px;stroke:white;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gear-icon-blue{background:var(--blue)}
+.gear-icon-purple{background:var(--purple)}
+.gear-info-name{font-size:18px;font-weight:900;color:#0D1117;letter-spacing:-0.5px}
+.gear-info-desc{font-size:13px;color:#6B7280;margin-top:2px;line-height:1.5}
+.gear-tags{display:flex;gap:6px;flex-wrap:wrap}
+.gear-tag{background:#F3F4F6;border-radius:100px;padding:4px 12px;font-size:12px;font-weight:600;color:#374151}
+.gear-tag-purple{background:#FAF5FF;color:var(--purple)}
+
+/* effects toggle */
+.effects-toggle-wrap{margin-top:20px}
+.effects-label{font-size:15px;font-weight:700;color:#0D1117;margin-bottom:12px}
+.effects-box{display:flex;flex-direction:row;align-items:stretch;border:1.5px solid #BFDBFE;border-radius:14px;overflow:hidden;background:white}
+.effects-btn{flex:1;padding:16px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#6B7280;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.effects-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.effects-btn.active{background:white;color:#2563EB;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.effects-divider-v{width:1px;background:#BFDBFE;flex-shrink:0}
+
+/* pedals tip box */
+.pedals-tip-box{background:#FAF5FF;border:1px solid #E9D5FF;border-radius:12px;padding:12px 16px;display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;font-size:13px;color:#7C3AED;line-height:1.5}
+.pedals-tip-box strong{font-weight:700}
+
+/* built-in amp effects */
+.builtin-section{margin-bottom:18px}
+.builtin-label{font-size:14px;font-weight:700;color:#2563EB;margin-bottom:10px}
+.builtin-pills{display:flex;flex-wrap:wrap;gap:8px}
+.builtin-pill{background:#F8FAFF;border:1.5px solid #E5E7EB;border-radius:100px;padding:6px 16px;font-size:14px;font-weight:500;color:#374151;cursor:pointer;transition:all 0.15s}
+.builtin-pill:hover{border-color:#BFDBFE;background:#EFF6FF}
+
+/* your pedals */
+.your-pedals-section{border-top:1px solid #F3F4F6;padding-top:16px}
+.your-pedals-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.your-pedals-label{font-size:14px;font-weight:700;color:#0D1117}
+.select-all-btn{font-size:13px;font-weight:600;color:#2563EB;cursor:pointer}
+.select-all-btn:hover{opacity:0.75}
+.pedal-chip{display:inline-flex;align-items:center;gap:8px;border:1.5px solid #BFDBFE;border-radius:100px;padding:8px 16px;font-size:14px;font-weight:500;color:#374151;cursor:pointer;transition:all 0.15s;margin-bottom:8px;margin-right:8px}
+.pedal-chip.selected{background:#EFF6FF;border-color:#2563EB;color:#2563EB}
+.pedal-chip-tag{font-size:11px;color:#9CA3AF;font-weight:500;background:#F3F4F6;border-radius:100px;padding:2px 8px}
+.pedal-chip.selected .pedal-chip-tag{background:#DBEAFE;color:#2563EB}
+.pedal-chip-check{font-size:12px;color:#2563EB;display:none}
+.pedal-chip.selected .pedal-chip-check{display:inline}
+
+/* multifx mode box */
+.multifx-mode-box{background:#FAF5FF;border:1.5px solid #E9D5FF;border-radius:16px;padding:20px 24px;margin-bottom:20px}
+.multifx-mode-title{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:900;color:var(--purple);margin-bottom:8px;letter-spacing:-0.3px}
+.multifx-mode-title svg{width:16px;height:16px;stroke:var(--purple);fill:none;stroke-width:2;stroke-linecap:round}
+.multifx-mode-sub{font-size:13px;color:#7C3AED;margin-bottom:16px}
+.multifx-unit-label{font-size:14px;font-weight:700;color:#0D1117;margin-bottom:10px}
+.multifx-unit-input{width:100%;background:white;border:1.5px solid #DDD6FE;border-radius:14px;padding:14px 16px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;color:#0D1117;outline:none;transition:border-color 0.2s}
+.multifx-unit-note{font-size:15px;font-weight:800;color:#0D1117;margin-top:14px;margin-bottom:4px;letter-spacing:-0.3px}
+.multifx-unit-desc{display:flex;align-items:center;gap:6px;font-size:13px;color:#9CA3AF;margin-top:2px}
+.multifx-unit-desc svg{width:12px;height:12px;stroke:#9CA3AF;fill:none;stroke-width:2;flex-shrink:0;margin-top:2px}
+
+/* song search */
+.song-input-wrap{position:relative;margin-bottom:20px}
+.song-input{width:100%;background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:16px 48px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;color:#0D1117;outline:none;transition:border-color 0.2s}
+.song-input:focus{border-color:var(--blue)}
+.song-input-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:1.8;stroke-linecap:round}
+.song-clear{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:2;stroke-linecap:round;display:none}
+.song-clear.visible{display:block}
+
+/* search dropdown */
+.song-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:white;border:1.5px solid #E5E7EB;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.10);z-index:100;overflow:hidden;display:none;max-height:280px;overflow-y:auto}
+.song-dropdown.visible{display:block}
+.song-dropdown-item{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid #F3F4F6}
+.song-dropdown-item:last-child{border-bottom:none}
+.song-dropdown-item:hover{background:#F8FAFF}
+.song-dropdown-icon{width:32px;height:32px;background:#EEF4FF;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.song-dropdown-icon svg{width:16px;height:16px;stroke:#2563EB;fill:none;stroke-width:1.8;stroke-linecap:round}
+.song-dropdown-info{flex:1;min-width:0}
+.song-dropdown-title{font-size:14px;font-weight:700;color:#0D1117;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-dropdown-artist{font-size:12px;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-dropdown-loading{padding:16px;text-align:center;font-size:13px;color:#9CA3AF}
+.song-dropdown-empty{padding:16px;text-align:center;font-size:13px;color:#9CA3AF}
+
+.artist-input{width:100%;background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:16px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;color:#6B7280;outline:none;transition:border-color 0.2s;margin-bottom:6px}
+.artist-input:focus{border-color:var(--blue)}
+.artist-note{font-size:12px;color:#9CA3AF;display:flex;align-items:center;gap:4px;margin-bottom:20px}
+.artist-note svg{width:12px;height:12px;stroke:#9CA3AF;fill:none;stroke-width:2;flex-shrink:0}
+
+/* part type */
+.part-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.part-btn{background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:18px;font-size:16px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:#374151;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.part-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.part-btn.active{border-color:#2563EB;background:#EFF6FF;color:#2563EB;font-weight:700}
+.part-btn:hover{border-color:#BFDBFE}
+
+/* tone type */
+.tone-type-box{background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:16px;padding:22px 24px;margin-bottom:20px}
+.tone-type-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tone-type-title{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#92400E}
+.recommended-badge{background:#FDE68A;color:#92400E;font-size:11px;font-weight:800;padding:4px 12px;border-radius:100px;letter-spacing:0.5px}
+.tone-desc{font-size:15px;color:#78350F;margin-bottom:18px;line-height:1.65;font-weight:400;max-width:600px}
+.tone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.tone-btn{background:white;border:2px solid #E5E7EB;border-radius:14px;padding:22px 16px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s}
+.tone-btn:hover{border-color:#BBF7D0;background:#F0FDF4}
+.tone-icon{width:48px;height:48px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center}
+.tone-icon svg{width:38px;height:38px;stroke:#9CA3AF;fill:none;transition:stroke 0.2s}
+.tone-btn-label{font-size:15px;font-weight:700;color:#374151;transition:color 0.2s}
+.tone-btn.active{border-color:#22C55E;background:#F0FDF4}
+.tone-btn.active .tone-icon svg{stroke:#22C55E}
+.tone-btn.active .tone-btn-label{color:#16A34A}
+.tone-tip{font-size:13px;color:#92400E;display:flex;align-items:center;gap:8px;background:#FEF9C3;border-radius:10px;padding:10px 14px;line-height:1.5}
+.tone-tip svg{width:16px;height:16px;stroke:#92400E;fill:none;stroke-width:2;flex-shrink:0}
+
+/* free trial banner */
+.trial-banner-box{background:#EFF6FF;border-radius:16px;padding:28px 32px;text-align:center;margin-bottom:28px}
+.trial-banner-eyebrow{font-size:13px;color:#6B7280;margin-bottom:6px}
+.trial-banner-title{font-size:26px;font-weight:900;color:#0D1117;letter-spacing:-1px;margin-bottom:8px}
+.trial-banner-sub{font-size:15px;color:#16A34A;font-weight:600;margin-bottom:20px}
+.trial-banner-row{display:flex;align-items:center;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-trial{background:var(--blue);color:white;border:none;padding:14px 28px;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.trial-fine{font-size:13px;color:#9CA3AF}
+
+/* research button */
+.research-btn{width:100%;background:var(--blue);color:white;border:none;padding:18px;border-radius:100px;font-size:17px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;transition:background 0.2s;box-shadow:0 4px 16px rgba(37,99,235,0.3)}
+.research-btn:hover{background:var(--blue-dark)}
+.research-btn.dim{background:#93C5FD}
+.research-btn svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round}
+.extra-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.extra-btn{background:white;border:1.5px solid #E5E7EB;border-radius:100px;padding:13px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all 0.2s}
+.extra-btn:hover{border-color:#BFDBFE;color:var(--blue)}
+.extra-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+
+/* results */
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.results-col-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.results-icon{width:44px;height:44px;border-radius:12px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.results-icon svg{width:22px;height:22px;stroke:white;fill:none;stroke-width:1.8;stroke-linecap:round}
+.results-col-title{font-size:18px;font-weight:900;letter-spacing:-0.4px}
+.results-col-sub{font-size:13px;color:#6B7280;margin-top:2px}
+
+/* community banner */
+.community-banner{background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;font-weight:600;color:#92400E}
+.community-banner svg{width:16px;height:16px;stroke:#92400E;fill:none;stroke-width:2;flex-shrink:0}
+
+/* original gear table */
+.orig-gear-card{background:white;border:1.5px solid #E5E7EB;border-radius:14px;overflow:hidden;margin-bottom:14px}
+.orig-gear-header{padding:14px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #F3F4F6}
+.orig-gear-header svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:1.8;stroke-linecap:round}
+.orig-gear-header span{font-size:14px;font-weight:700;color:#0D1117}
+.gear-table{width:100%;border-collapse:collapse}
+.gear-table td{padding:12px 18px;font-size:13px;vertical-align:top;border-bottom:1px solid #F9FAFB;line-height:1.5}
+.gear-table td:first-child{color:#6B7280;font-weight:500;white-space:nowrap;width:80px}
+.gear-table td:last-child{color:#0D1117;font-weight:400;text-align:right}
+.gear-table tr:last-child td{border-bottom:none}
+
+/* locked adapted tone */
+.locked-card{background:#F8FAFF;border:1.5px solid #E5E7EB;border-radius:14px;padding:48px 32px;text-align:center}
+.lock-icon{width:56px;height:56px;margin:0 auto 20px;stroke:var(--blue);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.locked-title{font-size:24px;font-weight:900;color:#0D1117;margin-bottom:10px;letter-spacing:-0.8px}
+.locked-sub{font-size:14px;color:#6B7280;margin-bottom:24px;line-height:1.6;max-width:300px;margin-left:auto;margin-right:auto}
+.btn-start-trial{background:var(--blue);color:white;border:none;padding:15px 36px;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:block;margin:0 auto 10px;width:100%;transition:background 0.2s}
+.btn-start-trial:hover{background:var(--blue-dark)}
+.no-commit{font-size:12px;color:#9CA3AF}
+
+/* difficulty card */
+.difficulty-card{background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:14px;padding:20px;margin-bottom:14px}
+.diff-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.diff-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#92400E}
+.diff-title svg{width:16px;height:16px;stroke:#92400E;fill:none;stroke-width:1.8;stroke-linecap:round}
+.solo-badge{background:#FED7AA;color:#92400E;font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px}
+.stars-row{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.star-filled{color:#F59E0B;font-size:20px}
+.star-empty{color:#D1D5DB;font-size:20px}
+.diff-score{font-size:16px;font-weight:700;color:#374151}
+.diff-desc{font-size:13px;color:#92400E;line-height:1.6}
+
+/* amp settings */
+.amp-card{background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:14px;padding:20px;margin-bottom:14px}
+.amp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.amp-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#166534}
+.amp-title svg{width:16px;height:16px;stroke:#166534;fill:none;stroke-width:1.8;stroke-linecap:round}
+.orig-badge{background:#BBF7D0;color:#166534;font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px}
+.amp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.amp-knob{background:white;border-radius:12px;padding:14px}
+.amp-knob-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.amp-knob-val{font-size:22px;font-weight:900;color:var(--green);margin-bottom:8px;letter-spacing:-0.5px}
+.amp-bar-track{background:#E5E7EB;border-radius:100px;height:6px;overflow:hidden}
+.amp-bar-fill{height:100%;background:var(--green);border-radius:100px}
+
+/* guitar controls */
+.guitar-ctrl-card{background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:20px;margin-bottom:14px}
+.guitar-ctrl-header{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#0D1117;margin-bottom:16px}
+.guitar-ctrl-header svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:1.8;stroke-linecap:round}
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ctrl-item{background:#F8FAFF;border-radius:10px;padding:14px}
+.ctrl-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px}
+.ctrl-val{font-size:22px;font-weight:900;color:var(--blue);letter-spacing:-0.5px}
+
+/* effects & pedals */
+.pedals-card{background:#FAF5FF;border:1.5px solid #E9D5FF;border-radius:14px;padding:20px;margin-bottom:14px}
+.pedals-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.pedals-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#6D28D9}
+.pedals-title svg{width:16px;height:16px;stroke:#6D28D9;fill:none;stroke-width:1.8;stroke-linecap:round}
+.orig-badge-purple{background:#E9D5FF;color:#6D28D9;font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px}
+.signal-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px}
+.signal-chain{font-size:13px;font-weight:600;color:var(--purple);background:white;border-radius:10px;padding:12px 14px;margin-bottom:16px;line-height:1.6}
+.pedals-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:10px}
+.pedal-row{background:white;border-radius:10px;padding:14px;margin-bottom:8px}
+.pedal-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.pedal-name{font-size:14px;font-weight:700;color:#0D1117}
+.pedal-pct{background:#F3E8FF;color:var(--purple);font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px}
+.pedal-note{font-size:12px;color:#9CA3AF;font-style:italic}
+.pedal-when{font-size:12px;color:#9CA3AF}
+.amp-effects-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin:14px 0 8px}
+.amp-effect-tag{display:inline-block;background:#E9D5FF;color:var(--purple);font-size:13px;font-weight:600;padding:6px 14px;border-radius:100px;margin-right:6px}
+
+/* sources */
+.sources-card{background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:20px;margin-bottom:14px}
+.sources-header{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;color:#0D1117;margin-bottom:14px}
+.sources-header svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:1.8;stroke-linecap:round}
+.source-link{display:block;color:var(--blue);font-size:14px;font-weight:500;text-decoration:none;padding:10px 14px;background:#F8FAFF;border-radius:8px;margin-bottom:6px;transition:background 0.2s}
+.source-link:hover{background:#EFF6FF}
+.more-sources{font-size:13px;color:var(--blue);font-weight:600;margin-top:4px}
+
+/* warnings */
+.warnings-card{background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:14px;padding:20px;margin-bottom:14px}
+.warnings-header{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#92400E;margin-bottom:12px}
+.warnings-header svg{width:16px;height:16px;stroke:#92400E;fill:none;stroke-width:2;stroke-linecap:round}
+.warning-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:13px;color:#78350F;line-height:1.6}
+.warning-item::before{content:'•';color:#D97706;flex-shrink:0;margin-top:0}
+
+/* empty state */
+.empty-state{text-align:center;padding:60px 20px}
+.empty-icon{margin:0 auto 16px}
+.empty-title{font-size:18px;font-weight:800;color:#0D1117;margin-bottom:8px}
+.empty-sub{font-size:14px;color:#9CA3AF;line-height:1.6;max-width:300px;margin:0 auto}
+
+/* footer */
+footer{background:#0F0F13;color:rgba(255,255,255,0.8);padding:64px 48px 32px}
+.footer-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;margin-bottom:40px}
+.footer-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.footer-logo-icon{width:40px;height:40px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.footer-logo-icon svg{width:20px;height:20px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round}
+.footer-logo-text{font-size:20px;font-weight:900;color:white;letter-spacing:-0.5px}
+.footer-brand-sub{font-size:14px;color:rgba(255,255,255,0.42);line-height:1.65;max-width:280px}
+.footer-col h4{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:18px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col ul a{text-decoration:none;font-size:14px;color:rgba(255,255,255,0.58);transition:color 0.2s}
+.footer-col ul a:hover{color:white}
+.footer-col .support-need{font-size:14px;color:rgba(255,255,255,0.42);margin-bottom:8px}
+.footer-col .support-email{font-size:14px;color:#60A5FA;font-weight:600;text-decoration:none}
+.footer-bottom{max-width:1100px;margin:0 auto;padding-top:24px;border-top:1px solid rgba(255,255,255,0.08);text-align:center}
+.footer-bottom p{font-size:13px;color:rgba(255,255,255,0.28)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:900px){
+  .results-grid{grid-template-columns:1fr}
+  .manual-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .trending-cards{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){
+  .footer-grid{grid-template-columns:1fr}
+  nav{padding:14px 18px}
+  .app-section{padding:0 16px 60px}
+  .card-body{padding:0 16px 20px}
+  .results-grid{grid-template-columns:1fr}
+  .tone-grid{grid-template-columns:1fr 1fr 1fr}
+  .trending-cards{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- MENU -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="slide-menu" id="slideMenu">
+  <div class="menu-header">
+    <a href="/" class="menu-logo">
+      <div class="menu-logo-icon"><svg width="38" height="38" viewBox="0 0 38 38"><rect width="38" height="38" rx="9" fill="#2563EB"/><line x1="13" y1="7" x2="13" y2="31" stroke="white" stroke-width="2.4" stroke-linecap="round"/><line x1="19" y1="5" x2="19" y2="31" stroke="white" stroke-width="2.4" stroke-linecap="round"/><line x1="25" y1="7" x2="25" y2="31" stroke="white" stroke-width="2.4" stroke-linecap="round"/><line x1="10" y1="26" x2="28" y2="26" stroke="white" stroke-width="2.4" stroke-linecap="round"/><polyline points="15,18 19,23 27,13" fill="none" stroke="#93C5FD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span>Tone<span style="color:#2563EB">Fit</span></span>
+    </a>
+    <button class="menu-close" id="menuClose">✕</button>
+  </div>
+  <div class="menu-section-label">Discover</div>
+  <a href="/app" class="menu-item"><span class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>Match Tones</a>
+  <a href="/app" class="menu-item"><span class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>Tone Database</a>
+  <div class="menu-section-label">My Collection</div>
+  <a href="/library" class="menu-item"><span class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>Library</a>
+  <a href="/gear" class="menu-item"><span class="menu-item-icon"><svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg></span>My Gear</a>
+  <div class="menu-section-label">Account</div>
+  <a href="/plans" class="menu-item"><span class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg></span>Plans</a>
+  <div class="menu-section-label">Feedback</div>
+  <a href="mailto:contact@tonefit.com" class="menu-item"><span class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Send Feedback</a>
+  <a href="mailto:contact@tonefit.com" class="menu-item"><span class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>Request Gear</a>
+  <div class="menu-divider"></div>
+  <a href="/login" class="menu-login">Login</a>
+  <a href="/signup" class="menu-signup">Sign Up</a>
+</div>
+<nav id="navbar"><button class="hamburger" id="menuOpen"><span></span><span></span><span></span></button></nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="gear-pill">
+    <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Gear-Matched Tone Settings
+  </div>
+  <h1 class="hero-title">ToneFit</h1>
+  <p class="hero-sub">Transform legendary guitar tones to match your gear</p>
+  <div class="mode-toggle">
+    <div class="mode-box">
+      <button class="mode-btn active" id="btnGuitar" onclick="setMode('guitar')">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Guitar
+      </button>
+      <button class="mode-btn" id="btnBass" onclick="setMode('bass')">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Bass
+      </button>
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="trending-section">
+    <div class="trending-header">
+      <div class="fire-badge">🔥</div>
+      <span class="trending-title">Trending This Week</span>
+    </div>
+    <p class="trending-sub">Most researched tones by our community</p>
+    <div class="trending-cards" id="trendingCards"></div>
+  </div>
+</section>
+
+<!-- ── MAIN APP ── -->
+<div class="app-section">
+
+  <!-- STEP TRACKER -->
+  <div class="step-tracker">
+    <div class="step-item">
+      <div class="step-circle active" id="step1circle">1</div>
+      <div class="step-label active-label" id="step1label">Your Gear</div>
+    </div>
+    <div class="step-line"><div class="step-line-fill" id="line1" style="width:50%"></div><div class="step-line-dot"></div></div>
+    <div class="step-item">
+      <div class="step-circle inactive" id="step2circle">2</div>
+      <div class="step-label" id="step2label">Song & Artist</div>
+    </div>
+    <div class="step-line"><div class="step-line-fill" id="line2" style="width:0%"></div><div class="step-line-dot"></div></div>
+    <div class="step-item">
+      <div class="step-circle inactive" id="step3circle">3</div>
+      <div class="step-label" id="step3label">Results</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: YOUR GEAR ── -->
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="step-num">1</div>
+      <h2 class="section-title">Your Gear</h2>
+    </div>
+    <div class="card-body">
+
+      <!-- saved preset -->
+      <div class="sub-label">
+        <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+        SAVED PRESET
+      </div>
+      <select class="gear-select" id="presetSelect" onchange="loadPreset(this.value)" style="border-color:#BFDBFE;font-size:15px">
+        <option value="">Select preset or choose manually...</option>
+      </select>
+      <div id="presetActive" style="display:none;margin-top:10px">
+        <div class="preset-active">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span id="presetActiveText">Using preset: Squier Stratocaster + Line 6 HX Stomp</span>
+        </div>
+      </div>
+
+      <!-- OR SELECT MANUALLY -->
+      <div class="or-divider">OR SELECT MANUALLY</div>
+
+      <div class="manual-grid">
+        <div>
+          <div class="gear-col-label">
+            <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            GUITAR ARCHETYPE
+          </div>
+          <select class="gear-select" id="guitarSelect" onchange="updateGear()">
+            <option value="">Select guitar...</option>
+            <optgroup label="Fender">
+            <option value="Squier Stratocaster">Squier Stratocaster</option>
+            <option value="Fender Stratocaster American Professional II">Fender Stratocaster American Professional II</option>
+            <option value="Fender Stratocaster Player">Fender Stratocaster Player</option>
+            <option value="Fender Telecaster American Professional II">Fender Telecaster American Professional II</option>
+            <option value="Fender Telecaster Player">Fender Telecaster Player</option>
+            <option value="Fender Jazzmaster">Fender Jazzmaster</option>
+            <option value="Fender Jaguar">Fender Jaguar</option>
+            <option value="Fender Mustang">Fender Mustang</option>
+            <option value="Fender Duo-Sonic">Fender Duo-Sonic</option>
+            <option value="Squier Classic Vibe 50s Stratocaster">Squier Classic Vibe 50s Stratocaster</option>
+            <option value="Squier Classic Vibe 60s Stratocaster">Squier Classic Vibe 60s Stratocaster</option>
+            <option value="Squier Affinity Stratocaster">Squier Affinity Stratocaster</option>
+            <option value="Squier Classic Vibe Telecaster">Squier Classic Vibe Telecaster</option>
+            <option value="Squier Affinity Telecaster">Squier Affinity Telecaster</option>
+            </optgroup>
+            <optgroup label="Gibson">
+            <option value="Gibson Les Paul Standard 50s">Gibson Les Paul Standard 50s</option>
+            <option value="Gibson Les Paul Standard 60s">Gibson Les Paul Standard 60s</option>
+            <option value="Gibson Les Paul Traditional">Gibson Les Paul Traditional</option>
+            <option value="Gibson Les Paul Studio">Gibson Les Paul Studio</option>
+            <option value="Gibson Les Paul Junior">Gibson Les Paul Junior</option>
+            <option value="Gibson SG Standard">Gibson SG Standard</option>
+            <option value="Gibson SG Special">Gibson SG Special</option>
+            <option value="Gibson ES-335">Gibson ES-335</option>
+            <option value="Gibson ES-339">Gibson ES-339</option>
+            <option value="Gibson Flying V">Gibson Flying V</option>
+            <option value="Gibson Explorer">Gibson Explorer</option>
+            <option value="Gibson L-00 Standard">Gibson L-00 Standard</option>
+            </optgroup>
+            <optgroup label="Epiphone">
+            <option value="Epiphone Les Paul Standard 50s">Epiphone Les Paul Standard 50s</option>
+            <option value="Epiphone Les Paul Standard 60s">Epiphone Les Paul Standard 60s</option>
+            <option value="Epiphone Les Paul Custom">Epiphone Les Paul Custom</option>
+            <option value="Epiphone SG Standard">Epiphone SG Standard</option>
+            <option value="Epiphone Casino">Epiphone Casino</option>
+            <option value="Epiphone ES-335">Epiphone ES-335</option>
+            </optgroup>
+            <optgroup label="PRS">
+            <option value="PRS Custom 24">PRS Custom 24</option>
+            <option value="PRS Custom 22">PRS Custom 22</option>
+            <option value="PRS SE Custom 24">PRS SE Custom 24</option>
+            <option value="PRS SE Standard 24">PRS SE Standard 24</option>
+            <option value="PRS Silver Sky">PRS Silver Sky</option>
+            <option value="PRS McCarty 594">PRS McCarty 594</option>
+            </optgroup>
+            <optgroup label="Ibanez">
+            <option value="Ibanez RG550">Ibanez RG550</option>
+            <option value="Ibanez RG450">Ibanez RG450</option>
+            <option value="Ibanez RGA42FM">Ibanez RGA42FM</option>
+            <option value="Ibanez AZ2402">Ibanez AZ2402</option>
+            <option value="Ibanez S670QM">Ibanez S670QM</option>
+            <option value="Ibanez AS93">Ibanez AS93</option>
+            <option value="Ibanez Artcore AF75">Ibanez Artcore AF75</option>
+            <option value="Ibanez AZES40">Ibanez AZES40</option>
+            </optgroup>
+            <optgroup label="ESP / LTD">
+            <option value="ESP LTD EC-1000">ESP LTD EC-1000</option>
+            <option value="ESP LTD MH-1000">ESP LTD MH-1000</option>
+            <option value="ESP LTD M-1000">ESP LTD M-1000</option>
+            <option value="ESP LTD Viper-1000">ESP LTD Viper-1000</option>
+            <option value="ESP E-II Horizon">ESP E-II Horizon</option>
+            <option value="ESP E-II Eclipse">ESP E-II Eclipse</option>
+            </optgroup>
+            <optgroup label="Schecter">
+            <option value="Schecter Hellraiser C-1">Schecter Hellraiser C-1</option>
+            <option value="Schecter Omen-6">Schecter Omen-6</option>
+            <option value="Schecter C-6 Plus">Schecter C-6 Plus</option>
+            <option value="Schecter Blackjack ATX C-1">Schecter Blackjack ATX C-1</option>
+            <option value="Schecter Reaper-6">Schecter Reaper-6</option>
+            </optgroup>
+            <optgroup label="Jackson">
+            <option value="Jackson JS22 Dinky">Jackson JS22 Dinky</option>
+            <option value="Jackson JS32 Rhoads">Jackson JS32 Rhoads</option>
+            <option value="Jackson Soloist SL2">Jackson Soloist SL2</option>
+            <option value="Jackson Dinky DK2">Jackson Dinky DK2</option>
+            </optgroup>
+            <optgroup label="Gretsch">
+            <option value="Gretsch G2622 Streamliner">Gretsch G2622 Streamliner</option>
+            <option value="Gretsch G5422TG Electromatic">Gretsch G5422TG Electromatic</option>
+            <option value="Gretsch G6120 Chet Atkins">Gretsch G6120 Chet Atkins</option>
+            <option value="Gretsch G6128T Duo Jet">Gretsch G6128T Duo Jet</option>
+            </optgroup>
+            <optgroup label="Acoustic">
+            <option value="Martin D-28">Martin D-28</option>
+            <option value="Martin D-15M">Martin D-15M</option>
+            <option value="Taylor 214ce">Taylor 214ce</option>
+            <option value="Taylor Academy 12e">Taylor Academy 12e</option>
+            <option value="Gibson J-45 Standard">Gibson J-45 Standard</option>
+            <option value="Yamaha FG800">Yamaha FG800</option>
+            <option value="Seagull S6 Original">Seagull S6 Original</option>
+            </optgroup>
+            <optgroup label="Semi-Hollow">
+            <option value="Epiphone Casino Coupe">Epiphone Casino Coupe</option>
+            <option value="Gretsch G5655TG Electromatic">Gretsch G5655TG Electromatic</option>
+            <option value="D'Angelico Excel DC">D'Angelico Excel DC</option>
+            </optgroup>
+          </select>
+          <div class="cant-find-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Can't find your guitar?</div>
+          <div class="cant-find-link" style="margin-top:4px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Custom pickups?</div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="gear-col-label" style="margin-bottom:0">
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              AMPLIFIER
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+              <span style="font-size:13px;color:#374151;font-weight:500;white-space:nowrap">Going direct</span>
+              <div class="toggle-switch" id="directToggle" onclick="toggleDirect()"><div class="thumb"></div></div>
+            </div>
+          </div>
+          <!-- shown when going direct is OFF -->
+          <div id="ampDropdownWrap">
+            <select class="gear-select" id="ampSelect" style="border-color:#BFDBFE">
+              <option value="">Select amp...</option>
+              <optgroup label="Fender">
+              <option value="Fender Blues Junior IV">Fender Blues Junior IV</option>
+              <option value="Fender Deluxe Reverb">Fender Deluxe Reverb</option>
+              <option value="Fender Twin Reverb">Fender Twin Reverb</option>
+              <option value="Fender Hot Rod Deville">Fender Hot Rod Deville</option>
+              <option value="Fender Hot Rod Deluxe IV">Fender Hot Rod Deluxe IV</option>
+              <option value="Fender Super Reverb">Fender Super Reverb</option>
+              <option value="Fender Princeton Reverb">Fender Princeton Reverb</option>
+              <option value="Fender Bassbreaker 15">Fender Bassbreaker 15</option>
+              </optgroup>
+              <optgroup label="Marshall">
+              <option value="Marshall DSL40CR">Marshall DSL40CR</option>
+              <option value="Marshall DSL20CR">Marshall DSL20CR</option>
+              <option value="Marshall JVM410H">Marshall JVM410H</option>
+              <option value="Marshall Origin 20C">Marshall Origin 20C</option>
+              <option value="Marshall SV20C Studio Vintage">Marshall SV20C Studio Vintage</option>
+              <option value="Marshall Code 25">Marshall Code 25</option>
+              </optgroup>
+              <optgroup label="Vox">
+              <option value="Vox AC15C1">Vox AC15C1</option>
+              <option value="Vox AC30C2">Vox AC30C2</option>
+              <option value="Vox AC10C1">Vox AC10C1</option>
+              <option value="Vox Pathfinder 10">Vox Pathfinder 10</option>
+              </optgroup>
+              <optgroup label="Orange">
+              <option value="Orange Rocker 15">Orange Rocker 15</option>
+              <option value="Orange Crush 20RT">Orange Crush 20RT</option>
+              <option value="Orange TH30C">Orange TH30C</option>
+              <option value="Orange Dark Terror">Orange Dark Terror</option>
+              </optgroup>
+              <optgroup label="Boss / Roland">
+              <option value="Boss Katana 50 MkII">Boss Katana 50 MkII</option>
+              <option value="Boss Katana 100 MkII">Boss Katana 100 MkII</option>
+              <option value="Boss Katana Artist MkII">Boss Katana Artist MkII</option>
+              <option value="Roland Blues Cube Artist">Roland Blues Cube Artist</option>
+              </optgroup>
+              <optgroup label="Blackstar">
+              <option value="Blackstar HT-20R MkII">Blackstar HT-20R MkII</option>
+              <option value="Blackstar HT-5R MkII">Blackstar HT-5R MkII</option>
+              <option value="Blackstar Studio 10 6L6">Blackstar Studio 10 6L6</option>
+              <option value="Blackstar ID Core 40">Blackstar ID Core 40</option>
+              </optgroup>
+              <optgroup label="Mesa Boogie">
+              <option value="Mesa Boogie Rectoverb 25">Mesa Boogie Rectoverb 25</option>
+              <option value="Mesa Boogie Mark V">Mesa Boogie Mark V</option>
+              <option value="Mesa Boogie Fillmore 25">Mesa Boogie Fillmore 25</option>
+              </optgroup>
+              <optgroup label="Peavey">
+              <option value="Peavey 6505+">Peavey 6505+</option>
+              <option value="Peavey Classic 30">Peavey Classic 30</option>
+              <option value="Peavey Vypyr X2">Peavey Vypyr X2</option>
+              </optgroup>
+              <optgroup label="EVH / Friedman">
+              <option value="EVH 5150 III 50W">EVH 5150 III 50W</option>
+              <option value="Friedman BE-Mini">Friedman BE-Mini</option>
+              <option value="Friedman Runt 20">Friedman Runt 20</option>
+              </optgroup>
+              <optgroup label="Digital / Modeling">
+              <option value="Positive Grid Spark">Positive Grid Spark</option>
+              <option value="Positive Grid Spark 40">Positive Grid Spark 40</option>
+              <option value="Line 6 Spider V 60 MkII">Line 6 Spider V 60 MkII</option>
+              <option value="Fender Mustang GTX50">Fender Mustang GTX50</option>
+              <option value="Yamaha THR10II">Yamaha THR10II</option>
+              <option value="Yamaha THR30II Wireless">Yamaha THR30II Wireless</option>
+              <option value="Nux Mighty 40 BT">Nux Mighty 40 BT</option>
+              </optgroup>
+            </select>
+            <div class="cant-find-link" style="margin-top:8px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Can't find your amp?</div>
+          </div>
+          <!-- shown when going direct is ON -->
+          <div class="multifx-info" id="ampInfo" style="display:none">
+            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <div>
+              <div class="multifx-info-title" id="ampInfoTitle">Using Line 6 HX Stomp as amp</div>
+              <div class="multifx-info-sub">Your multi-FX unit handles amp modeling — no physical amp needed.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- selected gear -->
+      <div class="selected-gear-label">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+        SELECTED GEAR
+      </div>
+
+      <div class="gear-info-card">
+        <div class="gear-info-top">
+          <div class="gear-icon-sq gear-icon-blue">
+            <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div>
+            <div class="gear-info-name" id="selectedGuitarName">Squier Stratocaster</div>
+            <div class="gear-info-desc">Standard configuration of the world's most popular electric guitar, offering clear, bell-like tones and a five-way selector switch.</div>
+          </div>
+        </div>
+        <div class="gear-tags"><span class="gear-tag">SSS</span><span class="gear-tag">low output</span></div>
+      </div>
+
+      <div class="gear-info-card">
+        <div class="gear-info-top">
+          <div class="gear-icon-sq gear-icon-purple">
+            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div>
+            <div class="gear-info-name" id="selectedAmpName">Line 6 HX Stomp</div>
+          </div>
+        </div>
+        <div class="gear-tags"><span class="gear-tag gear-tag-purple">Direct / Multi-FX Amp Modeling</span></div>
+      </div>
+
+      <!-- effects -->
+      <div class="effects-toggle-wrap" id="effectsWrap">
+        <div class="effects-label">Select Your Effects (Optional)</div>
+        <div class="effects-box">
+          <button class="effects-btn active" id="effectsPedals" onclick="setEffects('pedals')">
+            Pedals
+          </button>
+          <div class="effects-divider-v"></div>
+          <button class="effects-btn" id="effectsMultiFX" onclick="setEffects('multifx')">
+            <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Multi FX
+          </button>
+        </div>
+
+        <!-- Pedals panel -->
+        <div id="pedalsPanel" style="margin-top:14px">
+          <!-- Tip box -->
+          <div class="pedals-tip-box" id="pedalsTipBox" style="display:none">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--purple);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span><strong>Tip:</strong> Switch to Multi FX mode to get complete amp models, effects, and settings for your unit instead of just pedal suggestions.</span>
+          </div>
+          <!-- Built-in amp effects -->
+          <div class="builtin-section">
+            <div class="builtin-label">Built-in Amp Effects</div>
+            <div class="builtin-pills">
+              <span class="builtin-pill">Reverb</span>
+              <span class="builtin-pill">Delay</span>
+              <span class="builtin-pill">Chorus</span>
+              <span class="builtin-pill">Flanger</span>
+            </div>
+          </div>
+          <!-- Your Pedals -->
+          <div class="your-pedals-section" id="yourPedalsSection">
+            <div class="your-pedals-header">
+              <span class="your-pedals-label">Your Pedals</span>
+              <span class="select-all-btn">Select All Active</span>
+            </div>
+            <div class="your-pedals-list" id="yourPedalsList"></div>
+          </div>
+        </div>
+
+        <!-- Multi FX panel -->
+        <div id="multiFXPanel" style="display:none;margin-top:14px">
+          <div class="multifx-mode-box" id="multiFXMode">
+            <div class="multifx-mode-title">
+              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Multi FX Mode
+            </div>
+            <p class="multifx-mode-sub">We'll create a complete preset for your multi FX unit based on the tone research.</p>
+            <div class="multifx-unit-label">Select your unit:</div>
+            <input class="multifx-unit-input" id="multiFXInput" value="Line 6 HX Stomp" placeholder="Your multi-FX unit..."/>
+            <div class="multifx-unit-note" id="multiFXUnitName">Line 6 HX Stomp</div>
+            <div class="multifx-unit-desc">
+              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Going direct — your multi-FX handles amp modeling, no physical amp needed.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── STEP 2: SONG & PART ── -->
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="step-num">2</div>
+      <h2 class="section-title">Song & Part</h2>
+    </div>
+    <div class="card-body">
+
+      <div class="sub-label">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        SEARCH FOR A SONG
+      </div>
+      <div class="song-input-wrap">
+        <svg class="song-input-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="song-input" id="songInput" placeholder="Search for a song..." oninput="searchSong(this.value)" autocomplete="off"/>
+        <div class="song-dropdown" id="songDropdown"></div>
+        <svg class="song-clear" id="songClear" viewBox="0 0 24 24" onclick="clearSong()"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+
+      <div class="sub-label" style="margin-top:8px">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        ARTIST
+      </div>
+      <input class="artist-input" id="artistInput" placeholder="Artist will be filled automatically"/>
+      <div class="artist-note">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Artist is auto-filled when you select a song above
+      </div>
+
+      <div class="sub-label">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        PART TYPE
+      </div>
+      <div class="part-grid">
+        <button class="part-btn active" id="partRiff" onclick="setPart('riff')">
+          <!-- guitar icon for Riff -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M11.5 3.5l9 9-2 2-1.5-1.5-1 1c.5 1 .3 2.3-.5 3.1l-2 2c-1.2 1.2-3.1 1.2-4.2 0l-3.4-3.4c-1.2-1.2-1.2-3.1 0-4.2l2-2c.8-.8 2.1-1 3.1-.5l1-1-1.5-1.5 2-2z"/></svg>
+          Riff
+        </button>
+        <button class="part-btn" id="partSolo" onclick="setPart('solo')">
+          <!-- music note for Solo -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          Solo
+        </button>
+      </div>
+
+      <!-- tone type -->
+      <div class="tone-type-box">
+        <div class="tone-type-header">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#92400E;fill:none;stroke-width:2;stroke-linecap:round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          <span class="tone-type-title">TONE TYPE</span>
+          <span class="recommended-badge">RECOMMENDED</span>
+        </div>
+        <p class="tone-desc">Specify whether you want a clean or distorted tone for more accurate adaptation. This helps the system set the correct gain levels.</p>
+        <div class="tone-grid">
+          <div class="tone-btn active" id="toneAuto" onclick="setTone('auto')">
+            <div class="tone-icon">
+              <!-- magnifying glass — exact match to screenshot -->
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <div class="tone-btn-label">Auto-detect</div>
+          </div>
+          <div class="tone-btn" id="toneClean" onclick="setTone('clean')">
+            <div class="tone-icon">
+              <!-- star outline — exact match to screenshot -->
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="tone-btn-label">Clean</div>
+          </div>
+          <div class="tone-btn" id="toneDistorted" onclick="setTone('distorted')">
+            <div class="tone-icon">
+              <!-- water drop outline — exact match to screenshot -->
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0C19 10 12 2 12 2z"/></svg>
+            </div>
+            <div class="tone-btn-label">Distorted</div>
+          </div>
+        </div>
+        <div class="tone-tip">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Tip: Selecting Clean or Distorted can improve accuracy, especially for songs with mixed tones
+        </div>
+      </div>
+
+      <!-- free trial banner -->
+      <div class="trial-banner-box">
+        <p class="trial-banner-eyebrow">New here?</p>
+        <h3 class="trial-banner-title">Try ToneFit free for a limited time</h3>
+        <p class="trial-banner-sub">Start a free trial and unlock full adaptations, tone saving, and presets.</p>
+        <div class="trial-banner-row">
+          <button class="btn-trial" onclick="location.href='/plans'">Start Free Trial</button>
+          <span class="trial-fine">Cancel anytime during your trial · No long-term commitment</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- research button — outside cards, between Step 2 and Step 3 -->
+  <div style="padding:20px 0 8px;text-align:center">
+    <button class="research-btn" id="researchBtn" onclick="runResearch()">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span id="researchBtnText">Run Research</span>
+    </button>
+    <div class="extra-btns">
+      <button class="extra-btn" id="songsterrBtn" onclick="openSongsterr()">
+        <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span id="songsterrText">Open Songsterr Tab</span>
+      </button>
+      <button class="extra-btn" id="backingBtn" onclick="openBackingTrack()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <span id="backingText">Find Backing Track</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: RESULTS ── -->
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="step-num" id="step3num" style="background:#E5E7EB;color:#9CA3AF">3</div>
+      <h2 class="section-title">Results</h2>
+    </div>
+    <div class="card-body">
+      <div class="results-grid">
+
+        <!-- LEFT: Original Tone -->
+        <div>
+          <div class="results-col-header">
+            <div class="results-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+            <div>
+              <div class="results-col-title">Original Tone</div>
+              <div class="results-col-sub" id="originalToneSub">Enter a song to see results</div>
+            </div>
+          </div>
+          <div id="originalResults">
+            <div class="empty-state">
+              <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="1.5" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              <div class="empty-title">Ready to Research</div>
+              <div class="empty-sub">Enter a song and click "Run Research" to see the original tone details</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Adapted Tone -->
+        <div>
+          <div class="results-col-header">
+            <div class="results-icon" style="background:var(--blue)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <div>
+              <div class="results-col-title">Your Adapted Tone</div>
+              <div class="results-col-sub" id="adaptedToneSub">Squier Stratocaster + Line 6 HX Stomp</div>
+            </div>
+          </div>
+          <div id="adaptedResults">
+            <div class="empty-state">
+              <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="1.5" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              <div class="empty-title">Ready to Adapt</div>
+              <div class="empty-sub">Select your gear and run research to see your personalized tone settings</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo-row">
+        <div class="footer-logo-icon"><svg viewBox="0 0 24 24"><line x1="11" y1="2" x2="11" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="2" x2="16" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="6" y1="2" x2="6" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="4" y1="18" x2="19" y2="18" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="8,12 11,15 17,8" fill="none" stroke="#93C5FD" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="footer-logo-text">Tone<span style="color:#60A5FA">Fit</span></span>
+      </div>
+      <p class="footer-brand-sub">Gear-matched guitar tone settings for musicians worldwide.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/app">App</a></li>
+        <li><a href="/plans">Plans</a></li>
+        <li><a href="/status">Status</a></li>
+        <li><a href="/login">Login</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <p class="support-need">Need help or have questions?</p>
+      <a class="support-email" href="mailto:contact@tonefit.com">contact@tonefit.com</a>
+      <ul style="margin-top:12px">
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/terms">Terms of Use</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 ToneFit. All rights reserved.</p></div>
+</footer>
+
+<script>
+// ── NAV ──
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+document.getElementById('menuOpen').addEventListener('click', () => { document.getElementById('slideMenu').classList.add('open'); document.getElementById('menuOverlay').classList.add('open'); });
+document.getElementById('menuClose').addEventListener('click', closeMenu);
+document.getElementById('menuOverlay').addEventListener('click', closeMenu);
+function closeMenu() { document.getElementById('slideMenu').classList.remove('open'); document.getElementById('menuOverlay').classList.remove('open'); }
+
+// ── TRENDING ──
+const guitar_trending = [
+  {rank:1,song:'Master of Puppets',artist:'Metallica',searches:22,cls:'rank-1'},
+  {rank:2,song:'Beat It',artist:'Michael Jackson',searches:17,cls:'rank-2'},
+  {rank:3,song:'Hotel California',artist:'Eagles',searches:10,cls:'rank-3'},
+  {rank:4,song:'Back In the...',artist:'The Beatles',searches:10,cls:'rank-4'},
+  {rank:5,song:'Seek & Destroy',artist:'Metallica',searches:9,cls:'rank-5'},
+];
+const bass_trending = [
+  {rank:1,song:'Another One Bites...',artist:'Queen',searches:18,cls:'rank-1'},
+  {rank:2,song:'Come Together',artist:'The Beatles',searches:14,cls:'rank-2'},
+  {rank:3,song:'Hysteria',artist:'Muse',searches:11,cls:'rank-3'},
+  {rank:4,song:'Schism',artist:'Tool',searches:9,cls:'rank-4'},
+  {rank:5,song:'Orion',artist:'Metallica',searches:8,cls:'rank-5'},
+];
+
+function renderTrending(data) {
+  document.getElementById('trendingCards').innerHTML = data.map(t => `
+    <div class="trend-card" onclick="selectTrending('${t.song}','${t.artist}')">
+      <div class="rank-badge ${t.cls}">${t.rank}</div>
+      <div class="trend-info">
+        <div class="trend-song">${t.song}</div>
+        <div class="trend-artist">${t.artist}</div>
+        <div class="trend-searches"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>${t.searches} searches this week</div>
+      </div>
+    </div>`).join('');
+}
+renderTrending(guitar_trending);
+
+function setMode(m) {
+  document.getElementById('btnGuitar').classList.toggle('active', m === 'guitar');
+  document.getElementById('btnBass').classList.toggle('active', m === 'bass');
+  renderTrending(m === 'guitar' ? guitar_trending : bass_trending);
+}
+
+function selectTrending(song, artist) {
+  document.getElementById('songInput').value = song;
+  document.getElementById('artistInput').value = artist;
+  updateSong(song);
+  document.getElementById('app-section') && document.getElementById('app-section').scrollIntoView({behavior:'smooth'});
+}
+
+// ── PRESET ──
+const savedPreset = localStorage.getItem('tonefit_multifx') ? 
+  (() => { const g = JSON.parse(localStorage.getItem('tonefit_guitars')||'["Squier Stratocaster"]'); const m = JSON.parse(localStorage.getItem('tonefit_multifx')||'["Line 6 HX Stomp"]'); return `${g[0]||'Guitar'} + ${m[0]||'Multi-FX'}`; })() : 
+  'Squier Stratocaster + Line 6 HX Stomp';
+
+function loadPreset(val) {
+  if(!val) { document.getElementById('presetActive').style.display='none'; return; }
+  document.getElementById('presetActive').style.display = 'block';
+  document.getElementById('presetActiveText').textContent = 'Using preset: ' + val;
+}
+
+// ── GEAR ──
+let goingDirect = true;
+function updateGear() {
+  const g = document.getElementById('guitarSelect').value;
+  if(g) document.getElementById('selectedGuitarName').textContent = g;
+}
+
+function toggleDirect() {
+  goingDirect = !goingDirect;
+  const tog = document.getElementById('directToggle');
+  const thumb = tog.querySelector('.thumb');
+  if(goingDirect) {
+    tog.style.background = 'var(--purple)';
+    thumb.style.left = 'calc(100% - 19px)';
+    document.getElementById('ampDropdownWrap').style.display = 'none';
+    document.getElementById('ampInfo').style.display = 'flex';
+    setEffects('multifx');
+  } else {
+    tog.style.background = '#D1D5DB';
+    thumb.style.left = '3px';
+    document.getElementById('ampDropdownWrap').style.display = 'block';
+    document.getElementById('ampInfo').style.display = 'none';
+    setEffects('pedals');
+    loadPedalsFromStorage();
+  }
+}
+// init state based on whether user has multifx selected
+window.addEventListener('DOMContentLoaded', function() {
+  const hasMFX = JSON.parse(localStorage.getItem('tonefit_multifx') || '[]').length > 0;
+  goingDirect = hasMFX;
+  const tog = document.getElementById('directToggle');
+  const thumb = tog.querySelector('.thumb');
+  if(goingDirect) {
+    tog.style.background = 'var(--purple)';
+    thumb.style.left = 'calc(100% - 19px)';
+    document.getElementById('ampDropdownWrap').style.display = 'none';
+    document.getElementById('ampInfo').style.display = 'flex';
+    // if going direct, default effects to multifx
+    setEffects('multifx');
+  } else {
+    tog.style.background = '#D1D5DB';
+    thumb.style.left = '3px';
+    document.getElementById('ampDropdownWrap').style.display = 'block';
+    document.getElementById('ampInfo').style.display = 'none';
+    // if amp, default effects to pedals
+    setEffects('pedals');
+    loadPedalsFromStorage();
+  }
+});
+function setEffects(e) {
+  document.getElementById('effectsPedals').classList.toggle('active', e === 'pedals');
+  document.getElementById('effectsMultiFX').classList.toggle('active', e === 'multifx');
+  document.getElementById('pedalsPanel').style.display = e === 'pedals' ? 'block' : 'none';
+  document.getElementById('multiFXPanel').style.display = e === 'multifx' ? 'block' : 'none';
+}
+
+// Load pedals from onboarding localStorage
+function loadPedalsFromStorage() {
+  const extrasRaw = JSON.parse(localStorage.getItem('tonefit_extras') || '{}');
+  const savedPedals = extrasRaw.pedals || [];
+  const list = document.getElementById('yourPedalsList');
+  // Show tip only if user has multi-fx
+  const hasMFX = JSON.parse(localStorage.getItem('tonefit_multifx') || '[]').length > 0;
+  if(hasMFX) document.getElementById('pedalsTipBox').style.display = 'flex';
+  // Demo pedals if none saved
+  const pedals = savedPedals.length > 0 ? savedPedals : ['Amp Academy Stomp'];
+  list.innerHTML = pedals.map(p => `
+    <div class="pedal-chip selected" onclick="this.classList.toggle('selected')">
+      <span class="pedal-chip-check">✓</span>
+      ${p}
+      <span class="pedal-chip-tag">Other</span>
+    </div>`).join('');
+  // Also show your-pedals section
+  document.getElementById('yourPedalsSection').style.display = 'block';
+}
+
+// ── SONGSTERR + BACKING TRACK ──
+function openSongsterr() {
+  const song = document.getElementById('songInput').value.trim();
+  const artist = document.getElementById('artistInput').value.trim();
+  if(!song) { alert('Please search for a song first!'); return; }
+  const query = encodeURIComponent(`${artist} ${song}`).replace(/%20/g, '-').toLowerCase();
+  // Try to open Songsterr search
+  window.open(`https://www.songsterr.com/a/wsa/${query}-tab`, '_blank');
+}
+
+function openBackingTrack() {
+  const song = document.getElementById('songInput').value.trim();
+  const artist = document.getElementById('artistInput').value.trim();
+  if(!song) { alert('Please search for a song first!'); return; }
+  const query = encodeURIComponent(`${song} ${artist} backing track`);
+  window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+}
+
+// ── SONG SEARCH (iTunes API for album art + MusicBrainz fallback) ──
+let searchTimer = null;
+
+async function searchSong(v) {
+  const clear = document.getElementById('songClear');
+  const dropdown = document.getElementById('songDropdown');
+  clear.classList.toggle('visible', v.length > 0);
+
+  if (!v || v.length < 2) {
+    dropdown.classList.remove('visible');
+    dropdown.innerHTML = '';
+    updateSongUI('', '');
+    return;
+  }
+
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(async () => {
+    dropdown.innerHTML = '<div class="song-dropdown-loading">Searching...</div>';
+    dropdown.classList.add('visible');
+    try {
+      // iTunes API — free, no key, returns album art + duration
+      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(v)}&media=music&entity=song&limit=8`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const results = data.results || [];
+
+      if (results.length === 0) {
+        dropdown.innerHTML = '<div class="song-dropdown-empty">No songs found — try a different spelling</div>';
+        return;
+      }
+
+      // deduplicate by track+artist
+      const seen = new Set();
+      const items = results.filter(r => {
+        const key = (r.trackName + r.artistName).toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).slice(0, 6);
+
+      dropdown.innerHTML = items.map(r => {
+        const duration = r.trackTimeMillis ? Math.floor(r.trackTimeMillis/60000) + ':' + String(Math.floor((r.trackTimeMillis%60000)/1000)).padStart(2,'0') : '';
+        const artwork = r.artworkUrl60 || '';
+        const song = r.trackName.replace(/'/g,"\'");
+        const artist = r.artistName.replace(/'/g,"\'");
+        return `<div class="song-dropdown-item" onclick="selectSong('${song}','${artist}','${r.artworkUrl100||''}')">
+          ${artwork ? `<img src="${artwork}" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'"/>` : `<div class="song-dropdown-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`}
+          <div class="song-dropdown-info">
+            <div class="song-dropdown-title">${r.trackName}</div>
+            <div class="song-dropdown-artist">${r.artistName}</div>
+          </div>
+          ${duration ? `<div style="font-size:12px;color:#9CA3AF;margin-left:auto;flex-shrink:0">${duration}</div>` : ''}
+        </div>`;
+      }).join('');
+    } catch(e) {
+      dropdown.innerHTML = '<div class="song-dropdown-empty">Search unavailable — type song name manually</div>';
+    }
+  }, 350);
+}
+
+function selectSong(song, artist, artwork) {
+  document.getElementById('songInput').value = song;
+  document.getElementById('artistInput').value = artist;
+  document.getElementById('songDropdown').classList.remove('visible');
+  document.getElementById('songDropdown').innerHTML = '';
+  document.getElementById('songClear').classList.add('visible');
+  updateSongUI(song, artist);
+}
+
+function updateSongUI(song, artist) {
+  const btn = document.getElementById('researchBtn');
+  const txt = document.getElementById('researchBtnText');
+  if (song) {
+    btn.classList.remove('dim');
+    txt.textContent = `Research "${song}" by ${artist || '...'}`;
+    document.getElementById('songsterrText').textContent = `Open Songsterr Tab for "${song}"`;
+    document.getElementById('backingText').textContent = `Find Backing Track for "${song}"`;
+    document.getElementById('step2circle').className = 'step-circle active';
+    document.getElementById('step2label').className = 'step-label active-label';
+    document.getElementById('line1').style.width = '100%';
+  } else {
+    btn.classList.add('dim');
+    txt.textContent = 'Run Research';
+    document.getElementById('songsterrText').textContent = 'Open Songsterr Tab';
+    document.getElementById('backingText').textContent = 'Find Backing Track';
+    document.getElementById('step2circle').className = 'step-circle inactive';
+    document.getElementById('step2label').className = 'step-label';
+    document.getElementById('line1').style.width = '50%';
+  }
+}
+
+function updateSong(v) { updateSongUI(v, document.getElementById('artistInput').value); }
+
+function clearSong() {
+  document.getElementById('songInput').value = '';
+  document.getElementById('artistInput').value = '';
+  document.getElementById('songDropdown').classList.remove('visible');
+  document.getElementById('songDropdown').innerHTML = '';
+  updateSongUI('', '');
+}
+
+// close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.song-input-wrap')) {
+    const dd = document.getElementById('songDropdown');
+    if (dd) { dd.classList.remove('visible'); dd.innerHTML = ''; }
+  }
+});
+
+// ── PART & TONE ──
+function setPart(p) {
+  document.getElementById('partRiff').classList.remove('active');
+  document.getElementById('partSolo').classList.remove('active');
+  document.getElementById(p === 'riff' ? 'partRiff' : 'partSolo').classList.add('active');
+}
+function setTone(t) {
+  document.getElementById('toneAuto').classList.remove('active');
+  document.getElementById('toneClean').classList.remove('active');
+  document.getElementById('toneDistorted').classList.remove('active');
+  const map = {auto:'toneAuto', clean:'toneClean', distorted:'toneDistorted'};
+  if(map[t]) document.getElementById(map[t]).classList.add('active');
+}
+
+// ── RESEARCH ──
+async function runResearch() {
+  const song = document.getElementById('songInput').value.trim();
+  const artist = document.getElementById('artistInput').value.trim();
+  if (!song) { alert('Please enter a song name first!'); return; }
+
+  const guitar = document.getElementById('guitarSelect').value || document.getElementById('selectedGuitarName').textContent;
+  const amp = document.getElementById('multiFXInput').value || document.getElementById('selectedAmpName').textContent;
+  const partType = document.getElementById('partRiff').classList.contains('active') ? 'Riff' : 'Solo';
+  const toneType = document.getElementById('toneAuto').classList.contains('active') ? 'Auto-detect' :
+                   document.getElementById('toneClean').classList.contains('active') ? 'Clean' : 'Distorted';
+
+  // Update step tracker
+  document.getElementById('step3circle').className = 'step-circle active';
+  document.getElementById('step3label').className = 'step-label active-label';
+  document.getElementById('step3num').style.cssText = 'background:var(--blue);color:white';
+  document.getElementById('line2').style.width = '100%';
+  document.getElementById('originalToneSub').textContent = `${song} by ${artist}`;
+  document.getElementById('adaptedToneSub').textContent = savedPreset;
+
+  // Show loading state
+  document.getElementById('originalResults').innerHTML = `
+    <div style="text-align:center;padding:48px 20px">
+      <div style="width:44px;height:44px;border:3px solid #E5E7EB;border-top-color:#2563EB;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px"></div>
+      <div style="font-size:16px;font-weight:700;color:#0D1117;margin-bottom:6px">Researching tone...</div>
+      <div style="font-size:14px;color:#9CA3AF">Searching gear databases and forums for "${song}"</div>
+    </div>`;
+  document.getElementById('adaptedResults').innerHTML = `
+    <div style="text-align:center;padding:48px 20px">
+      <div style="font-size:14px;color:#9CA3AF">Adapting to your gear...</div>
+    </div>`;
+
+  setTimeout(() => document.querySelector('.results-grid').scrollIntoView({behavior:'smooth', block:'start'}), 100);
+
+  try {
+    const res = await fetch('/api/research', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ song, artist, guitar, amp, partType, toneType })
+    });
+
+    const result = await res.json();
+
+    if (!result.success) throw new Error(result.error || 'Research failed');
+
+    const d = result.data;
+
+    // ── ORIGINAL TONE ──
+    const ampKnobs = ['gain','bass','mid','treble','presence','reverb'];
+    const ampBars = ampKnobs.map(k => {
+      const val = d.ampSettings?.[k] ?? 5;
+      return `<div class="amp-knob">
+        <div class="amp-knob-label">${k.toUpperCase()}</div>
+        <div class="amp-knob-val">${val}</div>
+        <div class="amp-bar-track"><div class="amp-bar-fill" style="width:${val*10}%"></div></div>
+      </div>`;
+    }).join('');
+
+    const pedalsHtml = (d.pedalsUsed || []).map(p => `
+      <div class="pedal-row">
+        <div class="pedal-row-top"><span class="pedal-name">${p.name}</span><span class="pedal-pct">${p.confidence || 80}%</span></div>
+        <div class="pedal-note">${p.note || ''}</div>
+        <div class="pedal-when">${p.usage || ''}</div>
+      </div>`).join('');
+
+    const sourcesHtml = (d.sources || []).map(s => `<a class="source-link" href="#" onclick="return false">${s}</a>`).join('');
+    const warningsHtml = (d.warnings || []).map(w => `<div class="warning-item">${w}</div>`).join('');
+    const starsHtml = Array.from({length:5}, (_,i) =>
+      `<span class="${i < Math.round(d.difficulty?.stars || 3) ? 'star-filled' : 'star-empty'}">★</span>`
+    ).join('');
+
+    document.getElementById('originalResults').innerHTML = `
+      <div class="community-banner">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        AI-researched tone — based on gear databases, interviews and forums
+      </div>
+      <div class="orig-gear-card">
+        <div class="orig-gear-header"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Original Gear</span></div>
+        <table class="gear-table">
+          <tr><td>Guitar</td><td>${d.originalGear?.guitar || 'Unknown'}</td></tr>
+          <tr><td>Amp</td><td>${d.originalGear?.amp || 'Unknown'}</td></tr>
+          ${(d.originalGear?.pedals||[]).map(p=>`<tr><td>Pedal</td><td>${p}</td></tr>`).join('')}
+        </table>
+      </div>
+      <div class="difficulty-card">
+        <div class="diff-header">
+          <div class="diff-title"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Difficulty</div>
+          <span class="solo-badge">${partType}</span>
+        </div>
+        <div class="stars-row">${starsHtml}<span class="diff-score">${d.difficulty?.stars||3}/5</span></div>
+        <p class="diff-desc">${d.difficulty?.note || ''}</p>
+      </div>
+      <div class="amp-card">
+        <div class="amp-header"><div class="amp-title"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Amp Settings</div><span class="orig-badge">Original</span></div>
+        <div class="amp-grid">${ampBars}</div>
+      </div>
+      <div class="guitar-ctrl-card">
+        <div class="guitar-ctrl-header"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Guitar Controls</div>
+        <div class="ctrl-grid">
+          <div class="ctrl-item"><div class="ctrl-label">VOLUME</div><div class="ctrl-val">${d.guitarControls?.volume||'7-8'}</div></div>
+          <div class="ctrl-item"><div class="ctrl-label">TONE</div><div class="ctrl-val">${d.guitarControls?.tone||'6-7'}</div></div>
+        </div>
+      </div>
+      <div class="pedals-card">
+        <div class="pedals-header"><div class="pedals-title"><svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg>Effects & Pedals</div><span class="orig-badge-purple">Original</span></div>
+        <div class="signal-label">SIGNAL CHAIN</div>
+        <div class="signal-chain">${d.signalChain || 'Guitar → Amp'}</div>
+        <div class="pedals-label">PEDALS USED</div>
+        ${pedalsHtml}
+        ${d.ampEffects?.length ? `<div class="amp-effects-label">AMP EFFECTS</div>${d.ampEffects.map(e=>`<span class="amp-effect-tag">${e}</span>`).join('')}` : ''}
+      </div>
+      ${sourcesHtml ? `<div class="sources-card"><div class="sources-header"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Sources</div>${sourcesHtml}</div>` : ''}
+      ${warningsHtml ? `<div class="warnings-card"><div class="warnings-header"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Warnings</div>${warningsHtml}</div>` : ''}`;
+
+    // ── ADAPTED TONE ──
+    const adapted = d.adaptedSettings;
+    const adaptedBars = ampKnobs.map(k => {
+      const val = adapted?.ampSettings?.[k] ?? d.ampSettings?.[k] ?? 5;
+      return `<div class="amp-knob">
+        <div class="amp-knob-label">${k.toUpperCase()}</div>
+        <div class="amp-knob-val">${val}</div>
+        <div class="amp-bar-track"><div class="amp-bar-fill" style="width:${val*10}%;background:#2563EB"></div></div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('adaptedResults').innerHTML = `
+      <div class="orig-gear-card" style="border-color:#BFDBFE">
+        <div class="orig-gear-header" style="color:#2563EB"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg><span>Your Gear Setup</span></div>
+        <p style="font-size:14px;color:#374151;line-height:1.6">${adapted?.summary || 'Settings adapted for your gear'}</p>
+      </div>
+      <div class="amp-card" style="border-color:#BFDBFE">
+        <div class="amp-header"><div class="amp-title" style="color:#2563EB"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Your Amp Settings</div><span class="orig-badge" style="background:#EFF6FF;color:#2563EB">Adapted</span></div>
+        <div class="amp-grid">${adaptedBars}</div>
+      </div>
+      ${adapted?.tips?.length ? `<div class="sources-card" style="border-color:#BFDBFE"><div class="sources-header" style="color:#2563EB"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Tips for Your Gear</div>${adapted.tips.map(t=>`<div style="font-size:14px;color:#374151;padding:8px 0;border-bottom:1px solid #F3F4F6">💡 ${t}</div>`).join('')}</div>` : ''}`;
+
+  } catch(err) {
+    document.getElementById('originalResults').innerHTML = `
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+        <div style="font-size:16px;font-weight:700;color:#0D1117;margin-bottom:8px">Research failed</div>
+        <div style="font-size:14px;color:#6B7280">${err.message}</div>
+      </div>`;
+    document.getElementById('adaptedResults').innerHTML = '';
+  }
+}
+
+// ── LOAD PRESET FROM STORAGE ──
+window.addEventListener('load', () => {
+  const guitars = JSON.parse(localStorage.getItem('tonefit_guitars') || '["Squier Stratocaster"]');
+  const multifx = JSON.parse(localStorage.getItem('tonefit_multifx') || '["Line 6 HX Stomp"]');
+  const amps = JSON.parse(localStorage.getItem('tonefit_amps') || '[]');
+  const guitarName = guitars[0] || 'Squier Stratocaster';
+  const ampName = multifx[0] || amps[0] || 'Line 6 HX Stomp';
+  const presetName = guitarName + ' + ' + ampName;
+  // populate preset dropdown with saved preset option
+  const presetSel = document.getElementById('presetSelect');
+  const opt = document.createElement('option');
+  opt.value = presetName;
+  opt.textContent = presetName;
+  opt.selected = true;
+  presetSel.appendChild(opt);
+  document.getElementById('presetActiveText').textContent = 'Using preset: ' + presetName;
+  document.getElementById('presetActive').style.display = 'block';
+  // update selected gear display
+  document.getElementById('selectedGuitarName').textContent = guitarName;
+  document.getElementById('selectedAmpName').textContent = ampName;
+  document.getElementById('ampInfoTitle').textContent = 'Using ' + ampName + ' as amp';
+  document.getElementById('multiFXInput').value = ampName;
+  document.getElementById('multiFXUnitName').textContent = ampName;
+  document.getElementById('adaptedToneSub').textContent = presetName;
+  // pre-select guitar in dropdown
+  const guitarSel = document.getElementById('guitarSelect');
+  for(let opt of guitarSel.options){ if(opt.value === guitarName){ opt.selected = true; break; } }
+})
+</script>
+</body>
+</html>

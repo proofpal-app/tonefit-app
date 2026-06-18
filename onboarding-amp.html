@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Your Amps | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--blue-dark:#1D4ED8;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F0F4FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.progress-bar{position:fixed;top:0;left:0;width:65%;height:3px;background:#2563EB;z-index:300}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;background:transparent}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:#fff;border:none;padding:12px 14px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.10)}
+.hamburger span{width:20px;height:2px;background:#1a1a2e;border-radius:2px;display:block}
+main{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:80px 24px 60px;background:linear-gradient(160deg,#E8EEF8 0%,#EEF3FB 30%,#F5F8FF 60%,#ffffff 100%)}
+.page-wrap{max-width:540px;width:100%;padding-top:20px}
+
+/* header */
+.page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.icon-circle{width:52px;height:52px;background:#EEF4FF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-circle svg{width:24px;height:24px;stroke:#2563EB;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.header-title{font-size:22px;font-weight:900;letter-spacing:-0.5px;color:#0D1117}
+.header-sub{font-size:13px;color:#6B7280;margin-top:2px}
+
+/* amp/multifx toggle */
+.type-toggle{display:flex;justify-content:center;margin-bottom:24px}
+.type-box{display:inline-flex;align-items:center;background:#EEF4FF;border:2px solid #BFDBFE;border-radius:20px;padding:6px;gap:0}
+.type-btn{padding:11px 28px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#94A3B8;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s,color 0.2s,box-shadow 0.2s;display:flex;align-items:center;gap:8px}
+.type-btn.active{background:white;color:#1E3A8A;box-shadow:0 2px 10px rgba(0,0,0,0.10)}
+.type-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* selected tags */
+.selected-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.sel-tag{display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:100px;padding:7px 14px;font-size:13px;font-weight:600;color:#1E3A8A}
+.sel-tag-x{background:none;border:none;cursor:pointer;color:#93C5FD;font-size:14px;line-height:1;padding:0;font-family:'Plus Jakarta Sans',sans-serif}
+.sel-tag-x:hover{color:#2563EB}
+
+/* search box */
+.search-box{width:100%;display:flex;align-items:center;justify-content:space-between;background:white;border:1.5px solid #E5E7EB;border-radius:14px;padding:14px 18px;cursor:pointer;transition:border-color 0.2s;margin-bottom:0}
+.search-box.open{border-color:#2563EB;border-radius:14px 14px 0 0;border-bottom-color:transparent}
+.search-box-left{display:flex;align-items:center;gap:10px;color:#9CA3AF;font-size:15px}
+.search-box-left svg{width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:1.8;stroke-linecap:round}
+.search-chevron{width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:2;stroke-linecap:round;transition:transform 0.2s}
+.search-box.open .search-chevron{transform:rotate(180deg)}
+
+/* dropdown */
+.dropdown{background:white;border:1.5px solid #2563EB;border-top:none;border-radius:0 0 16px 16px;margin-bottom:20px;overflow:hidden;display:none}
+.dropdown.open{display:block}
+.dropdown-search{width:100%;border:none;border-bottom:1px solid #E5E7EB;padding:14px 18px;font-size:14px;color:#0D1117;font-family:'Plus Jakarta Sans',sans-serif;outline:none;background:#FAFBFD}
+.dropdown-search::placeholder{color:#9CA3AF}
+.brand-pills{display:flex;gap:6px;padding:12px 16px;overflow-x:auto;border-bottom:1px solid #F3F4F6}
+.brand-pills::-webkit-scrollbar{display:none}
+.brand-pill{white-space:nowrap;background:none;border:1.5px solid #E5E7EB;border-radius:100px;padding:5px 14px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s;flex-shrink:0}
+.brand-pill:hover{background:#F3F4F6}
+.brand-pill.active{background:#EFF6FF;border-color:#BFDBFE;color:#2563EB}
+.section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;padding:12px 18px 6px}
+.item-list{max-height:220px;overflow-y:auto}
+.item-row{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid #F9FAFB}
+.item-row:hover{background:#F8FAFF}
+.item-row.selected-row{background:#EFF6FF}
+.item-checkbox{width:22px;height:22px;border-radius:6px;border:1.5px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background 0.15s,border-color 0.15s;margin-top:2px}
+.item-row.selected-row .item-checkbox{background:#2563EB;border-color:#2563EB}
+.item-checkbox svg{width:13px;height:13px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;display:none}
+.item-row.selected-row .item-checkbox svg{display:block}
+.item-name{font-size:14px;font-weight:700;color:#0D1117;transition:color 0.15s}
+.item-row.selected-row .item-name{color:#2563EB}
+.item-desc{font-size:12px;color:#9CA3AF;margin-top:1px}
+.cant-find{padding:14px 18px;border-top:1px solid #F3F4F6}
+.cant-find-label{font-size:13px;font-weight:700;color:#0D1117;margin-bottom:4px}
+.cant-find-sub{font-size:12px;color:#9CA3AF;margin-bottom:10px}
+.cant-find-row{display:flex;gap:8px}
+.cant-find-input{flex:1;border:1.5px solid #E5E7EB;border-radius:10px;padding:10px 14px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;color:#0D1117;background:#FAFBFD}
+.cant-find-input:focus{border-color:#2563EB}
+.cant-find-add{background:#E5E7EB;color:#9CA3AF;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* quick select */
+.quick-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin:20px 0 10px}
+.quick-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.quick-pill{background:white;border:1.5px solid #E5E7EB;border-radius:100px;padding:8px 16px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.15s,border-color 0.15s,color 0.15s}
+.quick-pill:hover{background:#F3F4F6}
+.quick-pill.selected{background:#EFF6FF;border-color:#BFDBFE;color:#2563EB}
+
+/* CTA */
+.cta-btn{width:100%;background:#2563EB;color:white;border:none;padding:17px;border-radius:100px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s;margin-bottom:16px}
+.cta-btn:hover{background:#1D4ED8}
+.cta-btn:disabled{background:#E5E7EB;color:#9CA3AF;cursor:not-allowed}
+.bottom-row{display:flex;justify-content:space-between;align-items:center}
+.back-btn{font-size:14px;color:#9CA3AF;font-weight:600;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.back-btn:hover{color:#6B7280}
+.add-later{font-size:14px;color:#9CA3AF;font-weight:500;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+</style>
+</head>
+<body>
+<div class="progress-bar"></div>
+<nav><button class="hamburger"><span></span><span></span><span></span></button></nav>
+
+<main>
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="icon-circle" id="headerIcon">
+      <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+    </div>
+    <div>
+      <div class="header-title" id="headerTitle">Your Amps</div>
+      <div class="header-sub" id="headerSub">Search and tap to select your amp</div>
+    </div>
+  </div>
+
+  <!-- AMP / MULTI-FX TOGGLE -->
+  <div class="type-toggle">
+    <div class="type-box">
+      <button class="type-btn active" id="btnAmp" onclick="setMode('amp')">
+        <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        Amp
+      </button>
+      <button class="type-btn" id="btnMultiFX" onclick="setMode('multifx')">
+        <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="10" x2="16" y2="14"/><line x1="12" y1="16" x2="12" y2="20"/></svg>
+        Multi-FX
+      </button>
+    </div>
+  </div>
+
+  <!-- SELECTED TAGS -->
+  <div class="selected-tags" id="selectedTags"></div>
+
+  <!-- SEARCH BOX -->
+  <div class="search-box" id="searchBox" onclick="toggleDropdown()">
+    <div class="search-box-left">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span id="searchPlaceholder">Search amps...</span>
+    </div>
+    <svg class="search-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+
+  <!-- DROPDOWN -->
+  <div class="dropdown" id="dropdown">
+    <input class="dropdown-search" id="dropdownSearch" placeholder="Search amps..." oninput="filterItems(this.value)"/>
+    <div class="brand-pills" id="brandPills"></div>
+    <div class="section-label">POPULAR</div>
+    <div class="item-list" id="itemList"></div>
+    <div class="cant-find">
+      <div class="cant-find-label" id="cantFindLabel">Can't find your amp?</div>
+      <div class="cant-find-sub" id="cantFindSub">Include brand and model (e.g. "Boss Katana 50")</div>
+      <div class="cant-find-row">
+        <input class="cant-find-input" placeholder="Brand + Model..."/>
+        <button class="cant-find-add">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK SELECT -->
+  <div class="quick-label">QUICK SELECT</div>
+  <div class="quick-pills" id="quickPills"></div>
+
+  <button class="cta-btn" id="ctaBtn" disabled>Select an amp or multi-FX to continue</button>
+  <div class="bottom-row">
+    <button class="back-btn" onclick="history.back()">Back</button>
+    <button class="add-later">I'll add my gear later</button>
+  </div>
+
+</div>
+</main>
+
+<script>
+const amps = [
+  // FENDER
+  {name:'Fender Blues Junior IV',desc:'A classic 15-watt tube combo beloved for its warm clean tone and smooth breakup.',brand:'Fender'},
+  {name:'Fender Deluxe Reverb',desc:'The iconic 22-watt blackface combo with lush reverb and tremolo.',brand:'Fender'},
+  {name:'Fender Twin Reverb',desc:'A powerful 85-watt blackface combo with sparkling clean headroom.',brand:'Fender'},
+  {name:'Fender Mustang LT25',desc:'A 25-watt digital modeling combo with 30 presets and USB recording.',brand:'Fender'},
+  {name:'Fender Mustang GTX50',desc:'Advanced modeling amp with 100+ presets and Bluetooth connectivity.',brand:'Fender'},
+  {name:'Fender Champion 20',desc:'A 20-watt solid-state practice amp with built-in effects and guitar effects.',brand:'Fender'},
+  {name:'Fender Champion 40',desc:'A 40-watt combo with a wide range of amp voicings and effects.',brand:'Fender'},
+  {name:'Fender Blues Deluxe Reissue',desc:'40-watt tube combo reissue with warm blues-ready tone and spring reverb.',brand:'Fender'},
+  {name:'Fender Hot Rod DeVille',desc:'A high-powered 60-watt tube combo with three channels and reverb.',brand:'Fender'},
+  {name:'Fender Princeton Reverb',desc:'A compact 12-watt tube combo with beautiful reverb and tremolo.',brand:'Fender'},
+  {name:'Fender Tone Master Deluxe Reverb',desc:'Solid-state recreation of the Deluxe Reverb with authentic tube sound.',brand:'Fender'},
+  {name:'Fender Tone Master Twin Reverb',desc:'Solid-state Twin Reverb recreation with USB output and attenuator.',brand:'Fender'},
+  // MARSHALL
+  {name:'Marshall DSL40CR',desc:'A 40-watt two-channel tube combo with classic Marshall crunch and lead tones.',brand:'Marshall'},
+  {name:'Marshall DSL20CR',desc:'Compact 20-watt tube combo with two channels and reverb.',brand:'Marshall'},
+  {name:'Marshall JVM410H',desc:'The flagship 100-watt four-channel Marshall head with extensive tonal options.',brand:'Marshall'},
+  {name:'Marshall Origin20C',desc:'A vintage-voiced 20-watt tube combo with a single channel and tilt-back legs.',brand:'Marshall'},
+  {name:'Marshall CODE 25',desc:'25-watt digital modeling combo with Bluetooth and Marshall app control.',brand:'Marshall'},
+  {name:'Marshall CODE 50',desc:'50-watt modeling combo with studio-quality effects and recording output.',brand:'Marshall'},
+  {name:'Marshall Plexi Super Lead 1959',desc:'The legendary 100-watt plexi head that defined classic rock guitar tone.',brand:'Marshall'},
+  {name:'Marshall JCM800 2203',desc:'The iconic 100-watt high-gain head used by countless rock legends.',brand:'Marshall'},
+  {name:'Marshall JCM900',desc:'100-watt head with two channels and a more refined gain structure.',brand:'Marshall'},
+  {name:'Marshall SV20C Studio Vintage',desc:'20-watt studio version of the iconic 1959 Plexi with power reduction.',brand:'Marshall'},
+  {name:'Marshall MG30GFX',desc:'30-watt solid-state combo with four channels and built-in effects.',brand:'Marshall'},
+  {name:'Marshall Origin50C',desc:'50-watt vintage-voiced tube combo with tilt-back design.',brand:'Marshall'},
+  // BOSS
+  {name:'Boss Katana 50 MkII',desc:'A versatile 50-watt modeling combo with five amp characters and effects.',brand:'Boss'},
+  {name:'Boss Katana 100 MkII',desc:'100-watt modeling combo with expanded power amp section.',brand:'Boss'},
+  {name:'Boss Katana-Artist MkII',desc:'Premium Katana with all-valve power stage and premium speaker.',brand:'Boss'},
+  {name:'Boss Katana Mini',desc:'Compact battery-powered Katana with three amp characters.',brand:'Boss'},
+  {name:'Boss Nextone Stage',desc:'40-watt amp with four selectable power amp types and rich tube feel.',brand:'Boss'},
+  {name:'Boss Nextone Artist',desc:'80-watt premium Nextone with extended power amp voicing options.',brand:'Boss'},
+  // VOX
+  {name:'Vox AC15C1',desc:'The classic 15-watt all-tube AC15 combo with top boost channel and tremolo.',brand:'Vox'},
+  {name:'Vox AC30C2',desc:'The iconic 30-watt two-speaker combo beloved for its chime and sparkle.',brand:'Vox'},
+  {name:'Vox AC4C1',desc:'Compact 4-watt AC combo perfect for home use and recording.',brand:'Vox'},
+  {name:'Vox Pathfinder 10',desc:'Entry-level 10-watt solid-state combo with classic Vox styling.',brand:'Vox'},
+  {name:'Vox MV50 AC',desc:'Mini 50-watt head with Nutube technology in an ultra-compact form.',brand:'Vox'},
+  {name:'Vox Cambridge50',desc:'50-watt modeling combo with 11 amp models and 13 effect types.',brand:'Vox'},
+  // ORANGE
+  {name:'Orange Rocker 15',desc:'A 15-watt two-channel tube combo with switchable 1-watt mode.',brand:'Orange'},
+  {name:'Orange Crush 20RT',desc:'20-watt solid-state combo with reverb and tuner built in.',brand:'Orange'},
+  {name:'Orange Crush 35RT',desc:'35-watt solid-state combo with reverb tuner and headphone output.',brand:'Orange'},
+  {name:'Orange Dark Terror',desc:'A 15-watt tube head with a single channel high-gain tone.',brand:'Orange'},
+  {name:'Orange Rockerverb 50C',desc:'50-watt two-channel tube combo with reverb and power attenuation.',brand:'Orange'},
+  {name:'Orange AD30TC',desc:'A 30-watt two-channel tube combo with sparkling clean and warm drive.',brand:'Orange'},
+  {name:'Orange TH30C',desc:'30-watt combo with class A/AB switching and two channels.',brand:'Orange'},
+  // BLACKSTAR
+  {name:'Blackstar HT-5R MkII',desc:'A 5-watt tube combo with reverb and two channels for home use.',brand:'Blackstar'},
+  {name:'Blackstar HT-20R MkII',desc:'20-watt tube combo with reverb and Super Wide Stereo output.',brand:'Blackstar'},
+  {name:'Blackstar ID:Core 10 V3',desc:'10-watt stereo modeling combo with six voices and built-in effects.',brand:'Blackstar'},
+  {name:'Blackstar ID:Core 40 V3',desc:'40-watt stereo modeling combo with USB and professional features.',brand:'Blackstar'},
+  {name:'Blackstar Silverline Standard',desc:'20-watt digital combo with six amp voices and reverb.',brand:'Blackstar'},
+  {name:'Blackstar Artisan 30',desc:'30-watt handwired tube combo with two channels and spring reverb.',brand:'Blackstar'},
+  // LINE 6
+  {name:'Line 6 Spider V 20 MkII',desc:'20-watt modeling combo with 16 amp models and Bluetooth.',brand:'Line 6'},
+  {name:'Line 6 Spider V 60 MkII',desc:'60-watt modeling combo with expanded effects and recording features.',brand:'Line 6'},
+  {name:'Line 6 Catalyst 60',desc:'60-watt analog-voiced modeling combo with six amp channels.',brand:'Line 6'},
+  {name:'Line 6 Catalyst 100',desc:'100-watt powerful modeling combo with full-range tone options.',brand:'Line 6'},
+  {name:'Line 6 Powercab 112 Plus',desc:'Active speaker system designed as a full-range guitar cabinet.',brand:'Line 6'},
+  // POSITIVE GRID
+  {name:'Positive Grid Spark',desc:'40-watt smart practice amp with AI-powered chord detection and app.',brand:'Positive Grid'},
+  {name:'Positive Grid Spark 40',desc:'The standard 40-watt Spark with four amp channels and Smart Jam.',brand:'Positive Grid'},
+  {name:'Positive Grid Spark Mini',desc:'Compact 10-watt version of the Spark with the same smart features.',brand:'Positive Grid'},
+  {name:'Positive Grid Spark LIVE',desc:'Professional 40-watt live performance smart amp with stage features.',brand:'Positive Grid'},
+  // MESA BOOGIE
+  {name:'Mesa Boogie Mark V',desc:'The ultimate Mesa combo with ten channels spanning clean to high-gain.',brand:'Mesa Boogie'},
+  {name:'Mesa Boogie Rectoverb 25',desc:'25-watt combo combining Dual Rectifier gain with spring reverb.',brand:'Mesa Boogie'},
+  {name:'Mesa Boogie Fillmore 50',desc:'50-watt vintage-voiced tube head with two independent channels.',brand:'Mesa Boogie'},
+  {name:'Mesa Boogie California Tweed',desc:'A 6V6-powered amp paying homage to vintage Fender Tweed voicings.',brand:'Mesa Boogie'},
+  {name:'Mesa Boogie Dual Rectifier',desc:'The iconic 100-watt high-gain head with three channels and rectifier switching.',brand:'Mesa Boogie'},
+  // PRS
+  {name:'PRS MT 15 Mark Tremonti',desc:'15-watt two-channel mini head designed with Mark Tremonti.',brand:'PRS'},
+  {name:'PRS HDRX 20',desc:'20-watt Hendrix-inspired head based on the Super Lead circuit.',brand:'PRS'},
+  {name:'PRS Dallas',desc:'100-watt four-channel tube head with full tonal versatility.',brand:'PRS'},
+  // PEAVEY
+  {name:'Peavey Classic 30',desc:'A 30-watt tube combo beloved for its versatile clean and crunch tones.',brand:'Peavey'},
+  {name:'Peavey 6505+',desc:'The iconic high-gain 120-watt head used by countless metal bands.',brand:'Peavey'},
+  {name:'Peavey Vypyr VIP 2',desc:'40-watt modeling combo with guitar bass and acoustic voicings.',brand:'Peavey'},
+  // HUGHES & KETTNER
+  {name:'Hughes & Kettner TubeMeister 18',desc:'18-watt tube head with built-in power soak and Red Box DI.',brand:'Hughes & Kettner'},
+  {name:'Hughes & Kettner GrandMeister 36',desc:'36-watt four-channel tube head with MIDI and app control.',brand:'Hughes & Kettner'},
+  {name:'Hughes & Kettner Black Spirit 200',desc:'200-watt solid-state head with Spirit Tone Generator technology.',brand:'Hughes & Kettner'},
+  // LANEY
+  {name:'Laney L5T-112',desc:'5-watt tube combo with EL84 power tubes and vintage styling.',brand:'Laney'},
+  {name:'Laney IronHeart IRT30H',desc:'30-watt three-channel tube head with a modern high-gain focus.',brand:'Laney'},
+  {name:'Laney Cub12R',desc:'15-watt tube combo with reverb and switchable power modes.',brand:'Laney'},
+  // SUPRO
+  {name:'Supro 1695T Black Magick',desc:'25-watt tube combo used by Jimmy Page with a unique voicing.',brand:'Supro'},
+  {name:'Supro 1648RT Saturn Reverb',desc:'24-watt tube combo with spring reverb and tremolo.',brand:'Supro'},
+  // CARR
+  {name:'Carr Rambler',desc:'28-watt handbuilt combo offering superb clean and breakup tones.',brand:'Carr'},
+  // BOGNER
+  {name:'Bogner Ecstasy 101B',desc:'The classic 101-watt high-gain head with three channels and versatile EQ.',brand:'Bogner'},
+  {name:'Bogner Shiva',desc:'60-watt two-channel combo with reverb and a beautiful clean tone.',brand:'Bogner'},
+  // FRIEDMAN
+  {name:'Friedman BE-100 Deluxe',desc:'100-watt four-channel high-gain head built for professional use.',brand:'Friedman'},
+  {name:'Friedman Pink Taco',desc:'20-watt single-channel tube head with a focused high-gain tone.',brand:'Friedman'},
+  // EVH
+  {name:'EVH 5150 III 50W',desc:'50-watt three-channel tube head built with Eddie Van Halen.',brand:'EVH'},
+  {name:'EVH 5150 III EL34',desc:'EL34-powered version of the 5150 III with a different character.',brand:'EVH'},
+  {name:'EVH 5150 Iconic 40W',desc:'40-watt combo version of the iconic 5150 for practice and recording.',brand:'EVH'},
+  // ENGL
+  {name:'ENGL Fireball 100',desc:'100-watt two-channel high-gain tube head with powerful lead tone.',brand:'ENGL'},
+  {name:'ENGL Screamer 50',desc:'50-watt two-channel tube head with clean and high-gain voicings.',brand:'ENGL'},
+  {name:'ENGL Ironball 20',desc:'20-watt tube head with a switchable wattage and tube-driven reverb.',brand:'ENGL'},
+  // VICTORY
+  {name:'Victory V40 The Duchess',desc:'40-watt two-channel tube combo inspired by British EL34 classics.',brand:'Victory'},
+  {name:'Victory Sheriff 22',desc:'22-watt 6L6-powered combo with a warm American clean and crunch.',brand:'Victory'},
+  // TWO ROCK
+  {name:'Two Rock Classic Reverb Signature',desc:'A premium handbuilt 40-watt tube combo beloved by high-end players.',brand:'Two Rock'},
+  // KEMPER (counted as amp for modeling)
+  {name:'Kemper Profiler Head',desc:'The flagship profiling amplifier that captures real amp tones digitally.',brand:'Kemper'},
+  {name:'Kemper Profiler Stage',desc:'Floor-based Kemper Profiler with full expression control.',brand:'Kemper'},
+];
+
+const multifx = [
+  // LINE 6 HELIX
+  {name:'Helix Floor',desc:'The flagship Line 6 multi-effects processor with 32 simultaneous blocks.',brand:'Line 6'},
+  {name:'Helix LT',desc:'A lighter version of the Helix Floor with slightly fewer I/O options.',brand:'Line 6'},
+  {name:'HX Stomp',desc:'Compact Helix processor in a small form factor with 6 blocks.',brand:'Line 6'},
+  {name:'HX Stomp XL',desc:'Expanded HX Stomp with more footswitches and a larger display.',brand:'Line 6'},
+  {name:'POD Go',desc:'A streamlined floor processor with Helix sounds at an accessible price.',brand:'Line 6'},
+  {name:'POD Go Wireless',desc:'POD Go with integrated wireless guitar system.',brand:'Line 6'},
+  // BOSS
+  {name:'Boss GT-1000',desc:'Flagship Boss multi-effects with AIRD amp modeling technology.',brand:'Boss'},
+  {name:'Boss GT-1000CORE',desc:'Compact version of the GT-1000 for pedalboard integration.',brand:'Boss'},
+  {name:'Boss GX-100',desc:'Mid-range Boss multi-effects with 140 effects and wireless option.',brand:'Boss'},
+  {name:'Boss GT-100',desc:'Previous flagship Boss processor with Tube Logic amp modeling.',brand:'Boss'},
+  {name:'Boss MS-3',desc:'Compact multi-effects switcher integrating pedals with amp channel switching.',brand:'Boss'},
+  // FRACTAL AUDIO
+  {name:'Fractal Audio Axe-Fx III',desc:'The pinnacle of amp modeling with ultra-realistic simulation.',brand:'Fractal Audio'},
+  {name:'Fractal Audio FM9',desc:'Standalone floor unit with Axe-Fx III processing power.',brand:'Fractal Audio'},
+  {name:'Fractal Audio FM3',desc:'Compact floor unit with full Fractal Audio signal processing.',brand:'Fractal Audio'},
+  {name:'Fractal Audio FC-12',desc:'MIDI foot controller designed for the Axe-Fx III system.',brand:'Fractal Audio'},
+  // NEURAL DSP
+  {name:'Neural DSP Quad Cortex',desc:'A floor modeler with neural capture technology for amp cloning.',brand:'Neural DSP'},
+  // HEADRUSH
+  {name:'HeadRush Pedalboard',desc:'A touchscreen multi-effects with 33 amp models and 40 effects.',brand:'HeadRush'},
+  {name:'HeadRush MX5',desc:'Compact floor processor with HeadRush amp modeling in a small unit.',brand:'HeadRush'},
+  {name:'HeadRush Prime',desc:'Premium HeadRush with improved processing and expanded connectivity.',brand:'HeadRush'},
+  // ZOOM
+  {name:'Zoom G3Xn',desc:'Multi-effects with built-in expression pedal and amp models.',brand:'Zoom'},
+  {name:'Zoom G5n',desc:'Mid-range Zoom with 100+ effects and 15 amp models.',brand:'Zoom'},
+  {name:'Zoom G6',desc:'Premium Zoom multi-effects with 80 effects and expression pedal.',brand:'Zoom'},
+  {name:'Zoom G11',desc:'Flagship Zoom with color touchscreen and extensive routing options.',brand:'Zoom'},
+  // MOOER
+  {name:'Mooer GE300',desc:'Flagship Mooer with amp modeling laser IR capture and expression.',brand:'Mooer'},
+  {name:'Mooer GE200',desc:'Mid-range Mooer with amp models and built-in expression pedal.',brand:'Mooer'},
+  {name:'Mooer GE250',desc:'Expanded GE250 with more routing options and improved display.',brand:'Mooer'},
+  // DIGITECH
+  {name:'DigiTech RP360XP',desc:'Multi-effects with expression pedal looper and 100+ amp models.',brand:'DigiTech'},
+  // HUGHES & KETTNER
+  {name:'Hughes & Kettner Spirit Nano AMP',desc:'Compact solid-state amp with multi-effects in a tiny unit.',brand:'Hughes & Kettner'},
+  // NUX
+  {name:'NUX MG-400',desc:'Compact multi-effects with amp modeling and IR loading.',brand:'NUX'},
+  {name:'NUX MG-300',desc:'Entry-level multi-effects with amp simulation and built-in tuner.',brand:'NUX'},
+  // VALETON
+  {name:'Valeton GP-200',desc:'Affordable multi-effects with over 200 presets and amp models.',brand:'Valeton'},
+  // TC HELICON
+  {name:'TC Electronic Nova System',desc:'Dual-channel effects system with programmable loop switching.',brand:'TC Electronic'},
+  // KEMPER
+  {name:'Kemper Profiler Stage',desc:'Floor-based Kemper Profiler with full expression and switching control.',brand:'Kemper'},
+  {name:'Kemper Profiler PowerHead',desc:'Profiler with built-in power amp for driving a guitar cabinet directly.',brand:'Kemper'},
+];
+
+let mode = 'amp';
+let selected = [];
+let currentBrand = 'all';
+
+const ampBrands = ['Fender','Marshall','Boss','Vox','Orange','Blackstar','Line 6','Positive Grid','Mesa Boogie','PRS','Peavey','Hughes & Kettner','Laney','EVH','ENGL','Bogner','Friedman','Kemper'];
+const multifxBrands = ['Line 6','Boss','Fractal Audio','Neural DSP','HeadRush','Zoom','Mooer','DigiTech','NUX','Valeton','Kemper'];
+
+const ampQuick = ['Boss Katana 50 MkII','Fender Mustang LT25','Fender Champion 20','Marshall CODE 25','Positive Grid Spark','Fender Mustang GTX50'];
+const multifxQuick = ['Helix Floor','Helix LT','HX Stomp','POD Go','Boss GT-1000','Fractal Audio Axe-Fx III'];
+
+function setMode(m) {
+  // Save current multifx selections before switching
+  if(mode === 'multifx') localStorage.setItem('tonefit_multifx', JSON.stringify(selected));
+  mode = m;
+  selected = [];
+  // Load saved multifx selections when switching to multifx
+  if(m === 'multifx') {
+    const saved = localStorage.getItem('tonefit_multifx');
+    if(saved) selected = JSON.parse(saved);
+  }
+  currentBrand = 'all';
+  document.getElementById('btnAmp').classList.toggle('active', m === 'amp');
+  document.getElementById('btnMultiFX').classList.toggle('active', m === 'multifx');
+  const isAmp = m === 'amp';
+  document.getElementById('headerTitle').textContent = isAmp ? 'Your Amps' : 'Your Multi-FX';
+  document.getElementById('headerSub').textContent = isAmp ? 'Search and tap to select your amp' : 'Search and tap to select your multi-FX unit';
+  document.getElementById('searchPlaceholder').textContent = isAmp ? 'Search amps...' : 'Search multi-FX units...';
+  document.getElementById('dropdownSearch').placeholder = isAmp ? 'Search amps...' : 'Search multi-FX units...';
+  document.getElementById('cantFindLabel').textContent = isAmp ? "Can't find your amp?" : "Can't find your multi-FX unit?";
+  document.getElementById('cantFindSub').textContent = isAmp ? 'Include brand and model (e.g. "Boss Katana 50")' : 'Include brand and model (e.g. "Line 6 Helix")';
+  // close dropdown
+  document.getElementById('searchBox').classList.remove('open');
+  document.getElementById('dropdown').classList.remove('open');
+  renderBrandPills();
+  renderQuickPills();
+  updateUI();
+}
+
+function renderBrandPills() {
+  const brands = mode === 'amp' ? ampBrands : multifxBrands;
+  const el = document.getElementById('brandPills');
+  el.innerHTML = `<button class="brand-pill active" onclick="filterBrand('all',this)">All</button>` +
+    brands.map(b => `<button class="brand-pill" onclick="filterBrand('${b}',this)">${b}</button>`).join('');
+}
+
+function renderQuickPills() {
+  const pills = mode === 'amp' ? ampQuick : multifxQuick;
+  const el = document.getElementById('quickPills');
+  el.innerHTML = pills.map(p => `<button class="quick-pill ${selected.includes(p)?'selected':''}" onclick="quickSelect(this,'${p}')">${p}</button>`).join('');
+}
+
+function filterBrand(brand, el) {
+  currentBrand = brand;
+  document.querySelectorAll('.brand-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  filterItems(document.getElementById('dropdownSearch').value);
+}
+
+function getItems() { return mode === 'amp' ? amps : multifx; }
+
+function filterItems(q) {
+  const items = getItems().filter(i =>
+    i.name.toLowerCase().includes(q.toLowerCase()) &&
+    (currentBrand === 'all' || i.brand === currentBrand)
+  );
+  renderItemList(items);
+}
+
+function renderItemList(items) {
+  const el = document.getElementById('itemList');
+  el.innerHTML = items.map(i => `
+    <div class="item-row ${selected.includes(i.name)?'selected-row':''}" onclick="toggleItem('${i.name.replace(/'/g,"\\'")}')">
+      <div class="item-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div>
+        <div class="item-name">${i.name}</div>
+        <div class="item-desc">${i.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleDropdown() {
+  const box = document.getElementById('searchBox');
+  const drop = document.getElementById('dropdown');
+  box.classList.toggle('open');
+  drop.classList.toggle('open');
+  if(drop.classList.contains('open')) renderItemList(getItems());
+}
+
+// Save selections to localStorage whenever they change
+function saveToStorage() {
+  localStorage.setItem('tonefit_multifx', JSON.stringify(selected));
+}
+
+function toggleItem(name) {
+  if(selected.includes(name)) selected = selected.filter(s => s !== name);
+  else selected.push(name);
+  saveToStorage();
+  renderItemList(getItems().filter(i =>
+    (currentBrand === 'all' || i.brand === currentBrand)
+  ));
+  renderQuickPills();
+  updateUI();
+}
+
+function quickSelect(el, name) {
+  el.classList.toggle('selected');
+  if(selected.includes(name)) selected = selected.filter(s => s !== name);
+  else selected.push(name);
+  saveToStorage();
+  updateUI();
+}
+
+function removeTag(name) {
+  selected = selected.filter(s => s !== name);
+  saveToStorage();
+  renderQuickPills();
+  renderItemList(getItems());
+  updateUI();
+}
+
+function updateUI() {
+  const tagsEl = document.getElementById('selectedTags');
+  tagsEl.innerHTML = selected.map(n => `
+    <div class="sel-tag">${n}<button class="sel-tag-x" onclick="removeTag('${n.replace(/'/g,"\\'")}')">×</button></div>
+  `).join('');
+  const btn = document.getElementById('ctaBtn');
+  if(selected.length === 0) {
+    btn.disabled = true;
+    btn.textContent = 'Select an amp or multi-FX to continue';
+  } else {
+    btn.disabled = false;
+    btn.textContent = `Continue with ${selected.length} ${mode === 'amp' ? 'amp' : 'multi-FX'}${selected.length > 1 ? 's' : ''}`;
+  }
+  // Save multi-FX selections to localStorage so Extras page can load them
+  if(mode === 'multifx') {
+    localStorage.setItem('tonefit_multifx', JSON.stringify(selected));
+  }
+}
+
+// init
+renderBrandPills();
+renderQuickPills();
+updateUI();
+</script>
+</body></html>
