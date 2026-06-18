@@ -18,26 +18,34 @@ nav.scrolled{background:rgba(240,244,250,0.92);backdrop-filter:blur(14px);box-sh
 .slide-menu.open{transform:translateX(0)}
 .menu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
 .menu-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
-.menu-logo-icon{width:38px;height:38px;border-radius:10px;overflow:hidden;flex-shrink:0}
 .menu-close{background:none;border:none;font-size:22px;color:#9CA3AF;cursor:pointer}
 .menu-divider{height:1px;background:#F3F4F6;margin:18px 0}
 .menu-login{display:block;text-align:center;padding:12px;font-size:16px;font-weight:600;color:var(--text);text-decoration:none;margin-bottom:10px;border-radius:12px}
 .menu-signup{display:block;background:var(--blue);color:white;text-align:center;padding:15px;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none}
-.page-wrap{max-width:740px;margin:0 auto;padding:110px 24px 80px}
-.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);text-decoration:none;margin-bottom:36px;font-weight:500;transition:color 0.2s}
-.back-link:hover{color:var(--text)}
-.page-title{font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:-1.5px;margin-bottom:8px}
-.page-date{font-size:13px;color:var(--muted);margin-bottom:40px}
-.legal-body{font-size:15px;line-height:1.8;color:#374151}
-.legal-body h2{font-size:20px;font-weight:800;color:var(--text);margin:36px 0 12px;letter-spacing:-0.4px}
-.legal-body h3{font-size:16px;font-weight:700;color:var(--text);margin:24px 0 8px}
-.legal-body p{margin-bottom:16px}
-.legal-body ul,.legal-body ol{padding-left:20px;margin-bottom:16px}
-.legal-body li{margin-bottom:8px}
-.legal-body a{color:var(--blue);text-decoration:none}
-.legal-body a:hover{text-decoration:underline}
-.legal-body strong{font-weight:700;color:var(--text)}
-footer{background:#0F0F13;padding:32px 48px;text-align:center;margin-top:60px}
+.page-wrap{max-width:760px;margin:0 auto;padding:110px 24px 80px}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);text-decoration:none;margin-bottom:40px;font-weight:600;background:white;padding:10px 18px;border-radius:100px;border:1.5px solid var(--border)}
+.back-link:hover{color:var(--text);border-color:#BFDBFE}
+.badge{display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;color:var(--blue);border:1.5px solid #BFDBFE;border-radius:100px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:20px}
+.page-title{font-size:clamp(32px,5vw,48px);font-weight:900;letter-spacing:-2px;margin-bottom:12px;line-height:1.1}
+.page-meta{display:flex;align-items:center;gap:16px;margin-bottom:48px;flex-wrap:wrap}
+.page-meta span{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.toc{background:white;border:1.5px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:48px}
+.toc-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;text-transform:uppercase;letter-spacing:1px}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.toc-list a{font-size:14px;color:var(--blue);text-decoration:none;font-weight:500}
+.toc-list a:hover{text-decoration:underline}
+.legal-section{margin-bottom:48px}
+.legal-section h2{font-size:22px;font-weight:800;color:var(--text);margin-bottom:16px;letter-spacing:-0.5px;padding-top:16px;border-top:2px solid var(--border);display:flex;align-items:center;gap:10px}
+.legal-section h2 .num{width:32px;height:32px;background:var(--blue);color:white;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0}
+.legal-section h3{font-size:16px;font-weight:700;color:var(--text);margin:20px 0 8px}
+.legal-section p{font-size:15px;line-height:1.8;color:#374151;margin-bottom:14px}
+.legal-section ul{padding-left:0;margin-bottom:16px;list-style:none;display:flex;flex-direction:column;gap:8px}
+.legal-section ul li{font-size:15px;color:#374151;line-height:1.7;padding-left:20px;position:relative}
+.legal-section ul li::before{content:"→";position:absolute;left:0;color:var(--blue);font-weight:700}
+.legal-section a{color:var(--blue);text-decoration:none;font-weight:600}
+.legal-section a:hover{text-decoration:underline}
+.highlight-box{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:14px;color:#1e40af;line-height:1.7}
+footer{background:#0F0F13;padding:40px 48px;text-align:center;margin-top:60px}
 footer p{font-size:13px;color:rgba(255,255,255,0.28)}
 footer a{color:rgba(255,255,255,0.4);text-decoration:none;margin:0 8px}
 footer a:hover{color:white}
@@ -48,33 +56,132 @@ footer a:hover{color:white}
 <div class="slide-menu" id="slideMenu">
   <div class="menu-header">
     <a href="/" class="menu-logo">
-      <div class="menu-logo-icon"><svg width="38" height="38" viewBox="0 0 38 38"><rect width="38" height="38" rx="9" fill="#2563EB"/><line x1="13" y1="7" x2="13" y2="31" stroke="white" stroke-width="2.4" stroke-linecap="round"/><line x1="19" y1="5" x2="19" y2="31" stroke="white" stroke-width="2.4" stroke-linecap="round"/><line x1="25" y1="7" x2="25" y2="31" stroke="white" stroke-width="2.4" stroke-linecap="round"/><line x1="10" y1="26" x2="28" y2="26" stroke="white" stroke-width="2.4" stroke-linecap="round"/><polyline points="15,18 19,23 27,13" fill="none" stroke="#93C5FD" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span>Tone<span style="color:#2563EB">Fit</span></span>
     </a>
     <button class="menu-close" id="menuClose">✕</button>
   </div>
   <div class="menu-divider"></div>
   <a href="/login" class="menu-login">Login</a>
-  <a href="/signup" class="menu-signup">Sign Up</a>
+  <a href="/plans" class="menu-signup">Sign Up</a>
 </div>
 <nav id="navbar"><button class="hamburger" id="menuOpen"><span></span><span></span><span></span></button></nav>
-
 <div class="page-wrap">
   <a href="/" class="back-link">← Back to Home</a>
-  <h1 class="page-title">ToneFit Privacy Policy</h1>
-  <p class="page-date">Last Updated: May 1, 2026</p>
-  <div class="legal-body" id="legalContent">Loading...</div>
+  <div class="badge">Legal Document</div>
+  <h1 class="page-title">Privacy Policy</h1>
+  <div class="page-meta">
+    <span>Last updated: June 18, 2026</span>
+    <span>Effective immediately</span>
+  </div>
+  <div class="toc">
+    <div class="toc-title">Table of Contents</div>
+    <ol class="toc-list">
+      <li><a href="#s1">1. Information We Collect</a></li>
+      <li><a href="#s2">2. How We Use Your Information</a></li>
+      <li><a href="#s3">3. Data Storage & Security</a></li>
+      <li><a href="#s4">4. Cookies & Tracking</a></li>
+      <li><a href="#s5">5. Third-Party Services</a></li>
+      <li><a href="#s6">6. Your Rights</a></li>
+      <li><a href="#s7">7. Children's Privacy</a></li>
+      <li><a href="#s8">8. Changes to This Policy</a></li>
+      <li><a href="#s9">9. Contact Us</a></li>
+    </ol>
+  </div>
+  <div class="highlight-box"><strong>Summary:</strong> ToneFit collects minimal data needed to provide our guitar tone matching service. We never sell your personal information. You can delete your account and data at any time.</div>
+  <div class="legal-section" id="s1">
+    <h2><span class="num">1</span> Information We Collect</h2>
+    <h3>Account Information</h3>
+    <p>When you create a ToneFit account, we collect:</p>
+    <ul>
+      <li>Email address and name (when signing up via email or Google)</li>
+      <li>Profile picture (if signing in via Google)</li>
+      <li>Password (stored as a secure hash — never plain text)</li>
+    </ul>
+    <h3>Gear & Usage Data</h3>
+    <ul>
+      <li>Your saved guitar, amp, pedal, and effects unit selections</li>
+      <li>Songs you've researched and saved tone settings</li>
+      <li>Your gear presets created during onboarding</li>
+      <li>Subscription plan and payment status</li>
+    </ul>
+    <h3>Automatically Collected Data</h3>
+    <ul>
+      <li>IP address and approximate location</li>
+      <li>Browser type, device type, and operating system</li>
+      <li>Pages visited and features used within ToneFit</li>
+    </ul>
+  </div>
+  <div class="legal-section" id="s2">
+    <h2><span class="num">2</span> How We Use Your Information</h2>
+    <ul>
+      <li>Provide, maintain, and improve the ToneFit service</li>
+      <li>Personalize tone recommendations based on your gear setup</li>
+      <li>Process your subscription and manage billing</li>
+      <li>Send important account notifications and service updates</li>
+      <li>Respond to your support requests and feedback</li>
+      <li>Prevent fraud, abuse, and unauthorized access</li>
+    </ul>
+    <p>We do <strong>not</strong> use your data for targeted advertising or sell it to third parties.</p>
+  </div>
+  <div class="legal-section" id="s3">
+    <h2><span class="num">3</span> Data Storage & Security</h2>
+    <ul>
+      <li>All data is encrypted in transit using TLS/HTTPS</li>
+      <li>Passwords are hashed using bcrypt — never stored in plain text</li>
+      <li>Database access is restricted to authorized systems only</li>
+      <li>We use Supabase (PostgreSQL) hosted on AWS for data storage</li>
+    </ul>
+  </div>
+  <div class="legal-section" id="s4">
+    <h2><span class="num">4</span> Cookies & Tracking</h2>
+    <p>ToneFit uses essential cookies to keep you logged in, remember your gear preferences, and maintain your subscription status. We do not use advertising cookies or third-party tracking pixels.</p>
+  </div>
+  <div class="legal-section" id="s5">
+    <h2><span class="num">5</span> Third-Party Services</h2>
+    <ul>
+      <li><strong>Google OAuth</strong> — for sign-in</li>
+      <li><strong>Anthropic Claude API</strong> — powers tone research</li>
+      <li><strong>Razorpay / Stripe</strong> — payment processing</li>
+      <li><strong>Vercel</strong> — website hosting</li>
+      <li><strong>Supabase</strong> — database and authentication</li>
+      <li><strong>iTunes Search API</strong> — song search autocomplete</li>
+    </ul>
+  </div>
+  <div class="legal-section" id="s6">
+    <h2><span class="num">6</span> Your Rights</h2>
+    <ul>
+      <li><strong>Access</strong> — Request a copy of all data we hold about you</li>
+      <li><strong>Correction</strong> — Update or correct inaccurate personal information</li>
+      <li><strong>Deletion</strong> — Delete your account and all associated data permanently</li>
+      <li><strong>Export</strong> — Download your saved tones and gear data</li>
+      <li><strong>Opt-out</strong> — Unsubscribe from non-essential emails at any time</li>
+    </ul>
+    <p>Email us at <a href="mailto:contact@tonefit.com">contact@tonefit.com</a> to exercise any of these rights.</p>
+  </div>
+  <div class="legal-section" id="s7">
+    <h2><span class="num">7</span> Children's Privacy</h2>
+    <p>ToneFit is not intended for children under 13. We do not knowingly collect data from children under 13. Contact us at <a href="mailto:contact@tonefit.com">contact@tonefit.com</a> if you believe a child has provided us with data.</p>
+  </div>
+  <div class="legal-section" id="s8">
+    <h2><span class="num">8</span> Changes to This Policy</h2>
+    <p>We may update this policy from time to time. We will update the date at the top and notify registered users by email for significant changes.</p>
+  </div>
+  <div class="legal-section" id="s9">
+    <h2><span class="num">9</span> Contact Us</h2>
+    <ul>
+      <li><strong>Email:</strong> <a href="mailto:contact@tonefit.com">contact@tonefit.com</a></li>
+      <li><strong>Website:</strong> <a href="https://tonefit.site">tonefit.site</a></li>
+      <li><strong>Response time:</strong> Within 7 business days</li>
+    </ul>
+  </div>
 </div>
-
-<footer>
-  <p>© 2026 ToneFit. All rights reserved. &nbsp;·&nbsp; <a href="/privacy">Privacy</a> <a href="/terms">Terms</a></p>
-</footer>
+<footer><p>© 2026 ToneFit. All rights reserved. &nbsp;·&nbsp; <a href="/privacy">Privacy Policy</a> <a href="/terms">Terms of Use</a> &nbsp;·&nbsp; <a href="mailto:contact@tonefit.com">contact@tonefit.com</a></p></footer>
 <script>
 const nav=document.getElementById('navbar');
 window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>20));
 document.getElementById('menuOpen').addEventListener('click',()=>{document.getElementById('slideMenu').classList.add('open');document.getElementById('menuOverlay').classList.add('open')});
 document.getElementById('menuClose').addEventListener('click',()=>{document.getElementById('slideMenu').classList.remove('open');document.getElementById('menuOverlay').classList.remove('open')});
 document.getElementById('menuOverlay').addEventListener('click',()=>{document.getElementById('slideMenu').classList.remove('open');document.getElementById('menuOverlay').classList.remove('open')});
-document.getElementById('legalContent').innerHTML = '<p>The full legal text for this page would be loaded here from your backend. For now, please refer to the original ToneAdapt policy and update the company name to ToneFit, LLC and the contact email to contact@tonefit.com.</p>';
 </script>
 </body></html>
