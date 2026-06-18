@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Account | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F4F6FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1.5px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--blue)}
+.nav-app{background:var(--blue);color:white;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none}
+.page{max-width:680px;margin:0 auto;padding:90px 24px 60px}
+.hero{background:var(--blue);border-radius:20px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.hero-left{display:flex;align-items:center;gap:16px}
+.avatar{width:64px;height:64px;border-radius:14px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:white;overflow:hidden;flex-shrink:0}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+.hero-name{font-size:22px;font-weight:800;color:white;margin-bottom:4px}
+.hero-email{font-size:14px;color:rgba(255,255,255,0.75);margin-bottom:8px}
+.plan-badge{background:rgba(255,255,255,0.2);color:white;font-size:12px;font-weight:700;padding:4px 12px;border-radius:100px;display:inline-block}
+.hero-btn{background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);color:white;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;text-decoration:none;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.tab.active{background:var(--blue);color:white}
+.tab.inactive{background:white;color:var(--muted);border:1.5px solid var(--border)}
+.gear-link{font-size:14px;color:var(--muted);margin-bottom:16px}
+.gear-link a{color:var(--blue);font-weight:600;text-decoration:none}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.stat-num{font-size:28px;font-weight:900;color:var(--blue);margin-bottom:4px}
+.stat-label{font-size:13px;color:var(--muted);font-weight:600}
+.section{background:white;border:1.5px solid var(--border);border-radius:14px;padding:24px;margin-bottom:12px}
+.section-delete{border-color:#FECACA}
+.section-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.section-header-left{display:flex;align-items:center;gap:12px}
+.section-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.section-icon.blue{background:#EFF6FF}
+.section-icon.red{background:#FEE2E2}
+.section-title{font-size:16px;font-weight:800;color:var(--text)}
+.section-title.red{color:#DC2626}
+.section-sub{font-size:13px;color:var(--muted)}
+.chevron{font-size:18px;color:var(--muted);transition:transform 0.2s}
+.chevron.open{transform:rotate(180deg)}
+.section-body{margin-top:20px;border-top:1.5px solid var(--border);padding-top:20px}
+.label{font-size:13px;font-weight:700;color:var(--text);display:block;margin-bottom:6px}
+.input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;margin-bottom:12px;transition:border-color 0.2s}
+.input:focus{border-color:var(--blue)}
+.btn-blue{background:var(--blue);color:white;border:none;padding:13px 24px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.btn-red{background:white;color:#DC2626;border:2px solid #FECACA;padding:13px 24px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:8px}
+.btn-red:hover{background:#FEF2F2}
+.btn-outline{background:white;color:var(--text);border:1.5px solid var(--border);padding:13px 24px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.warning-box{background:#FEF2F2;border:1.5px solid #FECACA;border-radius:12px;padding:16px 18px;margin-bottom:16px;font-size:14px;color:#991B1B;line-height:1.7}
+.warning-box strong{font-weight:800}
+.sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.sub-cell{background:#F4F6FA;border-radius:10px;padding:14px}
+.sub-cell-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.sub-cell-val{font-size:15px;font-weight:800;color:var(--text)}
+.profile-pic-row{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.profile-avatar{width:56px;height:56px;border-radius:14px;background:#7C3AED;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;overflow:hidden;flex-shrink:0}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+.file-btn{background:white;border:1.5px solid var(--border);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
+.input-row{display:flex;gap:8px}
+.input-row .input{margin-bottom:0;flex:1}
+.success-toast{position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;display:none;z-index:999}
+.error-toast{position:fixed;bottom:24px;right:24px;background:#991B1B;color:white;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;display:none;z-index:999}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.hero{flex-direction:column;gap:16px;align-items:flex-start}.sub-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Tone<span>Fit</span>
+  </a>
+  <a href="/app" class="nav-app">🎸 Adapt Tone</a>
+</nav>
+
+<div class="page">
+  <div class="hero">
+    <div class="hero-left">
+      <div class="avatar" id="heroAvatar">S</div>
+      <div>
+        <div class="hero-name" id="heroName">Loading...</div>
+        <div class="hero-email" id="heroEmail">...</div>
+        <div class="plan-badge" id="heroPlan">Free Account</div>
+      </div>
+    </div>
+    <a href="/app" class="hero-btn">🎸 Adapt Tone</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active">⚙️ Settings</button>
+    <button class="tab inactive">📊 Activity &nbsp;<span id="activityCount">0</span></button>
+  </div>
+
+  <div class="gear-link">Looking for your saved gear? Visit your <a href="/gear">My Gear</a></div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="stat-num" id="statPresets">0</div><div class="stat-label">Presets</div></div>
+    <div class="stat-card"><div class="stat-num" id="statTones">0</div><div class="stat-label">Saved Tones</div></div>
+    <div class="stat-card"><div class="stat-num" id="statActivities">0</div><div class="stat-label">Activities</div></div>
+    <div class="stat-card"><div class="stat-num" id="statAdaptations">0</div><div class="stat-label">Adaptations</div></div>
+  </div>
+
+  <!-- Subscription -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection('sub')">
+      <div class="section-header-left">
+        <div class="section-icon blue">💳</div>
+        <div>
+          <div class="section-title">Subscription</div>
+          <div class="section-sub">No active plan</div>
+        </div>
+      </div>
+      <div class="chevron" id="chevronSub">∨</div>
+    </div>
+    <div class="section-body" id="bodySub" style="display:none">
+      <div class="sub-grid">
+        <div class="sub-cell"><div class="sub-cell-label">PLAN</div><div class="sub-cell-val" id="planName">No Plan</div></div>
+        <div class="sub-cell"><div class="sub-cell-label">STATUS</div><div class="sub-cell-val" id="planStatus">Inactive</div></div>
+      </div>
+      <a href="/plans" class="btn-blue" style="display:inline-block;text-decoration:none">Manage Subscription →</a>
+    </div>
+  </div>
+
+  <!-- Profile -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection('profile')">
+      <div class="section-header-left">
+        <div class="section-icon blue">👤</div>
+        <div>
+          <div class="section-title">Profile</div>
+          <div class="section-sub">Picture and username</div>
+        </div>
+      </div>
+      <div class="chevron" id="chevronProfile">∨</div>
+    </div>
+    <div class="section-body" id="bodyProfile" style="display:none">
+      <label class="label">Profile Picture</label>
+      <div class="profile-pic-row">
+        <div class="profile-avatar" id="profileAvatar">S</div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)"/>
+        <button class="file-btn" onclick="document.getElementById('fileInput').click()">Browse...</button>
+        <span style="font-size:13px;color:var(--muted)">Max 5MB · JPG, PNG, GIF</span>
+      </div>
+      <label class="label">Username</label>
+      <div class="input-row">
+        <input class="input" id="usernameInput" placeholder="Enter username"/>
+        <button class="btn-blue" onclick="saveUsername()">Save</button>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">3-30 characters, letters, numbers, underscores, hyphens</p>
+    </div>
+  </div>
+
+  <!-- Security -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSection('security')">
+      <div class="section-header-left">
+        <div class="section-icon blue">🔑</div>
+        <div>
+          <div class="section-title">Security</div>
+          <div class="section-sub">Password and sign out</div>
+        </div>
+      </div>
+      <div class="chevron" id="chevronSecurity">∨</div>
+    </div>
+    <div class="section-body" id="bodySecurity" style="display:none">
+      <label class="label">Change Password</label>
+      <input class="input" type="password" id="currentPwd" placeholder="Current password"/>
+      <input class="input" type="password" id="newPwd" placeholder="New password"/>
+      <input class="input" type="password" id="confirmPwd" placeholder="Confirm new password"/>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn-blue" onclick="updatePassword()">Update Password</button>
+        <button class="btn-outline" onclick="signOut()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Account -->
+  <div class="section section-delete">
+    <div class="section-header" onclick="toggleSection('delete')">
+      <div class="section-header-left">
+        <div class="section-icon red">⚠️</div>
+        <div>
+          <div class="section-title red">Delete Account</div>
+          <div class="section-sub">Permanently delete your account</div>
+        </div>
+      </div>
+      <div class="chevron" id="chevronDelete">∨</div>
+    </div>
+    <div class="section-body" id="bodyDelete" style="display:none;border-top-color:#FECACA">
+      <div class="warning-box"><strong>Warning:</strong> This action cannot be undone. All your saved tones, gear presets, and activity will be permanently deleted.</div>
+      <button class="btn-red" onclick="deleteAccount()">🗑 Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<div class="success-toast" id="successToast">✓ Saved successfully!</div>
+<div class="error-toast" id="errorToast">Something went wrong</div>
+
+<script>
+const SUPABASE_URL = 'https://gyjsrhsmsflqjxppmjaz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = '/login'; return; }
+  currentUser = session.user;
+  const meta = currentUser.user_metadata;
+  const name = meta.full_name || meta.name || currentUser.email.split('@')[0];
+  const email = currentUser.email;
+  const avatar = meta.avatar_url || meta.picture || null;
+  const initials = name.charAt(0).toUpperCase();
+  document.getElementById('heroName').textContent = name;
+  document.getElementById('heroEmail').textContent = email;
+  document.getElementById('heroAvatar').textContent = initials;
+  document.getElementById('profileAvatar').textContent = initials;
+  if(avatar) {
+    document.getElementById('heroAvatar').innerHTML = `<img src="${avatar}" alt="${name}"/>`;
+    document.getElementById('profileAvatar').innerHTML = `<img src="${avatar}" alt="${name}"/>`;
+  }
+  const searches = parseInt(localStorage.getItem('tf_searches') || '0');
+  document.getElementById('statAdaptations').textContent = searches;
+  document.getElementById('statPresets').textContent = localStorage.getItem('tf_preset') ? '1' : '0';
+}
+
+function toggleSection(id) {
+  const body = document.getElementById('body' + id.charAt(0).toUpperCase() + id.slice(1));
+  const chevron = document.getElementById('chevron' + id.charAt(0).toUpperCase() + id.slice(1));
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  chevron.classList.toggle('open', !isOpen);
+}
+
+function showToast(type, msg) {
+  const el = document.getElementById(type + 'Toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+
+async function saveUsername() {
+  const username = document.getElementById('usernameInput').value.trim();
+  if(!username || username.length < 3) { showToast('error', 'Username must be 3-30 characters'); return; }
+  const { error } = await sb.auth.updateUser({ data: { username } });
+  if(error) showToast('error', error.message);
+  else showToast('success', '✓ Username saved!');
+}
+
+async function updatePassword() {
+  const current = document.getElementById('currentPwd').value;
+  const newPwd = document.getElementById('newPwd').value;
+  const confirm = document.getElementById('confirmPwd').value;
+  if(!newPwd || newPwd.length < 6) { showToast('error', 'Password must be at least 6 characters'); return; }
+  if(newPwd !== confirm) { showToast('error', 'Passwords do not match'); return; }
+  const { error } = await sb.auth.updateUser({ password: newPwd });
+  if(error) showToast('error', error.message);
+  else {
+    showToast('success', '✓ Password updated!');
+    document.getElementById('currentPwd').value = '';
+    document.getElementById('newPwd').value = '';
+    document.getElementById('confirmPwd').value = '';
+  }
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  window.location.href = '/login';
+}
+
+async function deleteAccount() {
+  if(!confirm('Are you sure? This cannot be undone. All your data will be permanently deleted.')) return;
+  await sb.auth.signOut();
+  showToast('success', 'Account deleted. Goodbye!');
+  setTimeout(() => window.location.href = '/', 2000);
+}
+
+function uploadAvatar(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const src = e.target.result;
+    document.getElementById('heroAvatar').innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:14px"/>`;
+    document.getElementById('profileAvatar').innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:14px"/>`;
+    showToast('success', '✓ Profile picture updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+init();
+</script>
+</body>
+</html>
