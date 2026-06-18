@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>My Gear | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F4F6FA;--purple:#7C3AED}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1.5px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--blue)}
+.nav-app{background:var(--blue);color:white;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none}
+.page{max-width:1100px;margin:0 auto;padding:90px 24px 60px}
+.page-title{font-size:32px;font-weight:900;letter-spacing:-1.5px;margin-bottom:4px}
+.page-sub{font-size:15px;color:var(--muted);margin-bottom:28px}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-bottom:32px;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;background:white}
+.tab-btn{padding:16px;font-size:15px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;border-right:1.5px solid var(--border)}
+.tab-btn:last-child{border-right:none}
+.tab-btn.active{background:var(--blue);color:white}
+.tab-btn .badge{background:rgba(255,255,255,0.3);color:white;font-size:11px;font-weight:800;padding:2px 8px;border-radius:100px}
+.tab-btn:not(.active) .badge{background:#F3F4F6;color:var(--muted)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-title{font-size:20px;font-weight:800;color:var(--text)}
+.section-sub{font-size:14px;color:var(--muted);margin-top:2px}
+.btn-blue{background:var(--blue);color:white;border:none;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px}
+.btn-blue:hover{background:#1D4ED8}
+.create-preset-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:24px;cursor:pointer}
+.create-preset-header{display:flex;align-items:center;justify-content:space-between}
+.create-preset-left{display:flex;align-items:center;gap:14px}
+.create-icon{width:40px;height:40px;background:#DCFCE7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#16A34A;font-weight:700}
+.create-title{font-size:16px;font-weight:800;color:var(--text)}
+.create-sub{font-size:13px;color:var(--muted)}
+.create-body{margin-top:20px;padding-top:20px;border-top:1.5px solid var(--border);display:none}
+.create-body.open{display:block}
+.field-label{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.field-label .link{color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;margin-left:auto}
+.input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:border-color 0.2s}
+.input:focus{border-color:var(--blue)}
+.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.feature-item{background:#F8FAFF;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.your-presets-title{font-size:18px;font-weight:800;margin-bottom:16px}
+.your-presets-count{font-size:13px;color:var(--muted);font-weight:400}
+.preset-card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px}
+.preset-card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.preset-icon{width:40px;height:40px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.preset-name{font-size:15px;font-weight:800;color:var(--text)}
+.preset-date{font-size:12px;color:var(--muted);margin-top:2px}
+.preset-rows{display:flex;flex-direction:column;gap:0}
+.preset-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F3F4F6}
+.preset-row:last-child{border-bottom:none}
+.preset-row-left{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.preset-row-right{font-size:14px;font-weight:700;color:var(--text)}
+.preset-row.purple{background:#FAF5FF;border-radius:8px;padding:10px 12px;border:none;margin:4px 0}
+.preset-row.purple .preset-row-left{color:var(--purple)}
+.gear-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.gear-card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:20px;position:relative}
+.gear-card-name{font-size:16px;font-weight:800;color:var(--text);margin-bottom:4px}
+.gear-card-brand{font-size:13px;color:var(--muted);margin-bottom:12px}
+.gear-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.tag-purple{background:#F5F3FF;color:#6D28D9;font-size:12px;font-weight:600;padding:4px 10px;border-radius:100px;display:flex;align-items:center;gap:4px}
+.tag-grey{background:#F3F4F6;color:var(--muted);font-size:12px;font-weight:600;padding:4px 10px;border-radius:100px}
+.gear-actions{position:absolute;top:16px;right:16px;display:flex;gap:8px}
+.btn-star{background:none;border:none;cursor:pointer;font-size:18px;padding:4px}
+.btn-delete{background:#FEF2F2;border:none;cursor:pointer;font-size:14px;padding:6px 8px;border-radius:8px;color:#DC2626}
+.signal-chain{background:white;border:1.5px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px}
+.signal-chain-title{font-size:16px;font-weight:800;margin-bottom:4px}
+.signal-chain-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.chain-visual{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chain-node{background:#F4F6FA;border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.chain-node.pedal{background:white;border-color:var(--border);color:var(--text);flex-direction:column;align-items:flex-start;min-width:120px}
+.chain-node.pedal .pedal-name{font-size:13px;font-weight:700;color:var(--text)}
+.chain-node.pedal .pedal-brand{font-size:11px;color:var(--muted)}
+.chain-node.pedal .pedal-dot{width:8px;height:8px;background:#16A34A;border-radius:50%;margin-top:4px}
+.chain-arrow{color:var(--muted);font-size:16px}
+.pedal-card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px;max-width:400px}
+.pedal-card-name{font-size:16px;font-weight:800;margin-bottom:2px}
+.pedal-card-brand{font-size:13px;color:var(--muted);margin-bottom:10px}
+.pedal-card-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.tag-grey-outline{background:white;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:3px 10px;border-radius:100px}
+.tag-desc{background:#F3F4F6;color:var(--muted);font-size:11px;padding:3px 8px;border-radius:100px}
+.pedal-actions{display:flex;gap:8px;margin-top:8px}
+.btn-active{background:#DCFCE7;border:none;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.how-box{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:14px;padding:24px;margin-top:24px}
+.how-title{font-size:16px;font-weight:800;color:var(--blue);margin-bottom:12px}
+.how-item{font-size:14px;color:#1E40AF;margin-bottom:8px;line-height:1.6}
+.how-item strong{font-weight:800}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:500;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:20px;width:100%;max-width:640px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-header{padding:24px 28px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:20px;font-weight:800}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);padding:4px}
+.modal-body{padding:24px 28px;overflow-y:auto;flex:1}
+.search-input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:14px;font-size:15px;font-family:inherit;outline:none;margin-bottom:16px}
+.search-input:focus{border-color:var(--blue)}
+.filter-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.pill{padding:8px 16px;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--muted);font-family:inherit;transition:all 0.15s}
+.pill.active{background:var(--blue);color:white;border-color:var(--blue)}
+.pill.green{background:#DCFCE7;color:#16A34A;border-color:#BBF7D0}
+.pill.purple{background:#F5F3FF;color:#6D28D9;border-color:#DDD6FE}
+.pill.teal{background:#CCFBF1;color:#0F766E;border-color:#99F6E4}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-item{background:white;border:1.5px solid var(--border);border-radius:12px;padding:16px;position:relative}
+.modal-item.added{opacity:0.6}
+.modal-item-name{font-size:15px;font-weight:800;margin-bottom:2px}
+.modal-item-brand{font-size:13px;color:var(--muted);margin-bottom:8px}
+.modal-item-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.modal-item-price{font-size:13px;color:var(--muted)}
+.modal-item-used{font-size:12px;color:var(--muted);margin-top:4px}
+.btn-add{position:absolute;top:12px;right:12px;background:var(--blue);color:white;border:none;width:32px;height:32px;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-added{position:absolute;top:12px;right:12px;background:#F3F4F6;color:var(--muted);border:none;width:32px;height:32px;border-radius:8px;font-size:16px;cursor:default;display:flex;align-items:center;justify-content:center}
+@media(max-width:600px){.gear-grid{grid-template-columns:1fr}.modal-grid{grid-template-columns:1fr}.preset-grid{grid-template-columns:1fr}.feature-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Tone<span>Fit</span>
+  </a>
+  <a href="/app" class="nav-app">🎸 Adapt Tone</a>
+</nav>
+
+<div class="page">
+  <h1 class="page-title">My Gear</h1>
+  <p class="page-sub">Manage your presets, pedals, and multi-effects</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabPresets" onclick="switchTab('presets')">⚙️ Presets <span class="badge" id="presetBadge">0</span></button>
+    <button class="tab-btn" id="tabPedals" onclick="switchTab('pedals')">🎛 Pedals</button>
+    <button class="tab-btn" id="tabMultifx" onclick="switchTab('multifx')">📦 Multi FX</button>
+  </div>
+
+  <!-- PRESETS TAB -->
+  <div class="tab-content active" id="contentPresets">
+    <div class="create-preset-card" id="createPresetCard">
+      <div class="create-preset-header" onclick="toggleCreatePreset()">
+        <div class="create-preset-left">
+          <div class="create-icon">+</div>
+          <div>
+            <div class="create-title">Create New Preset</div>
+            <div class="create-sub">Save a guitar and amp combination</div>
+          </div>
+        </div>
+        <span id="createChevron" style="font-size:18px;color:var(--muted)">∨</span>
+      </div>
+      <div class="create-body" id="createBody">
+        <div style="margin-bottom:16px">
+          <div class="field-label">Preset Name</div>
+          <input class="input" id="presetName" placeholder="e.g., My Main Rig"/>
+        </div>
+        <div class="preset-grid">
+          <div>
+            <div class="field-label">🎸 Guitar</div>
+            <select class="input" id="presetGuitar">
+              <option value="">Search guitars...</option>
+              <option>Fender Stratocaster</option>
+              <option>Gibson Les Paul</option>
+              <option>Squier Stratocaster</option>
+              <option>Gibson SG</option>
+              <option>PRS Custom 24</option>
+              <option>Fender Telecaster</option>
+              <option>Epiphone Les Paul</option>
+            </select>
+          </div>
+          <div>
+            <div class="field-label">🔊 Amp <span class="link" onclick="toggleMultiFX()">Use Multi-FX instead</span></div>
+            <select class="input" id="presetAmp">
+              <option value="">Search amps...</option>
+              <option>Fender Twin Reverb</option>
+              <option>Marshall JCM800</option>
+              <option>Vox AC30</option>
+              <option>Mesa Boogie Dual Rectifier</option>
+              <option>Line 6 Helix LT</option>
+              <option>Boss Katana 100</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:16px">
+          <div class="field-label">Features</div>
+          <div class="feature-grid">
+            <div class="feature-item">🎸 Coil Split</div>
+            <div class="feature-item">⚙️ Presence</div>
+            <div class="feature-item">🔊 Reverb</div>
+            <div class="feature-item">🔄 FX Loop</div>
+          </div>
+        </div>
+        <button class="btn-blue" onclick="savePreset()">+ Save Preset</button>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <span class="your-presets-title">Your Presets</span>
+        <span class="your-presets-count" id="presetCount"> · 0 saved</span>
+      </div>
+    </div>
+    <div id="presetsList"></div>
+    <div id="emptyPresets" style="text-align:center;padding:40px;color:var(--muted);font-size:14px">No presets yet. Create your first preset above! 🎸</div>
+  </div>
+
+  <!-- PEDALS TAB -->
+  <div class="tab-content" id="contentPedals">
+    <div class="section-header">
+      <div>
+        <div class="section-title">My Pedals</div>
+        <div class="section-sub">Manage your pedal collection for tone matching</div>
+      </div>
+      <button class="btn-blue" onclick="openModal('pedal')">+ Add Pedal</button>
+    </div>
+
+    <div class="signal-chain">
+      <div class="signal-chain-title">Signal Chain</div>
+      <div class="signal-chain-sub">Drag to reorder · Click to toggle active/bypass</div>
+      <div class="chain-visual" id="signalChain">
+        <div class="chain-node">🎸 Guitar</div>
+        <div class="chain-arrow">→</div>
+        <div class="chain-node">🔊 Amp</div>
+      </div>
+    </div>
+
+    <div id="pedalsList"></div>
+    <div id="emptyPedals" style="text-align:center;padding:40px;color:var(--muted);font-size:14px">No pedals yet. Add your first pedal! 🎛</div>
+  </div>
+
+  <!-- MULTI FX TAB -->
+  <div class="tab-content" id="contentMultifx">
+    <div class="section-header">
+      <div>
+        <div class="section-title">My Multi FX Units</div>
+        <div class="section-sub">Manage your multi FX processors for tone matching</div>
+      </div>
+      <button class="btn-blue" onclick="openModal('multifx')">+ Add Multi FX</button>
+    </div>
+
+    <div id="multifxList"></div>
+    <div id="emptyMultifx" style="text-align:center;padding:40px;color:var(--muted);font-size:14px">No multi FX units yet. Add your first unit! 📦</div>
+
+    <div class="how-box">
+      <div class="how-title">How Multi FX Matching Works</div>
+      <div class="how-item"><strong>Effects-Only Units (Boss ME-80, GT-1):</strong> We'll show you the internal effects to use plus amp settings for your physical amp.</div>
+      <div class="how-item"><strong>Amp Modelers (Helix, Kemper, Axe-Fx):</strong> We'll provide a complete preset including amp model selection and all effect settings.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PEDAL MODAL -->
+<div class="modal-overlay" id="pedalModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Pedal to Collection</div>
+      <button class="modal-close" onclick="closeModal('pedal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input class="search-input" placeholder="Search pedals..." id="pedalSearch" oninput="filterPedals()"/>
+      <div class="filter-pills" id="pedalFilters">
+        <button class="pill active" onclick="setPedalFilter('All')">All</button>
+        <button class="pill green" onclick="setPedalFilter('Overdrive')">Overdrive</button>
+        <button class="pill" onclick="setPedalFilter('Distortion')" style="background:#FFF7ED;color:#C2410C;border-color:#FED7AA">Distortion</button>
+        <button class="pill purple" onclick="setPedalFilter('Fuzz')">Fuzz</button>
+        <button class="pill" onclick="setPedalFilter('Boost')" style="background:#FEFCE8;color:#A16207;border-color:#FDE68A">Boost</button>
+        <button class="pill" onclick="setPedalFilter('Delay')" style="background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE">Delay</button>
+        <button class="pill teal" onclick="setPedalFilter('Reverb')">Reverb</button>
+        <button class="pill" onclick="setPedalFilter('Modulation')" style="background:#FDF4FF;color:#A21CAF;border-color:#F0ABFC">Modulation</button>
+        <button class="pill" onclick="setPedalFilter('Wah')" style="background:#FFF1F2;color:#BE123C;border-color:#FECDD3">Wah</button>
+        <button class="pill" onclick="setPedalFilter('Compression')">Compression</button>
+        <button class="pill" onclick="setPedalFilter('EQ')">EQ</button>
+        <button class="pill" onclick="setPedalFilter('Noise Gate')">Noise Gate</button>
+        <button class="pill" onclick="setPedalFilter('Other')">Other</button>
+      </div>
+      <div class="modal-grid" id="pedalGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MULTI FX MODAL -->
+<div class="modal-overlay" id="multifxModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Multi FX Unit</div>
+      <button class="modal-close" onclick="closeModal('multifx')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input class="search-input" placeholder="Search multi FX units..." id="multifxSearch" oninput="filterMultiFX()"/>
+      <div class="filter-pills">
+        <button class="pill active" onclick="setMultiFXFilter('All Types')">All Types</button>
+        <button class="pill" onclick="setMultiFXFilter('Effects Only')" style="background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE">Effects Only</button>
+        <button class="pill purple" onclick="setMultiFXFilter('Amp Modeler')">Amp Modeler</button>
+        <button class="pill teal" onclick="setMultiFXFilter('Amp + Effects')">Amp + Effects</button>
+      </div>
+      <div class="modal-grid" id="multifxGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const pedalsDB = [
+  {name:'10-Band EQ',brand:'MXR',type:'EQ',price:'~$150',used:'Slash, Eddie Van Halen'},
+  {name:'3rd Dimension Chorus',brand:'TC Electronic',type:'Modulation',price:'~$34',used:''},
+  {name:'Alexa',brand:'Suhr',type:'Modulation',price:'~$499',used:''},
+  {name:'Alpha Cruncher',brand:'Donner',type:'Distortion',price:'~$69',used:''},
+  {name:'Alter Ego X4',brand:'TC Electronic',type:'Delay',price:'~$269',used:''},
+  {name:'Amp Academy Stomp',brand:'NUX',type:'Other',price:'~$279',used:''},
+  {name:'BB Preamp',brand:'Xotic',type:'Overdrive',price:'~$159',used:'John Mayer'},
+  {name:'Big Muff Pi',brand:'Electro-Harmonix',type:'Fuzz',price:'~$99',used:'David Gilmour, Jack White'},
+  {name:'Blues Driver BD-2',brand:'Boss',type:'Overdrive',price:'~$99',used:'John Mayer, Stevie Ray Vaughan'},
+  {name:'CE-2W Chorus',brand:'Boss',type:'Modulation',price:'~$169',used:''},
+  {name:'Carbon Copy',brand:'MXR',type:'Delay',price:'~$149',used:''},
+  {name:'CS-3 Compression',brand:'Boss',type:'Compression',price:'~$99',used:''},
+  {name:'DD-8 Delay',brand:'Boss',type:'Delay',price:'~$179',used:''},
+  {name:'DS-1 Distortion',brand:'Boss',type:'Distortion',price:'~$69',used:'Kurt Cobain, Joe Satriani'},
+  {name:'Dyna Comp',brand:'MXR',type:'Compression',price:'~$99',used:''},
+  {name:'Echoplex EP-3',brand:'Maestro',type:'Delay',price:'~$499',used:'Eddie Van Halen'},
+  {name:'Flashback 2 Delay',brand:'TC Electronic',type:'Delay',price:'~$179',used:''},
+  {name:'Fuzz Face',brand:'Dunlop',type:'Fuzz',price:'~$99',used:'Jimi Hendrix, David Gilmour'},
+  {name:'Hall of Fame 2',brand:'TC Electronic',type:'Reverb',price:'~$179',used:''},
+  {name:'Ibanez Tube Screamer TS9',brand:'Ibanez',type:'Overdrive',price:'~$109',used:'Stevie Ray Vaughan, John Mayer'},
+  {name:'Klon Centaur',brand:'Klon',type:'Overdrive',price:'~$2000',used:'John Mayer, Joe Bonamassa'},
+  {name:'Noise Clamp',brand:'Decimator',type:'Noise Gate',price:'~$149',used:''},
+  {name:'OCD Overdrive',brand:'Fulltone',type:'Overdrive',price:'~$179',used:''},
+  {name:'Phase 90',brand:'MXR',type:'Modulation',price:'~$89',used:'Eddie Van Halen'},
+  {name:'RC-5 Loop Station',brand:'Boss',type:'Other',price:'~$249',used:''},
+  {name:'RV-6 Reverb',brand:'Boss',type:'Reverb',price:'~$179',used:''},
+  {name:'Small Clone',brand:'Electro-Harmonix',type:'Modulation',price:'~$89',used:'Kurt Cobain'},
+  {name:'Super Overdrive SD-1',brand:'Boss',type:'Overdrive',price:'~$59',used:''},
+  {name:'Uni-Vibe',brand:'Dunlop',type:'Modulation',price:'~$199',used:'Jimi Hendrix'},
+  {name:'Wah GCB-95',brand:'Cry Baby',type:'Wah',price:'~$89',used:'Jimi Hendrix, Slash'},
+];
+
+const multifxDB = [
+  {name:'Helix Floor',brand:'Line 6',type:'Amp Modeler',price:'$1600-1700',amps:'US Small Tweed, US Princess, US Deluxe Vib +27 more'},
+  {name:'Helix LT',brand:'Line 6',type:'Amp Modeler',price:'$1100-1200',amps:'US Small Tweed, US Princess, US Deluxe Vib +13 more'},
+  {name:'HX Stomp',brand:'Line 6',type:'Amp Modeler',price:'$699-799',amps:'US Small Tweed, US Princess +9 more'},
+  {name:'POD Go',brand:'Line 6',type:'Amp Modeler',price:'$449-499',amps:'Various amp models'},
+  {name:'Kemper Profiler',brand:'Kemper',type:'Amp Modeler',price:'$1799-1999',amps:'Profile any amp'},
+  {name:'Axe-Fx III',brand:'Fractal',type:'Amp Modeler',price:'$2499',amps:'200+ amp models'},
+  {name:'GT-1000',brand:'Boss',type:'Amp + Effects',price:'$599',amps:'Numerous amp simulations'},
+  {name:'GT-100',brand:'Boss',type:'Amp + Effects',price:'$499',amps:'Various amp models'},
+  {name:'ME-80',brand:'Boss',type:'Effects Only',price:'$299',amps:'Effects only'},
+  {name:'GT-1',brand:'Boss',type:'Effects Only',price:'$199',amps:'Effects only'},
+  {name:'Zoom G3Xn',brand:'Zoom',type:'Effects Only',price:'$199',amps:'Amp sims included'},
+  {name:'Zoom G6',brand:'Zoom',type:'Amp + Effects',price:'$399',amps:'Various amp models'},
+  {name:'DigiTech RP360',brand:'DigiTech',type:'Amp + Effects',price:'$149',amps:'Various amp models'},
+];
+
+let myPedals = JSON.parse(localStorage.getItem('tf_myPedals') || '[]');
+let myMultiFX = JSON.parse(localStorage.getItem('tf_myMultiFX') || '[]');
+let myPresets = JSON.parse(localStorage.getItem('tf_myPresets') || '[]');
+let pedalFilter = 'All';
+let multiFXFilter = 'All Types';
+
+function savePedals(){localStorage.setItem('tf_myPedals',JSON.stringify(myPedals));}
+function saveMultiFX(){localStorage.setItem('tf_myMultiFX',JSON.stringify(myMultiFX));}
+function savePresets(){localStorage.setItem('tf_myPresets',JSON.stringify(myPresets));}
+
+function switchTab(tab){
+  ['presets','pedals','multifx'].forEach(t=>{
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('active');
+    document.getElementById('content'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('active');
+  });
+  document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+  document.getElementById('content'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+}
+
+function toggleCreatePreset(){
+  const body = document.getElementById('createBody');
+  const chevron = document.getElementById('createChevron');
+  const open = body.classList.contains('open');
+  body.classList.toggle('open',!open);
+  chevron.textContent = open ? '∨' : '∧';
+}
+
+function toggleMultiFX(){
+  const amp = document.getElementById('presetAmp');
+  amp.innerHTML = myMultiFX.length ?
+    '<option value="">Select Multi-FX...</option>' + myMultiFX.map(m=>`<option>${m.name}</option>`).join('') :
+    '<option>No Multi-FX added yet</option>';
+}
+
+function savePreset(){
+  const name = document.getElementById('presetName').value.trim();
+  const guitar = document.getElementById('presetGuitar').value;
+  const amp = document.getElementById('presetAmp').value;
+  if(!guitar){alert('Please select a guitar');return;}
+  if(!amp){alert('Please select an amp or multi-FX');return;}
+  const presetName = name || (guitar + ' + ' + amp);
+  const preset = {id:Date.now(),name:presetName,guitar,amp,date:new Date().toLocaleDateString('en-IN')};
+  myPresets.push(preset);
+  savePresets();
+  renderPresets();
+  document.getElementById('presetName').value='';
+  document.getElementById('presetGuitar').value='';
+  document.getElementById('presetAmp').value='';
+  toggleCreatePreset();
+}
+
+function deletePreset(id){
+  myPresets=myPresets.filter(p=>p.id!==id);
+  savePresets();renderPresets();
+}
+
+function renderPresets(){
+  const list=document.getElementById('presetsList');
+  const empty=document.getElementById('emptyPresets');
+  document.getElementById('presetCount').textContent = ' · '+myPresets.length+' saved';
+  document.getElementById('presetBadge').textContent = myPresets.length;
+  if(!myPresets.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=myPresets.map(p=>`
+    <div class="preset-card">
+      <div class="preset-card-header">
+        <div class="preset-icon">🎸</div>
+        <div>
+          <div class="preset-name">${p.name}</div>
+          <div class="preset-date">${p.date}</div>
+        </div>
+        <button onclick="deletePreset(${p.id})" style="margin-left:auto;background:#FEF2F2;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;color:#DC2626;font-size:13px">🗑</button>
+      </div>
+      <div class="preset-rows">
+        <div class="preset-row">
+          <span class="preset-row-left">🎸 Guitar</span>
+          <span class="preset-row-right">${p.guitar}</span>
+        </div>
+        <div class="preset-row purple">
+          <span class="preset-row-left" style="color:var(--purple)">📦 ${p.amp.includes('Helix')||p.amp.includes('Zoom')||p.amp.includes('Boss')||p.amp.includes('Line 6')?'Multi-FX':'Amp'}</span>
+          <span class="preset-row-right">${p.amp}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openModal(type){document.getElementById(type==='pedal'?'pedalModal':'multifxModal').classList.add('open');if(type==='pedal')renderPedalGrid();else renderMultiFXGrid();}
+function closeModal(type){document.getElementById(type==='pedal'?'pedalModal':'multifxModal').classList.remove('open');}
+
+function setPedalFilter(f){
+  pedalFilter=f;
+  document.querySelectorAll('#pedalFilters .pill').forEach(p=>{p.classList.toggle('active',p.textContent.trim()===f);});
+  renderPedalGrid();
+}
+
+function filterPedals(){renderPedalGrid();}
+
+function renderPedalGrid(){
+  const search=document.getElementById('pedalSearch').value.toLowerCase();
+  const filtered=pedalsDB.filter(p=>{
+    const matchSearch=!search||p.name.toLowerCase().includes(search)||p.brand.toLowerCase().includes(search);
+    const matchFilter=pedalFilter==='All'||p.type===pedalFilter;
+    return matchSearch&&matchFilter;
+  });
+  const added=myPedals.map(p=>p.name);
+  document.getElementById('pedalGrid').innerHTML=filtered.map(p=>`
+    <div class="modal-item ${added.includes(p.name)?'added':''}">
+      <div class="modal-item-name">${p.name}</div>
+      <div class="modal-item-brand">${p.brand}</div>
+      <div class="modal-item-tags"><span class="tag-grey" style="background:#F5F3FF;color:#6D28D9;border-radius:100px;font-size:12px;padding:3px 10px">${p.type}</span><span class="tag-grey">${p.price}</span></div>
+      ${p.used?`<div class="modal-item-used">Used by: ${p.used}</div>`:''}
+      ${added.includes(p.name)?`<div class="btn-added">✓</div>`:`<button class="btn-add" onclick="addPedal('${p.name}','${p.brand}','${p.type}')">+</button>`}
+    </div>`).join('');
+}
+
+function addPedal(name,brand,type){
+  if(myPedals.find(p=>p.name===name))return;
+  myPedals.push({name,brand,type,active:true});
+  savePedals();renderPedalsList();renderPedalGrid();updateSignalChain();
+}
+
+function deletePedal(name){
+  myPedals=myPedals.filter(p=>p.name!==name);
+  savePedals();renderPedalsList();updateSignalChain();
+}
+
+function renderPedalsList(){
+  const list=document.getElementById('pedalsList');
+  const empty=document.getElementById('emptyPedals');
+  if(!myPedals.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=myPedals.map(p=>`
+    <div class="pedal-card">
+      <div class="pedal-card-name">${p.name}</div>
+      <div class="pedal-card-brand">${p.brand}</div>
+      <div class="pedal-card-tags">
+        <span class="tag-grey-outline">${p.type}</span>
+      </div>
+      <div class="pedal-actions">
+        <button class="btn-active" onclick="deletePedal('${p.name}')" title="Remove">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function updateSignalChain(){
+  const chain=document.getElementById('signalChain');
+  if(!myPedals.length){chain.innerHTML=`<div class="chain-node">🎸 Guitar</div><div class="chain-arrow">→</div><div class="chain-node">🔊 Amp</div>`;return;}
+  chain.innerHTML=`<div class="chain-node">🎸 Guitar</div><div class="chain-arrow">→</div>`+
+    myPedals.map(p=>`<div class="chain-node pedal"><div class="pedal-name">${p.name}</div><div class="pedal-brand">${p.brand}</div><div class="pedal-dot"></div></div><div class="chain-arrow">→</div>`).join('')+
+    `<div class="chain-node">🔊 Amp</div>`;
+}
+
+function setMultiFXFilter(f){
+  multiFXFilter=f;
+  document.querySelectorAll('#multifxModal .filter-pills .pill').forEach(p=>{p.classList.toggle('active',p.textContent.trim()===f);});
+  renderMultiFXGrid();
+}
+
+function filterMultiFX(){renderMultiFXGrid();}
+
+function renderMultiFXGrid(){
+  const search=document.getElementById('multifxSearch').value.toLowerCase();
+  const filtered=multifxDB.filter(u=>{
+    const matchSearch=!search||u.name.toLowerCase().includes(search)||u.brand.toLowerCase().includes(search);
+    const matchFilter=multiFXFilter==='All Types'||u.type===multiFXFilter;
+    return matchSearch&&matchFilter;
+  });
+  const added=myMultiFX.map(u=>u.name);
+  document.getElementById('multifxGrid').innerHTML=filtered.map(u=>`
+    <div class="modal-item ${added.includes(u.name)?'added':''}">
+      <div class="modal-item-name">${u.name}</div>
+      <div class="modal-item-brand">${u.brand}</div>
+      <div class="modal-item-tags">
+        <span style="background:#F5F3FF;color:#6D28D9;border-radius:100px;font-size:12px;padding:3px 10px;font-weight:600">🔊 ${u.type}</span>
+        <span class="tag-grey">Amp Modeling</span>
+      </div>
+      <div class="modal-item-price">${u.price}</div>
+      <div class="modal-item-used" style="margin-top:6px;font-size:12px;color:var(--muted)">Amps: ${u.amps}</div>
+      ${added.includes(u.name)?`<div class="btn-added">✓</div>`:`<button class="btn-add" onclick="addMultiFX('${u.name}','${u.brand}','${u.type}')">+</button>`}
+    </div>`).join('');
+}
+
+function addMultiFX(name,brand,type){
+  if(myMultiFX.find(u=>u.name===name))return;
+  myMultiFX.push({name,brand,type});
+  saveMultiFX();renderMultiFXList();renderMultiFXGrid();
+}
+
+function deleteMultiFX(name){
+  myMultiFX=myMultiFX.filter(u=>u.name!==name);
+  saveMultiFX();renderMultiFXList();
+}
+
+function renderMultiFXList(){
+  const list=document.getElementById('multifxList');
+  const empty=document.getElementById('emptyMultifx');
+  if(!myMultiFX.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=`<div class="gear-grid">${myMultiFX.map(u=>`
+    <div class="gear-card">
+      <div class="gear-card-name">${u.name}</div>
+      <div class="gear-card-brand">${u.brand}</div>
+      <div class="gear-tags">
+        <span class="tag-purple">🔊 ${u.type}</span>
+        <span class="tag-grey">Amp Modeling</span>
+      </div>
+      <div class="gear-actions">
+        <button class="btn-star">⭐</button>
+        <button class="btn-delete" onclick="deleteMultiFX('${u.name}')">🗑</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+});
+
+renderPresets();renderPedalsList();renderMultiFXList();updateSignalChain();
+
+const lsPreset=localStorage.getItem('tf_preset');
+if(lsPreset){
+  try{
+    const p=JSON.parse(lsPreset);
+    if(p.guitar&&!myPresets.find(pr=>pr.guitar===p.guitar)){
+      myPresets.push({id:Date.now(),name:(p.guitar||'Guitar')+' + '+(p.amp||'Amp'),guitar:p.guitar||'Unknown',amp:p.amp||'Unknown',date:new Date().toLocaleDateString('en-IN')});
+      savePresets();renderPresets();
+    }
+  }catch(e){}
+}
+</script>
+</body>
+</html>
