@@ -1145,7 +1145,7 @@ function openSongsterr() {
   if(!song) { alert('Please search for a song first!'); return; }
   const query = encodeURIComponent(`${artist} ${song}`).replace(/%20/g, '-').toLowerCase();
   // Try to open Songsterr search
-  window.open(`https://www.songsterr.com/a/wsa/${query}-tab`, '_blank');
+  window.open('https://www.songsterr.com/a/wa/search?pattern=' + query, '_blank');
 }
 
 function openBackingTrack() {
