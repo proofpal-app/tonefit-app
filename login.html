@@ -115,7 +115,7 @@ async function signInWithGoogle() {
   btn.textContent = 'Connecting...';
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: 'https://tonefit.site/app' }
+    options: { redirectTo: window.location.href.includes('redirect') ? new URLSearchParams(window.location.search).get('redirect') : redirectTo: window.location.href.includes('redirect') ? new URLSearchParams(window.location.search).get('redirect') : 'https://tonefit.site/app' }
   });
   if (error) {
     showError(error.message);
@@ -150,7 +150,7 @@ async function switchToSignUp() {
   btn.textContent = 'Creating account...';
   const { error } = await sb.auth.signUp({
     email, password,
-    options: { emailRedirectTo: 'https://tonefit.site/app' }
+    options: { emailredirectTo: window.location.href.includes('redirect') ? new URLSearchParams(window.location.search).get('redirect') : redirectTo: window.location.href.includes('redirect') ? new URLSearchParams(window.location.search).get('redirect') : 'https://tonefit.site/app' }
   });
   if (error) {
     showError(error.message);

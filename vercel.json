@@ -16,6 +16,7 @@
     { "source": "/onboarding-summary", "destination": "/onboarding-summary.html" },
     { "source": "/onboarding-done", "destination": "/onboarding-done.html" },
     { "source": "/refund", "destination": "/refund.html" },
-    { "source": "/account", "destination": "/account.html" }
+    { "source": "/account", "destination": "/account.html" },
+    { "source": "/contact", "destination": "/contact.html" }
   ]
 }

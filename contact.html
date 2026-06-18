@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Request a Feature | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F4F6FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1.5px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--blue)}
+.nav-app{background:var(--blue);color:white;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none}
+.page{max-width:760px;margin:0 auto;padding:100px 24px 60px}
+.page-header{text-align:center;margin-bottom:40px}
+.page-title{font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:-1.5px;color:#0D1117;margin-bottom:12px}
+.page-sub{font-size:16px;color:var(--muted);line-height:1.6;max-width:480px;margin:0 auto}
+.card{background:white;border:1.5px solid var(--border);border-radius:20px;padding:36px}
+.card-title{font-size:20px;font-weight:800;color:#0D1117;margin-bottom:4px}
+.card-sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.info-box{background:#F8FAFF;border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:28px;font-size:14px;color:#374151;display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.info-icon{color:var(--blue);font-size:16px;flex-shrink:0;margin-top:1px}
+.field{margin-bottom:22px}
+.field label{font-size:14px;font-weight:700;color:#0D1117;display:block;margin-bottom:8px}
+.field label .req{color:#DC2626}
+.field label .opt{font-size:13px;font-weight:400;color:#9CA3AF}
+.select-wrap{position:relative}
+.select-wrap select{width:100%;padding:14px 40px 14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;color:#0D1117;background:white;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;font-family:'Plus Jakarta Sans',sans-serif;transition:border-color 0.2s}
+.select-wrap select:focus{border-color:var(--blue)}
+.select-wrap::after{content:"⌄";position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px;pointer-events:none}
+.requesting{font-size:13px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:5px}
+.input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;color:#0D1117;outline:none;font-family:'Plus Jakarta Sans',sans-serif;transition:border-color 0.2s}
+.input:focus{border-color:var(--blue)}
+.hint{font-size:12px;color:#9CA3AF;margin-top:6px}
+textarea.input{min-height:120px;resize:vertical}
+.char-count{font-size:12px;color:#9CA3AF;margin-top:4px}
+.submit-btn{width:100%;background:var(--blue);color:white;border:none;padding:17px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.2s;margin-bottom:28px;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit-btn:hover{background:#1D4ED8}
+.submit-btn:disabled{background:#93C5FD;cursor:not-allowed}
+.divider{height:1px;background:var(--border);margin-bottom:24px}
+.next-title{font-size:16px;font-weight:800;color:#0D1117;margin-bottom:16px}
+.next-list{display:flex;flex-direction:column;gap:12px}
+.next-item{display:flex;align-items:center;gap:10px;font-size:14px;color:#374151}
+.next-check{color:var(--blue);font-size:16px;font-weight:700;flex-shrink:0}
+.success-banner{background:#DCFCE7;border:1.5px solid #BBF7D0;border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:15px;color:#166534;font-weight:600;display:none;text-align:center}
+.error-banner{background:#FEE2E2;border:1.5px solid #FECACA;border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:14px;color:#991B1B;display:none}
+footer{background:#0F0F13;padding:40px 48px;text-align:center;margin-top:60px}
+footer p{font-size:13px;color:rgba(255,255,255,0.28)}
+footer a{color:rgba(255,255,255,0.4);text-decoration:none;margin:0 8px}
+footer a:hover{color:white}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Tone<span>Fit</span>
+  </a>
+  <a href="/app" class="nav-app">🎸 Adapt Tone</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">Request a Feature</h1>
+    <p class="page-sub">Help us improve ToneFit by requesting amps, guitars, or other features you'd like to see added to the app.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Feature Request Form</div>
+    <div class="card-sub">Tell us what you'd like to see in ToneFit. We review all requests and prioritize based on user demand.</div>
+
+    <div class="info-box">
+      <span class="info-icon">ⓘ</span>
+      We do our best to add all requested gear within 14 days. Your request helps us prioritize what to add next.
+    </div>
+
+    <div class="success-banner" id="successBanner">🎉 Thank you! Your feature request has been submitted. We'll notify you when it's added!</div>
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="field">
+      <label>What would you like to request? <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select id="requestType" onchange="updateRequesting()">
+          <option value="Guitar Amp">Guitar Amp</option>
+          <option value="Guitar Model">Guitar Model</option>
+          <option value="Effects Pedal">Effects Pedal</option>
+          <option value="Multi-FX Unit">Multi-FX Unit</option>
+          <option value="Bass Guitar">Bass Guitar</option>
+          <option value="Bass Amp">Bass Amp</option>
+          <option value="Other Feature">Other Feature</option>
+        </select>
+      </div>
+      <div class="requesting">🔊 Requesting: <span id="requestingLabel">Guitar Amp</span></div>
+    </div>
+
+    <div class="field">
+      <label id="itemLabel">Guitar Amp Name <span class="req">*</span></label>
+      <input class="input" id="itemName" placeholder="e.g., Fender Twin Reverb"/>
+      <p class="hint">Be as specific as possible (model name, year, etc.)</p>
+    </div>
+
+    <div class="field">
+      <label>Additional Information <span class="opt">(Optional)</span></label>
+      <textarea class="input" id="additionalInfo" placeholder="Any other details, links, or context that might help us understand your request better..." maxlength="300" oninput="updateCharCount()"></textarea>
+      <div class="char-count"><span id="charCount">0</span>/300 characters</div>
+    </div>
+
+    <div class="field">
+      <label>Your Email <span class="req">*</span></label>
+      <input class="input" type="email" id="emailInput" placeholder="your.email@example.com"/>
+      <p class="hint">We'll use this to notify you when your requested feature is added</p>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitRequest()">✨ Submit Feature Request</button>
+
+    <div class="divider"></div>
+
+    <div class="next-title">What happens next?</div>
+    <div class="next-list">
+      <div class="next-item"><span class="next-check">✓</span> We review all feature requests regularly</div>
+      <div class="next-item"><span class="next-check">✓</span> Popular requests are prioritized for development</div>
+      <div class="next-item"><span class="next-check">✓</span> You'll be notified via email when your requested feature is added</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 ToneFit by adprofit. All rights reserved. &nbsp;·&nbsp; <a href="/privacy">Privacy</a> <a href="/terms">Terms</a> <a href="/refund">Refund Policy</a> &nbsp;·&nbsp; <a href="mailto:contact@tonefit.com">contact@tonefit.com</a></p>
+</footer>
+
+<script>
+function updateRequesting() {
+  const val = document.getElementById('requestType').value;
+  document.getElementById('requestingLabel').textContent = val;
+  const labelMap = {
+    'Guitar Amp': 'Guitar Amp Name',
+    'Guitar Model': 'Guitar Model Name',
+    'Effects Pedal': 'Pedal Name',
+    'Multi-FX Unit': 'Multi-FX Unit Name',
+    'Bass Guitar': 'Bass Guitar Name',
+    'Bass Amp': 'Bass Amp Name',
+    'Other Feature': 'Feature Name'
+  };
+  const placeholderMap = {
+    'Guitar Amp': 'e.g., Fender Twin Reverb',
+    'Guitar Model': 'e.g., Gibson Les Paul Standard',
+    'Effects Pedal': 'e.g., Boss DS-1 Distortion',
+    'Multi-FX Unit': 'e.g., Line 6 Helix',
+    'Bass Guitar': 'e.g., Fender Jazz Bass',
+    'Bass Amp': 'e.g., Ampeg SVT-CL',
+    'Other Feature': 'Describe the feature you want'
+  };
+  document.getElementById('itemLabel').innerHTML = (labelMap[val] || 'Name') + ' <span style="color:#DC2626">*</span>';
+  document.getElementById('itemName').placeholder = placeholderMap[val] || '';
+}
+
+function updateCharCount() {
+  const len = document.getElementById('additionalInfo').value.length;
+  document.getElementById('charCount').textContent = len;
+}
+
+async function submitRequest() {
+  const type = document.getElementById('requestType').value;
+  const name = document.getElementById('itemName').value.trim();
+  const info = document.getElementById('additionalInfo').value.trim();
+  const email = document.getElementById('emailInput').value.trim();
+
+  if (!name) { showError('Please enter the name of what you want to request.'); return; }
+  if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    await fetch('https://formspree.io/f/contact@tonefit.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, name, info, email, _subject: 'ToneFit Feature Request: ' + name })
+    });
+  } catch(e) {}
+
+  document.getElementById('errorBanner').style.display = 'none';
+  document.getElementById('successBanner').style.display = 'block';
+  document.getElementById('itemName').value = '';
+  document.getElementById('additionalInfo').value = '';
+  document.getElementById('emailInput').value = '';
+  document.getElementById('charCount').textContent = '0';
+  btn.disabled = false;
+  btn.innerHTML = '✨ Submit Feature Request';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBanner');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('successBanner').style.display = 'none';
+}
+</script>
+</body>
+</html>
