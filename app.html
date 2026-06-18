@@ -1344,7 +1344,7 @@ async function runResearch() {
         <div class="pedal-when">${p.usage || ''}</div>
       </div>`).join('');
 
-    const sourcesHtml = (d.sources || []).map(s => `<a class="source-link" href="#" onclick="return false">${s}</a>`).join('');
+    const sourcesHtml = (d.sources || []).map(s => `<a class="source-link" href="https://www.google.com/search?q=${encodeURIComponent(s)}" target="_blank">${s}</a>`).join('');
     const warningsHtml = (d.warnings || []).map(w => `<div class="warning-item">${w}</div>`).join('');
     const starsHtml = Array.from({length:5}, (_,i) =>
       `<span class="${i < Math.round(d.difficulty?.stars || 3) ? 'star-filled' : 'star-empty'}">★</span>`
