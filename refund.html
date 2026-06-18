@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Refund Policy | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F0F4FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text)}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:20px 24px;display:flex;align-items:center;background:transparent;transition:background 0.3s}
+nav.scrolled{background:rgba(240,244,250,0.92);backdrop-filter:blur(14px);box-shadow:0 1px 12px rgba(0,0,0,0.06)}
+.hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:#fff;border:none;padding:12px 14px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.10)}
+.hamburger span{width:20px;height:2px;background:#1a1a2e;border-radius:2px;display:block}
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.menu-overlay.open{opacity:1;pointer-events:all}
+.slide-menu{position:fixed;top:0;left:0;width:300px;height:100vh;background:white;z-index:400;transform:translateX(-100%);transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;padding:28px 24px 32px;overflow-y:auto}
+.slide-menu.open{transform:translateX(0)}
+.menu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+.menu-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:var(--text);text-decoration:none}
+.menu-close{background:none;border:none;font-size:22px;color:#9CA3AF;cursor:pointer}
+.menu-divider{height:1px;background:#F3F4F6;margin:18px 0}
+.menu-login{display:block;text-align:center;padding:12px;font-size:16px;font-weight:600;color:var(--text);text-decoration:none;margin-bottom:10px;border-radius:12px}
+.menu-signup{display:block;background:var(--blue);color:white;text-align:center;padding:15px;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none}
+.page-wrap{max-width:760px;margin:0 auto;padding:110px 24px 80px}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);text-decoration:none;margin-bottom:40px;font-weight:600;background:white;padding:10px 18px;border-radius:100px;border:1.5px solid var(--border)}
+.back-link:hover{color:var(--text);border-color:#BFDBFE}
+.badge{display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;color:var(--blue);border:1.5px solid #BFDBFE;border-radius:100px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:20px}
+.page-title{font-size:clamp(32px,5vw,48px);font-weight:900;letter-spacing:-2px;margin-bottom:12px;line-height:1.1}
+.page-meta{display:flex;align-items:center;gap:16px;margin-bottom:48px;flex-wrap:wrap}
+.page-meta span{font-size:13px;color:var(--muted)}
+.highlight-box{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:16px 20px;margin-bottom:32px;font-size:14px;color:#1e40af;line-height:1.7}
+.highlight-box strong{font-weight:700}
+.green-box{background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:12px;padding:16px 20px;margin-bottom:32px;font-size:14px;color:#166534;line-height:1.7}
+.green-box strong{font-weight:700}
+.legal-section{margin-bottom:48px}
+.legal-section h2{font-size:22px;font-weight:800;color:var(--text);margin-bottom:16px;letter-spacing:-0.5px;padding-top:16px;border-top:2px solid var(--border);display:flex;align-items:center;gap:10px}
+.legal-section h2 .num{width:32px;height:32px;background:var(--blue);color:white;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0}
+.legal-section h3{font-size:16px;font-weight:700;color:var(--text);margin:20px 0 8px}
+.legal-section p{font-size:15px;line-height:1.8;color:#374151;margin-bottom:14px}
+.legal-section ul{padding-left:0;margin-bottom:16px;list-style:none;display:flex;flex-direction:column;gap:8px}
+.legal-section ul li{font-size:15px;color:#374151;line-height:1.7;padding-left:20px;position:relative}
+.legal-section ul li::before{content:"→";position:absolute;left:0;color:var(--blue);font-weight:700}
+.legal-section a{color:var(--blue);text-decoration:none;font-weight:600}
+.legal-section a:hover{text-decoration:underline}
+.refund-table{width:100%;border-collapse:collapse;margin-bottom:24px;border-radius:12px;overflow:hidden}
+.refund-table th{background:#EFF6FF;padding:14px 20px;text-align:left;font-size:14px;font-weight:700;color:#1E3A8A;border-bottom:2px solid #BFDBFE}
+.refund-table td{padding:14px 20px;font-size:14px;color:#374151;border-bottom:1px solid #F3F4F6;background:white}
+.refund-table tr:last-child td{border-bottom:none}
+.tag-yes{background:#DCFCE7;color:#166534;padding:4px 10px;border-radius:100px;font-size:12px;font-weight:700}
+.tag-no{background:#FEE2E2;color:#991B1B;padding:4px 10px;border-radius:100px;font-size:12px;font-weight:700}
+footer{background:#0F0F13;padding:40px 48px;text-align:center;margin-top:60px}
+footer p{font-size:13px;color:rgba(255,255,255,0.28)}
+footer a{color:rgba(255,255,255,0.4);text-decoration:none;margin:0 8px}
+footer a:hover{color:white}
+</style>
+</head>
+<body>
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="slide-menu" id="slideMenu">
+  <div class="menu-header">
+    <a href="/" class="menu-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Tone<span style="color:#2563EB">Fit</span></span>
+    </a>
+    <button class="menu-close" id="menuClose">✕</button>
+  </div>
+  <div class="menu-divider"></div>
+  <a href="/login" class="menu-login">Login</a>
+  <a href="/plans" class="menu-signup">Sign Up</a>
+</div>
+<nav id="navbar"><button class="hamburger" id="menuOpen"><span></span><span></span><span></span></button></nav>
+
+<div class="page-wrap">
+  <a href="/" class="back-link">← Back to Home</a>
+  <div class="badge">Legal Document</div>
+  <h1 class="page-title">Refund Policy</h1>
+  <div class="page-meta">
+    <span>Last updated: June 18, 2026</span>
+    <span>Version 1.0</span>
+  </div>
+
+  <div class="green-box">
+    <strong>Our Promise:</strong> We want you to love ToneFit. If you're not satisfied within 48 hours of your first payment, we'll give you a full refund — no questions asked.
+  </div>
+
+  <div class="legal-section">
+    <h2><span class="num">1</span> 48-Hour Money-Back Guarantee</h2>
+    <p>If you subscribe to any ToneFit paid plan and are not satisfied, you may request a full refund within <strong>48 hours</strong> of your first payment. This applies to:</p>
+    <ul>
+      <li>First-time subscribers on any plan (Beginner or Expert)</li>
+      <li>Monthly and annual subscriptions</li>
+      <li>Upgrades from one plan to another</li>
+    </ul>
+    <p>To request a refund within 48 hours, email us at <a href="mailto:contact@tonefit.com">contact@tonefit.com</a> with your account email and we will process it within 1 business day.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2><span class="num">2</span> Free Trial</h2>
+    <p>All ToneFit plans include a <strong>7-day free trial</strong>. You will not be charged during the trial period. Your subscription only begins after the trial ends.</p>
+    <ul>
+      <li>No credit card required to start the free trial</li>
+      <li>Cancel anytime during the trial with zero charges</li>
+      <li>If you forget to cancel, you may still request a refund within 48 hours of the first charge</li>
+    </ul>
+  </div>
+
+  <div class="legal-section">
+    <h2><span class="num">3</span> Refund Eligibility Summary</h2>
+    <table class="refund-table">
+      <tr>
+        <th>Situation</th>
+        <th>Refund Eligible?</th>
+      </tr>
+      <tr>
+        <td>Within 48 hours of first payment</td>
+        <td><span class="tag-yes">✓ Yes — Full Refund</span></td>
+      </tr>
+      <tr>
+        <td>Cancel during free trial</td>
+        <td><span class="tag-yes">✓ Yes — No Charge</span></td>
+      </tr>
+      <tr>
+        <td>After 48 hours of first payment</td>
+        <td><span class="tag-no">✗ No</span></td>
+      </tr>
+      <tr>
+        <td>Renewal payments (2nd month+)</td>
+        <td><span class="tag-no">✗ No</span></td>
+      </tr>
+      <tr>
+        <td>Partial month after cancellation</td>
+        <td><span class="tag-no">✗ No</span></td>
+      </tr>
+      <tr>
+        <td>Account suspended for Terms violation</td>
+        <td><span class="tag-no">✗ No</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="legal-section">
+    <h2><span class="num">4</span> How to Cancel Your Subscription</h2>
+    <p>You can cancel your ToneFit subscription at any time:</p>
+    <ul>
+      <li>Log in to your ToneFit account</li>
+      <li>Go to <strong>Account → Subscription</strong></li>
+      <li>Click <strong>Cancel Subscription</strong></li>
+      <li>Your access continues until the end of your current billing period</li>
+    </ul>
+    <p>Alternatively, email us at <a href="mailto:contact@tonefit.com">contact@tonefit.com</a> and we'll cancel it for you within 1 business day.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2><span class="num">5</span> How to Request a Refund</h2>
+    <p>To request a refund within the eligible 48-hour window:</p>
+    <ul>
+      <li>Email <a href="mailto:contact@tonefit.com">contact@tonefit.com</a></li>
+      <li>Subject line: <strong>Refund Request — [your email]</strong></li>
+      <li>Include your account email and reason (optional)</li>
+      <li>We will process within 1 business day</li>
+      <li>Refund appears on your card within 5-10 business days</li>
+    </ul>
+  </div>
+
+  <div class="legal-section">
+    <h2><span class="num">6</span> Exceptions</h2>
+    <p>We reserve the right to deny refunds in cases of:</p>
+    <ul>
+      <li>Suspected fraud or abuse of the refund policy</li>
+      <li>Accounts suspended for violating our Terms of Use</li>
+      <li>Requests made after the 48-hour window</li>
+    </ul>
+  </div>
+
+  <div class="legal-section">
+    <h2><span class="num">7</span> Contact Us</h2>
+    <p>For any refund questions or requests:</p>
+    <ul>
+      <li><strong>Email:</strong> <a href="mailto:contact@tonefit.com">contact@tonefit.com</a></li>
+      <li><strong>Response time:</strong> Within 1 business day</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 ToneFit. All rights reserved. &nbsp;·&nbsp; <a href="/privacy">Privacy</a> <a href="/terms">Terms</a> <a href="/refund">Refund Policy</a> &nbsp;·&nbsp; <a href="mailto:contact@tonefit.com">contact@tonefit.com</a></p>
+</footer>
+<script>
+const nav=document.getElementById('navbar');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>20));
+document.getElementById('menuOpen').addEventListener('click',()=>{document.getElementById('slideMenu').classList.add('open');document.getElementById('menuOverlay').classList.add('open')});
+document.getElementById('menuClose').addEventListener('click',()=>{document.getElementById('slideMenu').classList.remove('open');document.getElementById('menuOverlay').classList.remove('open')});
+document.getElementById('menuOverlay').addEventListener('click',()=>{document.getElementById('slideMenu').classList.remove('open');document.getElementById('menuOverlay').classList.remove('open')});
+</script>
+</body></html>

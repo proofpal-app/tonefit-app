@@ -14,6 +14,7 @@
     { "source": "/onboarding-gear", "destination": "/onboarding-gear.html" },
     { "source": "/onboarding-confirm", "destination": "/onboarding-confirm.html" },
     { "source": "/onboarding-summary", "destination": "/onboarding-summary.html" },
-    { "source": "/onboarding-done", "destination": "/onboarding-done.html" }
+    { "source": "/onboarding-done", "destination": "/onboarding-done.html" },
+    { "source": "/refund", "destination": "/refund.html" }
   ]
 }
