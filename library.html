@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>My Library | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F4F6FA;--purple:#7C3AED}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1.5px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--blue)}
+.nav-app{background:var(--blue);color:white;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none}
+.page{max-width:1100px;margin:0 auto;padding:90px 24px 60px}
+.page-title{font-size:32px;font-weight:900;letter-spacing:-1.5px;margin-bottom:4px}
+.page-sub{font-size:15px;color:var(--muted);margin-bottom:28px}
+
+/* PAYWALL */
+.paywall-wrap{background:linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 50%,#F5F3FF 100%);border-radius:20px;padding:80px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:500px}
+.paywall-icon-wrap{width:80px;height:80px;background:rgba(124,58,237,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:28px;font-size:36px}
+.paywall-title{font-size:28px;font-weight:900;letter-spacing:-1px;color:#1E0A3C;margin-bottom:12px}
+.paywall-sub{font-size:16px;color:#6D28D9;line-height:1.6;max-width:400px;margin:0 auto 32px}
+.paywall-btn{background:var(--purple);color:white;border:none;padding:16px 36px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:10px;text-decoration:none}
+.paywall-btn:hover{background:#6D28D9}
+
+/* LIBRARY */
+.library-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:gap}
+.search-wrap{position:relative;flex:1;max-width:400px}
+.search-input{width:100%;padding:13px 16px 13px 42px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-family:inherit;outline:none;background:white}
+.search-input:focus{border-color:var(--blue)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px}
+.filter-row{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.filter-pill{padding:8px 16px;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--muted);font-family:inherit}
+.filter-pill.active{background:var(--blue);color:white;border-color:var(--blue)}
+.tone-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.tone-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:20px;position:relative;transition:box-shadow 0.2s}
+.tone-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+.tone-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.tone-song{font-size:16px;font-weight:800;color:var(--text);margin-bottom:2px}
+.tone-artist{font-size:13px;color:var(--muted)}
+.tone-date{font-size:11px;color:var(--muted);margin-top:4px}
+.tone-gear{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tone-gear-tag{background:#F4F6FA;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px}
+.tone-settings{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.setting-item{background:#F8FAFF;border-radius:8px;padding:8px;text-align:center}
+.setting-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:4px}
+.setting-bar{height:4px;background:#E5E7EB;border-radius:100px;overflow:hidden}
+.setting-fill{height:100%;background:var(--blue);border-radius:100px}
+.setting-val{font-size:11px;font-weight:700;color:var(--text);margin-top:3px}
+.tone-footer{display:flex;align-items:center;justify-content:space-between}
+.tone-part{font-size:12px;color:var(--muted);background:#F3F4F6;padding:4px 10px;border-radius:100px;font-weight:600}
+.tone-actions{display:flex;gap:8px}
+.btn-tone-app{background:var(--blue);color:white;border:none;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none}
+.btn-tone-del{background:#FEF2F2;color:#DC2626;border:none;padding:8px 10px;border-radius:8px;font-size:12px;cursor:pointer}
+.empty-library{text-align:center;padding:80px 40px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:16px}
+.empty-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:8px}
+.empty-sub{font-size:14px;margin-bottom:24px}
+.btn-research{background:var(--blue);color:white;border:none;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
+@media(max-width:600px){.tone-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Tone<span>Fit</span>
+  </a>
+  <a href="/app" class="nav-app">🎸 Adapt Tone</a>
+</nav>
+
+<div class="page">
+  <h1 class="page-title">My Library</h1>
+  <p class="page-sub">Your saved tone research and adaptations</p>
+
+  <!-- PAYWALL STATE -->
+  <div id="paywallState">
+    <div class="paywall-wrap">
+      <div class="paywall-icon-wrap">🎵</div>
+      <div class="paywall-title">Unlock Saved Tones</div>
+      <div class="paywall-sub">Save your adapted tone settings for quick reference anytime.</div>
+      <a href="/plans" class="paywall-btn">✨ View Plans</a>
+    </div>
+  </div>
+
+  <!-- LIBRARY STATE -->
+  <div id="libraryState" style="display:none">
+    <div class="library-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchInput" placeholder="Search your tones..." oninput="filterTones()"/>
+      </div>
+      <div style="font-size:14px;color:var(--muted)" id="toneCount">0 tones saved</div>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-pill active" onclick="setFilter('All')">All</button>
+      <button class="filter-pill" onclick="setFilter('Riff')">Riff</button>
+      <button class="filter-pill" onclick="setFilter('Solo')">Solo</button>
+      <button class="filter-pill" onclick="setFilter('Clean')">Clean</button>
+      <button class="filter-pill" onclick="setFilter('Distorted')">Distorted</button>
+    </div>
+
+    <div id="toneGrid" class="tone-grid"></div>
+
+    <div id="emptyLibrary" style="display:none">
+      <div class="empty-library">
+        <div class="empty-icon">🎸</div>
+        <div class="empty-title">No saved tones yet</div>
+        <div class="empty-sub">Research a tone in the app and save it to your library</div>
+        <a href="/app" class="btn-research">Start Researching →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gyjsrhsmsflqjxppmjaz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let allTones = [];
+let activeFilter = 'All';
+let isPaid = false;
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('subscribed') === 'true') {
+    localStorage.setItem('tf_paid', 'true');
+  }
+  isPaid = localStorage.getItem('tf_paid') === 'true';
+  if (isPaid) {
+    document.getElementById('paywallState').style.display = 'none';
+    document.getElementById('libraryState').style.display = 'block';
+    loadTones();
+  }
+}
+
+function loadTones() {
+  const saved = localStorage.getItem('tf_savedTones');
+  allTones = saved ? JSON.parse(saved) : [];
+  renderTones();
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.textContent === f));
+  renderTones();
+}
+
+function filterTones() { renderTones(); }
+
+function renderTones() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allTones.filter(t => {
+    const matchSearch = !search || t.song.toLowerCase().includes(search) || t.artist.toLowerCase().includes(search);
+    const matchFilter = activeFilter === 'All' || t.partType === activeFilter || t.toneType === activeFilter;
+    return matchSearch && matchFilter;
+  });
+  document.getElementById('toneCount').textContent = allTones.length + ' tone' + (allTones.length !== 1 ? 's' : '') + ' saved';
+  const grid = document.getElementById('toneGrid');
+  const empty = document.getElementById('emptyLibrary');
+  if (!filtered.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  grid.innerHTML = filtered.map((t, i) => `
+    <div class="tone-card">
+      <div class="tone-card-top">
+        <div>
+          <div class="tone-song">${t.song}</div>
+          <div class="tone-artist">by ${t.artist}</div>
+          <div class="tone-date">${t.date}</div>
+        </div>
+        <span style="background:#EFF6FF;color:#1D4ED8;font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px">${t.partType || 'Riff'}</span>
+      </div>
+      <div class="tone-gear">
+        <div class="tone-gear-tag">🎸 ${t.guitar || 'Guitar'}</div>
+        <div class="tone-gear-tag">🔊 ${t.amp || 'Amp'}</div>
+      </div>
+      ${t.ampSettings ? `
+      <div class="tone-settings">
+        ${['gain','bass','mid','treble'].map(s => `
+          <div class="setting-item">
+            <div class="setting-label">${s}</div>
+            <div class="setting-bar"><div class="setting-fill" style="width:${(t.ampSettings[s]||5)*10}%"></div></div>
+            <div class="setting-val">${t.ampSettings[s]||5}</div>
+          </div>`).join('')}
+      </div>` : ''}
+      <div class="tone-footer">
+        <span class="tone-part">${t.toneType || 'Auto-detect'}</span>
+        <div class="tone-actions">
+          <a href="/app" class="btn-tone-app">Use in App →</a>
+          <button class="btn-tone-del" onclick="deleteTone(${i})">🗑</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function deleteTone(i) {
+  if (!confirm('Remove this tone from your library?')) return;
+  allTones.splice(i, 1);
+  localStorage.setItem('tf_savedTones', JSON.stringify(allTones));
+  renderTones();
+}
+
+init();
+</script>
+</body>
+</html>
