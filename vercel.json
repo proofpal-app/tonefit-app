@@ -21,6 +21,6 @@
     { "source": "/gear", "destination": "/gear.html" },
     { "source": "/library", "destination": "/library.html" },
     { "source": "/community", "destination": "/community.html" },
-{ "source": "/tone", "destination": "/tone-detail.html" }
+    { "source": "/tone", "destination": "/tone-detail.html" }
   ]
 }
