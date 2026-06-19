@@ -34,7 +34,6 @@ h1{font-size:26px;font-weight:900;letter-spacing:-1px;text-align:center;margin-b
 .footer-text a{color:var(--blue);text-decoration:none;font-weight:600}
 .error-msg{background:#FEE2E2;border:1.5px solid #FECACA;border-radius:10px;padding:12px 16px;font-size:14px;color:#991B1B;margin-bottom:16px;display:none}
 .success-msg{background:#DCFCE7;border:1.5px solid #BBF7D0;border-radius:10px;padding:12px 16px;font-size:14px;color:#166534;margin-bottom:16px;display:none}
-.loading{display:none;text-align:center;padding:20px;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
@@ -90,10 +89,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Check if already logged in
 sb.auth.getSession().then(({ data: { session } }) => {
   if (session) window.location.href = '/app';
 });
+
+function getRedirectUrl() {
+  const redirect = new URLSearchParams(window.location.search).get('redirect');
+  return redirect || 'https://tonefit.site/app';
+}
 
 function showError(msg) {
   const el = document.getElementById('errorMsg');
@@ -115,7 +118,7 @@ async function signInWithGoogle() {
   btn.textContent = 'Connecting...';
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.href.includes('redirect') ? new URLSearchParams(window.location.search).get('redirect') : redirectTo: window.location.href.includes('redirect') ? new URLSearchParams(window.location.search).get('redirect') : 'https://tonefit.site/app' }
+    options: { redirectTo: getRedirectUrl() }
   });
   if (error) {
     showError(error.message);
@@ -137,7 +140,7 @@ async function signInWithEmail() {
     btn.disabled = false;
     btn.textContent = 'Sign In';
   } else {
-    window.location.href = '/app';
+    window.location.href = getRedirectUrl();
   }
 }
 
@@ -150,7 +153,7 @@ async function switchToSignUp() {
   btn.textContent = 'Creating account...';
   const { error } = await sb.auth.signUp({
     email, password,
-    options: { emailredirectTo: window.location.href.includes('redirect') ? new URLSearchParams(window.location.search).get('redirect') : redirectTo: window.location.href.includes('redirect') ? new URLSearchParams(window.location.search).get('redirect') : 'https://tonefit.site/app' }
+    options: { emailRedirectTo: getRedirectUrl() }
   });
   if (error) {
     showError(error.message);
