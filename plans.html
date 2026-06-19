@@ -256,7 +256,7 @@ function startCheckout(plan) {
       displayMode: 'overlay',
       theme: 'light',
       locale: 'en',
-      successUrl: 'https://tonefit.site/app?subscribed=true'
+      successUrl: (() => { const r = localStorage.getItem('tf_redirect'); return r ? r + (r.includes('?') ? '&' : '?') + 'subscribed=true' : 'https://tonefit.site/app?subscribed=true'; })()
     },
     customData: { plan: plan, billing: currentBilling }
   });
