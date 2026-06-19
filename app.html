@@ -1269,12 +1269,21 @@ async function runResearch() {
   setTimeout(() => document.querySelector('.results-grid').scrollIntoView({behavior:'smooth', block:'start'}), 100);
 
   try {
-    const res = await fetch('/api/research', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const fingerprint = btoa([navigator.userAgent,navigator.language,screen.width+'x'+screen.height,new Date().getTimezoneOffset()].join('|'));
+      const { data: { session } } = await sb.auth.getSession();
+       const token = session?.access_token || '';
+       const res = await fetch('/api/research', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json', 'x-fingerprint': fingerprint, 'Authorization': token ? `Bearer ${token}` : '' },
       body: JSON.stringify({ song, artist, guitar, amp, partType, toneType, mode: currentMode })
     });
     const result = await res.json();
+    if (!result.success && result.error === 'FREE_LIMIT_REACHED') {
+      document.getElementById('originalResults').innerHTML = '';
+      document.getElementById('adaptedResults').innerHTML = '';
+      openPaywall();
+      return;
+    }
     if (!result.success) throw new Error(result.error || 'Research failed');
     const d = result.data;
 
