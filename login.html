@@ -16,13 +16,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 h1{font-size:26px;font-weight:900;letter-spacing:-1px;text-align:center;margin-bottom:8px}
 .subtitle{font-size:15px;color:var(--muted);text-align:center;margin-bottom:32px;line-height:1.5}
 .google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:white;border:2px solid var(--border);border-radius:14px;padding:16px;font-size:16px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;margin-bottom:16px}
-.google-btn:hover{border-color:#BFDBFE;background:#F8FAFF;transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,99,235,0.12)}
-.google-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.google-btn:hover{border-color:#BFDBFE;background:#F8FAFF}
+.google-btn:disabled{opacity:0.6;cursor:not-allowed}
 .google-icon{width:22px;height:22px;flex-shrink:0}
 .divider{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .divider-line{flex:1;height:1px;background:var(--border)}
 .divider-text{font-size:13px;color:var(--muted);font-weight:500}
-.email-form{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.tab-row{display:flex;background:#F3F4F6;border-radius:12px;padding:4px;gap:4px;margin-bottom:20px}
+.tab-btn{flex:1;padding:10px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s}
+.tab-btn.active{background:white;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.email-form{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
 .input-group{display:flex;flex-direction:column;gap:6px}
 .input-group label{font-size:13px;font-weight:700;color:var(--text)}
 .input-group input{padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s}
@@ -34,6 +37,8 @@ h1{font-size:26px;font-weight:900;letter-spacing:-1px;text-align:center;margin-b
 .footer-text a{color:var(--blue);text-decoration:none;font-weight:600}
 .error-msg{background:#FEE2E2;border:1.5px solid #FECACA;border-radius:10px;padding:12px 16px;font-size:14px;color:#991B1B;margin-bottom:16px;display:none}
 .success-msg{background:#DCFCE7;border:1.5px solid #BBF7D0;border-radius:10px;padding:12px 16px;font-size:14px;color:#166534;margin-bottom:16px;display:none}
+.forgot-link{font-size:13px;color:var(--muted);text-align:right;cursor:pointer;margin-top:-4px}
+.forgot-link:hover{color:var(--blue)}
 </style>
 </head>
 <body>
@@ -42,50 +47,66 @@ h1{font-size:26px;font-weight:900;letter-spacing:-1px;text-align:center;margin-b
     <svg width="36" height="36" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div class="logo-text">Tone<span>Fit</span></div>
   </div>
-  <h1>Welcome back</h1>
-  <p class="subtitle">Sign in to continue matching tones to your gear</p>
 
   <div class="error-msg" id="errorMsg"></div>
   <div class="success-msg" id="successMsg"></div>
 
   <button class="google-btn" id="googleBtn" onclick="signInWithGoogle()">
-    <svg class="google-icon" viewBox="0 0 24 24">
-      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-    </svg>
+    <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
     Continue with Google
   </button>
 
-  <div class="divider">
-    <div class="divider-line"></div>
-    <div class="divider-text">or</div>
-    <div class="divider-line"></div>
+  <div class="divider"><div class="divider-line"></div><div class="divider-text">or</div><div class="divider-line"></div></div>
+
+  <!-- LOGIN / SIGNUP TABS -->
+  <div class="tab-row">
+    <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+    <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
   </div>
 
-  <div class="email-form">
-    <div class="input-group">
-      <label>Email address</label>
-      <input type="email" id="emailInput" placeholder="you@example.com"/>
+  <!-- LOGIN FORM -->
+  <div id="loginForm">
+    <h1 style="font-size:22px;font-weight:900;letter-spacing:-0.8px;margin-bottom:20px">Welcome back</h1>
+    <div class="email-form">
+      <div class="input-group">
+        <label>Email address</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com"/>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')signInWithEmail()"/>
+      </div>
+      <div class="forgot-link" onclick="forgotPassword()">Forgot password?</div>
+      <button class="submit-btn" id="loginBtn" onclick="signInWithEmail()">Sign In</button>
     </div>
-    <div class="input-group">
-      <label>Password</label>
-      <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')signInWithEmail()"/>
-    </div>
-    <button class="submit-btn" id="emailBtn" onclick="signInWithEmail()">Sign In</button>
+    <div class="footer-text">Don't have an account? <a href="#" onclick="switchTab('signup')">Sign up free</a></div>
   </div>
 
-  <div class="footer-text">
-    Don't have an account? <a href="#" onclick="switchToSignUp()">Sign up free</a><br/>
-    <a href="#" onclick="forgotPassword()" style="margin-top:6px;display:inline-block">Forgot password?</a>
+  <!-- SIGNUP FORM -->
+  <div id="signupForm" style="display:none">
+    <h1 style="font-size:22px;font-weight:900;letter-spacing:-0.8px;margin-bottom:20px">Create your account</h1>
+    <div class="email-form">
+      <div class="input-group">
+        <label>Email address</label>
+        <input type="email" id="signupEmail" placeholder="you@example.com"/>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="Min 6 characters"/>
+      </div>
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <input type="password" id="signupConfirm" placeholder="Repeat password" onkeydown="if(event.key==='Enter')signUpWithEmail()"/>
+      </div>
+      <button class="submit-btn" id="signupBtn" onclick="signUpWithEmail()">Create Account</button>
+    </div>
+    <div class="footer-text">Already have an account? <a href="#" onclick="switchTab('login')">Sign in</a></div>
   </div>
 </div>
 
 <script>
 const SUPABASE_URL = 'https://gyjsrhsmsflqjxppmjaz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo';
-
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -94,7 +115,7 @@ sb.auth.getSession().then(({ data: { session } }) => {
 });
 
 function getRedirectUrl() {
-  const redirect = new URLSearchParams(window.location.search).get('redirect');
+  const redirect = localStorage.getItem('tf_redirect');
   return redirect || 'https://tonefit.site/app';
 }
 
@@ -104,12 +125,23 @@ function showError(msg) {
   el.style.display = 'block';
   document.getElementById('successMsg').style.display = 'none';
 }
-
 function showSuccess(msg) {
   const el = document.getElementById('successMsg');
   el.textContent = msg;
   el.style.display = 'block';
   document.getElementById('errorMsg').style.display = 'none';
+}
+function clearMessages() {
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('successMsg').style.display = 'none';
+}
+
+function switchTab(tab) {
+  clearMessages();
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
 }
 
 async function signInWithGoogle() {
@@ -118,7 +150,7 @@ async function signInWithGoogle() {
   btn.textContent = 'Connecting...';
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: getRedirectUrl() }
+    options: { redirectTo: 'https://tonefit.site/app' }
   });
   if (error) {
     showError(error.message);
@@ -128,46 +160,49 @@ async function signInWithGoogle() {
 }
 
 async function signInWithEmail() {
-  const email = document.getElementById('emailInput').value.trim();
-  const password = document.getElementById('passwordInput').value;
-  if (!email || !password) { showError('Please enter email and password'); return; }
-  const btn = document.getElementById('emailBtn');
-  btn.disabled = true;
-  btn.textContent = 'Signing in...';
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) { showError('Please enter your email and password'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Signing in...';
   const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) {
-    showError(error.message);
-    btn.disabled = false;
-    btn.textContent = 'Sign In';
+    if (error.message.includes('Invalid login') || error.message.includes('invalid_credentials')) {
+      showError('No account found with this email, or wrong password. Please sign up first.');
+    } else {
+      showError(error.message);
+    }
+    btn.disabled = false; btn.textContent = 'Sign In';
   } else {
     window.location.href = getRedirectUrl();
   }
 }
 
-async function switchToSignUp() {
-  const email = document.getElementById('emailInput').value.trim();
-  const password = document.getElementById('passwordInput').value;
-  if (!email || !password) { showError('Enter email and password to sign up'); return; }
-  const btn = document.getElementById('emailBtn');
-  btn.disabled = true;
-  btn.textContent = 'Creating account...';
+async function signUpWithEmail() {
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupConfirm').value;
+  if (!email || !password) { showError('Please enter your email and password'); return; }
+  if (password.length < 6) { showError('Password must be at least 6 characters'); return; }
+  if (password !== confirm) { showError('Passwords do not match'); return; }
+  const btn = document.getElementById('signupBtn');
+  btn.disabled = true; btn.textContent = 'Creating account...';
   const { error } = await sb.auth.signUp({
     email, password,
-    options: { emailRedirectTo: getRedirectUrl() }
+    options: { emailRedirectTo: 'https://tonefit.site/app' }
   });
   if (error) {
     showError(error.message);
-    btn.disabled = false;
-    btn.textContent = 'Sign In';
+    btn.disabled = false; btn.textContent = 'Create Account';
   } else {
-    showSuccess('Check your email to confirm your account!');
-    btn.disabled = false;
-    btn.textContent = 'Sign In';
+    showSuccess('✅ Account created! Check your email to confirm, then sign in.');
+    btn.disabled = false; btn.textContent = 'Create Account';
+    setTimeout(() => switchTab('login'), 3000);
   }
 }
 
 async function forgotPassword() {
-  const email = document.getElementById('emailInput').value.trim();
+  const email = document.getElementById('loginEmail').value.trim();
   if (!email) { showError('Enter your email address first'); return; }
   const { error } = await sb.auth.resetPasswordForEmail(email, {
     redirectTo: 'https://tonefit.site/login'
