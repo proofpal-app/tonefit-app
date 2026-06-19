@@ -167,6 +167,7 @@ const urlParams = new URLSearchParams(window.location.search);
 if(urlParams.get('subscribed')==='true') localStorage.setItem('tf_paid','true');
 
 const id = urlParams.get('id') || 'hotel-california-eagles';
+
 const tone = tones[id] || tones['hotel-california-eagles'];
 
 document.title = tone.song + ' | ToneFit';
