@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://tonefit.site/</loc><priority>1.0</priority></url>
+  <url><loc>https://tonefit.site/app</loc><priority>0.9</priority></url>
+  <url><loc>https://tonefit.site/community</loc><priority>0.8</priority></url>
+  <url><loc>https://tonefit.site/plans</loc><priority>0.8</priority></url>
+  <url><loc>https://tonefit.site/library</loc><priority>0.7</priority></url>
+  <url><loc>https://tonefit.site/gear</loc><priority>0.6</priority></url>
+  <url><loc>https://tonefit.site/contact</loc><priority>0.5</priority></url>
+  <url><loc>https://tonefit.site/privacy</loc><priority>0.3</priority></url>
+  <url><loc>https://tonefit.site/terms</loc><priority>0.3</priority></url>
+  <url><loc>https://tonefit.site/refund</loc><priority>0.3</priority></url>
+</urlset>
