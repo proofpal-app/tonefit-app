@@ -19,6 +19,8 @@
     { "source": "/account", "destination": "/account.html" },
     { "source": "/contact", "destination": "/contact.html" },
     { "source": "/gear", "destination": "/gear.html" },
-    { "source": "/library", "destination": "/library.html" }
+    { "source": "/library", "destination": "/library.html" },
+    { "source": "/community", "destination": "/community.html" },
+{ "source": "/tone", "destination": "/tone-detail.html" }
   ]
 }

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tone Database | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F4F6FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1.5px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--blue)}
+.nav-app{background:var(--blue);color:white;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none}
+.page{max-width:1100px;margin:0 auto;padding:90px 24px 60px}
+.page-header{text-align:center;margin-bottom:40px}
+.page-title{font-size:clamp(32px,5vw,52px);font-weight:900;letter-spacing:-2px;margin-bottom:12px}
+.page-title span{color:var(--blue)}
+.page-sub{font-size:16px;color:var(--muted);max-width:500px;margin:0 auto;line-height:1.6}
+.search-wrap{position:relative;max-width:680px;margin:0 auto 32px}
+.search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#9CA3AF;font-size:20px}
+.search-input{width:100%;padding:18px 18px 18px 52px;border:1.5px solid var(--border);border-radius:16px;font-size:16px;font-family:inherit;outline:none;background:white;transition:border-color 0.2s}
+.search-input:focus{border-color:var(--blue)}
+.filters-wrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px}
+.filter-group{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.filter-divider{width:1px;height:20px;background:var(--border);margin:0 4px}
+.pill{padding:8px 16px;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--muted);font-family:inherit;transition:all 0.15s}
+.pill.active{background:#0D1117;color:white;border-color:#0D1117}
+.pill.active-blue{background:var(--blue);color:white;border-color:var(--blue)}
+.tone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.tone-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:22px;display:flex;flex-direction:column;cursor:pointer;transition:box-shadow 0.2s;text-decoration:none;color:inherit}
+.tone-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+.tone-song{font-size:20px;font-weight:900;color:var(--text);margin-bottom:4px}
+.tone-artist{font-size:14px;color:#9CA3AF;margin-bottom:14px}
+.tone-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.tag-grey{background:#F3F4F6;color:#374151;font-size:12px;font-weight:600;padding:4px 10px;border-radius:100px}
+.tag-distorted{background:#FFF7ED;color:#C2410C;font-size:12px;font-weight:700;padding:4px 10px;border-radius:100px}
+.tag-clean{background:#F0FDF4;color:#15803D;font-size:12px;font-weight:700;padding:4px 10px;border-radius:100px}
+.tag-versions{color:var(--blue);font-size:12px;font-weight:700}
+.tone-gear{font-size:12px;color:#9CA3AF;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.tone-meta{display:flex;gap:8px;margin-bottom:16px;align-items:center}
+.genre-badge{font-size:11px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.5px}
+.genre-metal{background:#FEF2F2;color:#991B1B}
+.genre-rock{background:#EFF6FF;color:#1D4ED8}
+.genre-blues{background:#F5F3FF;color:#6D28D9}
+.genre-punk{background:#FFF7ED;color:#C2410C}
+.decade{font-size:11px;color:#9CA3AF;font-weight:600}
+.tone-footer{display:flex;align-items:center;gap:12px;margin-top:auto}
+.like-count{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.view-btn{background:var(--blue);color:white;border:none;padding:12px 0;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;flex:1;transition:background 0.2s}
+.view-btn:hover{background:#1D4ED8}
+footer{background:#0F0F13;padding:40px 48px;text-align:center;margin-top:60px}
+footer p{font-size:13px;color:rgba(255,255,255,0.28)}
+footer a{color:rgba(255,255,255,0.4);text-decoration:none;margin:0 8px}
+footer a:hover{color:white}
+@media(max-width:900px){.tone-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.tone-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Tone<span>Fit</span>
+  </a>
+  <a href="/app" class="nav-app">🎸 Adapt Tone</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title"><span>Tone</span> Database</h1>
+    <p class="page-sub">Browse tones researched by the community. Find settings for your favorite songs and adapt them to your gear.</p>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="searchInput" placeholder="Search songs, artists, or gear..." oninput="filterTones()"/>
+  </div>
+
+  <div class="filters-wrap">
+    <div class="filter-group">
+      <button class="pill active" onclick="setFilter('instrument','All')">All</button>
+      <button class="pill" onclick="setFilter('instrument','Guitar')">🎸 Guitar</button>
+      <button class="pill" onclick="setFilter('instrument','Bass')">🎸 Bass</button>
+      <div class="filter-divider"></div>
+      <button class="pill active" onclick="setFilter('part','All Parts')">All Parts</button>
+      <button class="pill" onclick="setFilter('part','Riff')">Riff</button>
+      <button class="pill" onclick="setFilter('part','Solo')">Solo</button>
+      <div class="filter-divider"></div>
+      <button class="pill active" onclick="setFilter('tone','All Tones')">All Tones</button>
+      <button class="pill" onclick="setFilter('tone','Clean')">Clean</button>
+      <button class="pill" onclick="setFilter('tone','Distorted')">Distorted</button>
+    </div>
+    <div class="filter-group">
+      <button class="pill active" onclick="setSort('Top')">Top</button>
+      <button class="pill" onclick="setSort('Popular')">Popular</button>
+      <button class="pill" onclick="setSort('Recent')">Recent</button>
+    </div>
+  </div>
+
+  <div class="tone-grid" id="toneGrid"></div>
+</div>
+
+<footer>
+  <p>© 2026 ToneFit by adprofit. All rights reserved. &nbsp;·&nbsp; <a href="/privacy">Privacy</a> <a href="/terms">Terms</a> <a href="/refund">Refund Policy</a></p>
+</footer>
+
+<script>
+const tones = [
+  {id:'master-of-puppets-metallica',song:'Master of Puppets',artist:'Metallica',instrument:'Guitar',part:'Riff',tone:'Distorted',versions:728,guitar:'ESP MX22 (black finish)',amp:'Mesa/Boogie Mark IIC+ (preamp into power amp)',genre:'METAL',decade:'1980S',likes:78,
+   type:'RIFF TONE',tags:['Guitar','Riff','Distorted'],
+   originalGuitar:'ESP MX-220 (black finish, James Hetfield signature setup)',
+   originalAmp:'Mesa/Boogie Mark IIC+ (preamp section only into a separate power amp)',
+   ampSettings:{gain:8,bass:7,mid:5,treble:7,presence:6,reverb:2},
+   notes:'Recorded at the Sweet Silence Studio in Copenhagen, 1986. Hetfield used his ESP Explorer through a Mesa/Boogie Mark IIC+. The rhythm tone is heavily palm-muted with tight downpicking.',
+   difficulty:4,difficultyNote:'Requires very precise palm muting and downpicking technique at high tempo.',
+   effects:['Noise Gate','Mesa/Boogie Mark IIC+ built-in effects']},
+  {id:'enter-sandman-metallica',song:'Enter Sandman',artist:'Metallica',instrument:'Guitar',part:'Riff',tone:'Distorted',versions:362,guitar:'ESP MX-220 (black finish)',amp:'Mesa/Boogie Mark IIC',genre:'METAL',decade:'1990S',likes:44,
+   type:'RIFF TONE',originalGuitar:'ESP MX-220 (black finish)',originalAmp:'Mesa/Boogie Mark IIC',
+   ampSettings:{gain:7,bass:6,mid:4,treble:7,presence:6,reverb:1},
+   notes:'From the Black Album (1991). The tone is slightly cleaner than Master of Puppets, with more compression.',
+   difficulty:3,difficultyNote:'Good entry point for Metallica riffs. Palm muting is key.',
+   effects:['Noise Gate','Chorus (light)']},
+  {id:'sweet-child-o-mine-guns-n-roses',song:"Sweet Child O' Mine",artist:"Guns N' Roses",instrument:'Guitar',part:'Riff',tone:'Distorted',versions:247,guitar:"Mid-'80s Kramer Baretta",amp:'1977 Marshall Super Lead 100-watt',genre:'ROCK',decade:'1980S',likes:38,
+   type:'RIFF TONE',originalGuitar:"Mid-'80s Kramer Baretta (white)",originalAmp:'1977 Marshall Super Lead 100-watt (modified)',
+   ampSettings:{gain:6,bass:5,mid:7,treble:7,presence:7,reverb:2},
+   notes:"Slash used his famous Kramer through a modified Marshall Super Lead. The intro riff uses the neck pickup for a warmer tone.",
+   difficulty:3,difficultyNote:'The intro pattern requires clean articulation at moderate speed.',
+   effects:['MXR Phase 90 (subtle)','Boss CE-2 Chorus']},
+  {id:'hotel-california-eagles',song:'Hotel California',artist:'Eagles',instrument:'Guitar',part:'Solo',tone:'Distorted',versions:237,guitar:'Fender Telecaster (circa 1953-59)',amp:"Fender 'Black Panel' Deluxe",genre:'ROCK',decade:'1970S',likes:25,
+   type:'SOLO TONE',originalGuitar:'Fender Telecaster (circa 1953-59, maple neck, bridge pickup, as used by Joe Walsh for the solo)',originalAmp:"Fender 'Black Panel' Deluxe Amp (1963-1966, studio recording, as confirmed by multiple sources)",
+   ampSettings:{gain:5,bass:5.5,mid:6,treble:6.5,presence:5,reverb:4},
+   notes:'Studio recording, 1976. Joe Walsh played the iconic solo using a vintage Fender Telecaster into a Fender Black Panel Deluxe amp, with a Maestro Echoplex tape delay and an MXR Phase 90 phaser.',
+   difficulty:4,difficultyNote:'The solo requires advanced bending, vibrato, and phrasing, as well as tight synchronization for harmonized lines.',
+   effects:['Maestro Echoplex EP-3 (tape delay)','MXR Phase 90 (subtle phasing)']},
+  {id:'comfortably-numb-pink-floyd',song:'Comfortably Numb',artist:'Pink Floyd',instrument:'Guitar',part:'Solo',tone:'Distorted',versions:198,guitar:'1969 Fender Stratocaster',amp:'Hiwatt DR103 100-watt',genre:'ROCK',decade:'1970S',likes:10,
+   type:'SOLO TONE',originalGuitar:'1969 Fender Stratocaster (black, "The Black Strat")',originalAmp:'Hiwatt DR103 100-watt head',
+   ampSettings:{gain:4,bass:5,mid:5,treble:6,presence:6,reverb:3},
+   notes:"David Gilmour's most celebrated solo. Recorded in 1979, using his famous Black Strat through Hiwatt amps with extensive delay and chorus.",
+   difficulty:5,difficultyNote:'One of the most expressive solos ever recorded. Requires exceptional feel, bends and sustain control.',
+   effects:['Boss CE-2 Chorus','Electro-Harmonix Electric Mistress','MXR Digital Delay']},
+  {id:'smells-like-teen-spirit-nirvana',song:'Smells Like Teen Spirit',artist:'Nirvana',instrument:'Guitar',part:'Riff',tone:'Distorted',versions:196,guitar:"Early-'90s Japanese Fender Stratocaster",amp:'Mesa/Boogie Studio Preamp',genre:'ROCK',decade:'1990S',likes:14,
+   type:'RIFF TONE',originalGuitar:"Early-'90s Japanese Fender Stratocaster",originalAmp:'Mesa/Boogie Studio Preamp into Crown power amp',
+   ampSettings:{gain:9,bass:7,mid:3,treble:6,presence:5,reverb:1},
+   notes:'Kurt Cobain scooped the mids heavily for this tone. The Boss DS-2 Turbo Distortion was used for additional gain.',
+   difficulty:2,difficultyNote:'Great beginner song. Simple power chords and the tone is mostly about gain and mid-scoop.',
+   effects:['Boss DS-2 Turbo Distortion','Electro-Harmonix Small Clone Chorus']},
+  {id:'back-in-black-acdc',song:'Back in Black',artist:'AC/DC',instrument:'Guitar',part:'Riff',tone:'Distorted',versions:312,guitar:'1974 Gibson SG',amp:'Marshall 1959 Super Lead',genre:'ROCK',decade:'1980S',likes:52,
+   type:'RIFF TONE',originalGuitar:'1974 Gibson SG (Standard)',originalAmp:'Marshall 1959 Super Lead 100-watt (cranked)',
+   ampSettings:{gain:7,bass:5,mid:8,treble:7,presence:8,reverb:1},
+   notes:"Angus Young's classic tone. The Marshall was cranked to near full volume for natural power amp distortion. Very minimal pedals.",
+   difficulty:2,difficultyNote:'Simple but iconic riff. Focus on tight palm muting and pick attack.',
+   effects:['None (amp only)']},
+  {id:'eruption-van-halen',song:'Eruption',artist:'Van Halen',instrument:'Guitar',part:'Solo',tone:'Distorted',versions:156,guitar:'Frankenstrat (custom built)',amp:'Marshall 1959 Super Lead (modified)',genre:'ROCK',decade:'1970S',likes:67,
+   type:'SOLO TONE',originalGuitar:'Frankenstrat (custom-built by Eddie Van Halen)',originalAmp:'Marshall 1959 Super Lead (modified "brown sound" setup)',
+   ampSettings:{gain:8,bass:6,mid:6,treble:7,presence:7,reverb:2},
+   notes:"Eddie Van Halen's revolutionary 1978 solo. The 'brown sound' was achieved through a variac-controlled Marshall.",
+   difficulty:5,difficultyNote:'Extremely difficult. Two-hand tapping at speed requires extensive practice.',
+   effects:['MXR Phase 90','Echoplex EP-3','Variac (power reduction)']},
+  {id:'nothing-else-matters-metallica',song:'Nothing Else Matters',artist:'Metallica',instrument:'Guitar',part:'Riff',tone:'Clean',versions:289,guitar:'Kirk Hammett Gibson Les Paul Custom',amp:'Mesa/Boogie Mark IIC+',genre:'METAL',decade:'1990S',likes:33,
+   type:'CLEAN TONE',originalGuitar:'Kirk Hammett Gibson Les Paul Custom',originalAmp:'Mesa/Boogie Mark IIC+ (clean channel)',
+   ampSettings:{gain:2,bass:5,mid:6,treble:6,presence:4,reverb:3},
+   notes:'One of Metallicas most accessible songs. Clean fingerpicked intro on the clean channel. Gain increases for the heavier sections.',
+   difficulty:2,difficultyNote:'Great intro for fingerpicking. The clean tone is warm and full.',
+   effects:['Light reverb','Slight chorus on clean parts']},
+];
+
+let filters = {instrument:'All', part:'All Parts', tone:'All Tones'};
+let sortBy = 'Top';
+
+function setFilter(type, val) {
+  filters[type] = val;
+  document.querySelectorAll('.pill').forEach(p => {
+    if(p.textContent.trim() === val) p.classList.add('active');
+    else if(['All','🎸 Guitar','🎸 Bass'].includes(p.textContent.trim()) && type==='instrument') p.classList.remove('active');
+    else if(['All Parts','Riff','Solo'].includes(p.textContent.trim()) && type==='part') p.classList.remove('active');
+    else if(['All Tones','Clean','Distorted'].includes(p.textContent.trim()) && type==='tone') p.classList.remove('active');
+  });
+  renderTones();
+}
+
+function setSort(val) {
+  sortBy = val;
+  document.querySelectorAll('.pill').forEach(p => {
+    if(['Top','Popular','Recent'].includes(p.textContent.trim())) p.classList.toggle('active', p.textContent.trim()===val);
+  });
+  renderTones();
+}
+
+function filterTones() { renderTones(); }
+
+function renderTones() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  let filtered = tones.filter(t => {
+    const matchSearch = !search || t.song.toLowerCase().includes(search) || t.artist.toLowerCase().includes(search) || t.genre.toLowerCase().includes(search);
+    const matchInstrument = filters.instrument==='All' || t.instrument===filters.instrument;
+    const matchPart = filters.part==='All Parts' || t.part===filters.part;
+    const matchTone = filters.tone==='All Tones' || t.tone===filters.tone;
+    return matchSearch && matchInstrument && matchPart && matchTone;
+  });
+  if(sortBy==='Top') filtered.sort((a,b)=>b.likes-a.likes);
+  else if(sortBy==='Popular') filtered.sort((a,b)=>b.versions-a.versions);
+  const grid = document.getElementById('toneGrid');
+  grid.innerHTML = filtered.map(t => `
+    <a href="/tone?id=${t.id}" class="tone-card">
+      <div class="tone-song">${t.song}</div>
+      <div class="tone-artist">${t.artist}</div>
+      <div class="tone-tags">
+        <span class="tag-grey">🎸 ${t.instrument}</span>
+        <span class="tag-grey">${t.part}</span>
+        <span class="${t.tone==='Distorted'?'tag-distorted':'tag-clean'}">${t.tone}</span>
+        <span class="tag-versions">${t.versions} versions</span>
+      </div>
+      <div class="tone-gear">🎸 ${t.guitar.substring(0,20)}... + 🔊 ${t.amp.substring(0,20)}...</div>
+      <div class="tone-meta">
+        <span class="genre-badge genre-${t.genre.toLowerCase()}">${t.genre}</span>
+        <span class="decade">${t.decade}</span>
+      </div>
+      <div class="tone-footer">
+        <span class="like-count">👍 ${t.likes}</span>
+        <button class="view-btn">View Tone</button>
+      </div>
+    </a>`).join('');
+}
+
+renderTones();
+</script>
+</body>
+</html>

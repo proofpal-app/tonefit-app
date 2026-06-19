@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tone Detail | ToneFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#2563EB;--text:#0D1117;--muted:#6B7280;--border:#E5E7EB;--bg:#F4F6FA}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1.5px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--blue)}
+.nav-app{background:var(--blue);color:white;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none}
+.page{max-width:1100px;margin:0 auto;padding:90px 24px 60px}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);text-decoration:none;margin-bottom:24px;font-weight:600}
+.back-link:hover{color:var(--text)}
+.page-layout{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start}
+.tone-type{font-size:12px;font-weight:800;color:var(--blue);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.tone-title{font-size:clamp(28px,4vw,44px);font-weight:900;letter-spacing:-2px;color:var(--text);margin-bottom:6px}
+.tone-artist{font-size:20px;color:var(--muted);margin-bottom:20px}
+.tone-tags{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.tag{padding:7px 16px;border-radius:100px;font-size:13px;font-weight:700}
+.tag-grey{background:#F3F4F6;color:#374151}
+.tag-genre{background:#EFF6FF;color:#1D4ED8}
+.tag-decade{background:#F3F4F6;color:#374151}
+.section-card{background:white;border:1.5px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.section-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:18px}
+.gear-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gear-item{background:#F8FAFF;border:1.5px solid var(--border);border-radius:12px;padding:16px}
+.gear-label{font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.gear-text{font-size:14px;color:var(--text);line-height:1.6}
+.settings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
+.settings-grid.full{grid-template-columns:repeat(6,1fr)}
+.setting-card{background:#F8FAFF;border:1.5px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.setting-label{font-size:10px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.setting-val{font-size:22px;font-weight:900;color:var(--blue);margin-bottom:8px}
+.setting-bar{height:4px;background:#E5E7EB;border-radius:100px;overflow:hidden}
+.setting-fill{height:100%;background:var(--blue);border-radius:100px}
+.blur-wrap{position:relative}
+.blur-content{filter:blur(6px);pointer-events:none;user-select:none}
+.unlock-overlay{text-align:center;padding:24px 0 8px}
+.unlock-text{font-size:14px;color:var(--muted);margin-bottom:14px}
+.unlock-btn{background:var(--blue);color:white;border:none;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.2s}
+.unlock-btn:hover{background:#1D4ED8}
+.effects-item{padding:12px 0;border-bottom:1px solid #F3F4F6;font-size:14px;color:#374151;display:flex;align-items:center;gap:8px}
+.effects-item:last-child{border-bottom:none}
+.effects-note{font-size:12px;color:#9CA3AF;margin-top:10px}
+.sidebar-card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.like-row{display:flex;align-items:center;gap:10px}
+.like-btn{background:none;border:1.5px solid var(--border);border-radius:100px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;color:var(--text);transition:all 0.2s}
+.like-btn:hover{border-color:var(--blue);color:var(--blue)}
+.like-btn.liked{background:#EFF6FF;border-color:#BFDBFE;color:var(--blue)}
+.researched-box{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;font-size:14px;color:#1D4ED8;line-height:1.6}
+.researched-box strong{font-weight:800}
+.sidebar-label{font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sidebar-label::before{content:'';width:6px;height:6px;background:var(--blue);border-radius:50%;display:inline-block}
+.notes-text{font-size:13px;color:#374151;line-height:1.7}
+.difficulty-dots{display:flex;gap:4px;margin-bottom:10px}
+.dot{width:14px;height:14px;border-radius:50%}
+.dot.filled{background:var(--blue)}
+.dot.empty{background:#E5E7EB}
+.difficulty-note{font-size:13px;color:#374151;line-height:1.6}
+.adapt-btn{width:100%;background:var(--blue);color:white;border:none;padding:16px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.2s}
+.adapt-btn:hover{background:#1D4ED8}
+.tone-char-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+footer{background:#0F0F13;padding:40px 48px;text-align:center;margin-top:60px}
+footer p{font-size:13px;color:rgba(255,255,255,0.28)}
+footer a{color:rgba(255,255,255,0.4);text-decoration:none;margin:0 8px}
+footer a:hover{color:white}
+@media(max-width:900px){.page-layout{grid-template-columns:1fr}.settings-grid.full{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2563EB"/><line x1="11" y1="6" x2="11" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="16" y1="4" x2="16" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="21" y1="6" x2="21" y2="26" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="8" y1="22" x2="24" y2="22" stroke="white" stroke-width="2.2" stroke-linecap="round"/><polyline points="13,15 16,19 23,11" fill="none" stroke="#93C5FD" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Tone<span>Fit</span>
+  </a>
+  <a href="/app" class="nav-app">🎸 Adapt Tone</a>
+</nav>
+
+<div class="page">
+  <a href="/community" class="back-link">← Back to Community</a>
+
+  <div class="page-layout">
+    <div id="mainContent"></div>
+    <div id="sidebar"></div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 ToneFit by adprofit. All rights reserved. &nbsp;·&nbsp; <a href="/privacy">Privacy</a> <a href="/terms">Terms</a></p>
+</footer>
+
+<script>
+const tones = {
+  'master-of-puppets-metallica':{song:'Master of Puppets',artist:'Metallica',type:'RIFF TONE',genre:'METAL',decade:'1980S',instrument:'Guitar',versions:728,likes:67,researchedTimes:1247,
+    originalGuitar:'ESP MX-220 (black finish, James Hetfield signature setup)',
+    originalAmp:'Mesa/Boogie Mark IIC+ (preamp section only into a separate power amp)',
+    ampSettings:{gain:8,bass:7,mid:5,treble:7,presence:6,reverb:2},
+    notes:'Recorded at the Sweet Silence Studio in Copenhagen, 1986. Hetfield used his ESP Explorer through a Mesa/Boogie Mark IIC+. The rhythm tone is heavily palm-muted with tight downpicking.',
+    difficulty:4,difficultyNote:'Requires very precise palm muting and downpicking technique at high tempo. Essential Metallica technique.',
+    effects:['🎛 Noise Gate','⚙️ Mesa/Boogie Mark IIC+ built-in effects','🎸 Boss NS-2 (live setup)'],
+    toneChar:['Heavy','Tight','Aggressive','Compressed','Dark','Palm-muted','High-gain','Punchy','Percussive','Metallic']},
+  'hotel-california-eagles':{song:'Hotel California',artist:'Eagles',type:'SOLO TONE',genre:'ROCK',decade:'1970S',instrument:'Guitar',versions:237,likes:25,researchedTimes:892,
+    originalGuitar:'Fender Telecaster (circa 1953-59, maple neck, bridge pickup, as used by Joe Walsh for the solo)',
+    originalAmp:"Fender 'Black Panel' Deluxe Amp (1963-1966, studio recording, as confirmed by multiple sources)",
+    ampSettings:{gain:5,bass:5.5,mid:6,treble:6.5,presence:5,reverb:4},
+    notes:'Studio recording, 1976. Joe Walsh played the iconic solo using a vintage Fender Telecaster into a Fender Black Panel Deluxe amp, with a Maestro Echoplex tape delay and an MXR Phase 90 phaser.',
+    difficulty:4,difficultyNote:'The solo requires advanced bending, vibrato, and phrasing, as well as tight synchronization for harmonized lines.',
+    effects:['🎛 Maestro Echoplex EP-3 (tape delay)','🌊 MXR Phase 90 (subtle phasing)','🔊 Light amp reverb'],
+    toneChar:['Warm','Twangy','Vintage','Singing','Expressive','Harmonized','Delayed','Phasey','Clean-ish','Dynamic']},
+  'enter-sandman-metallica':{song:'Enter Sandman',artist:'Metallica',type:'RIFF TONE',genre:'METAL',decade:'1990S',instrument:'Guitar',versions:362,likes:44,researchedTimes:1089,
+    originalGuitar:'ESP MX-220 (black finish)',originalAmp:'Mesa/Boogie Mark IIC',
+    ampSettings:{gain:7,bass:6,mid:4,treble:7,presence:6,reverb:1},
+    notes:'From the Black Album (1991). Produced by Bob Rock. The tone is slightly cleaner than earlier Metallica, with more compression and less raw gain.',
+    difficulty:3,difficultyNote:'Good entry point for Metallica riffs. Focus on palm muting control.',
+    effects:['🎛 Noise Gate','⚙️ Boss NS-2','🎸 Light chorus'],
+    toneChar:['Heavy','Compressed','Mid-scooped','Tight','Punchy','Modern','Gain','Dark','Chunky','Powerful']},
+  'sweet-child-o-mine-guns-n-roses':{song:"Sweet Child O' Mine",artist:"Guns N' Roses",type:'RIFF TONE',genre:'ROCK',decade:'1980S',instrument:'Guitar',versions:247,likes:38,researchedTimes:743,
+    originalGuitar:"Mid-'80s Kramer Baretta (white)",originalAmp:'1977 Marshall Super Lead 100-watt (modified)',
+    ampSettings:{gain:6,bass:5,mid:7,treble:7,presence:7,reverb:2},
+    notes:"Slash used his famous Kramer through a modified Marshall Super Lead. The intro riff uses the neck pickup for a warmer tone.",
+    difficulty:3,difficultyNote:'The intro pattern requires clean articulation. Focus on pick accuracy.',
+    effects:['🌊 MXR Phase 90','🎛 Boss CE-2 Chorus','🔊 Dunlop Cry Baby Wah (sections)'],
+    toneChar:['Warm','Bright','Classic','Crunchy','Musical','Expressive','Vintage','Rock','Singing','Open']},
+  'comfortably-numb-pink-floyd':{song:'Comfortably Numb',artist:'Pink Floyd',type:'SOLO TONE',genre:'ROCK',decade:'1970S',instrument:'Guitar',versions:198,likes:10,researchedTimes:654,
+    originalGuitar:'1969 Fender Stratocaster (black, "The Black Strat")',originalAmp:'Hiwatt DR103 100-watt head',
+    ampSettings:{gain:4,bass:5,mid:5,treble:6,presence:6,reverb:3},
+    notes:"David Gilmour's most celebrated solo. Recorded in 1979, using his famous Black Strat through Hiwatt amps with extensive delay and chorus.",
+    difficulty:5,difficultyNote:'Requires exceptional feel, bends and sustain control. One of the most expressive solos ever.',
+    effects:['🌊 Boss CE-2 Chorus','⚡ Electro-Harmonix Electric Mistress','⏱ MXR Digital Delay'],
+    toneChar:['Smooth','Sustain','Emotional','Warm','Spacious','Delayed','Chorus','Expressive','Singing','Epic']},
+  'smells-like-teen-spirit-nirvana':{song:'Smells Like Teen Spirit',artist:'Nirvana',type:'RIFF TONE',genre:'ROCK',decade:'1990S',instrument:'Guitar',versions:196,likes:14,researchedTimes:521,
+    originalGuitar:"Early-'90s Japanese Fender Stratocaster",originalAmp:'Mesa/Boogie Studio Preamp into Crown power amp',
+    ampSettings:{gain:9,bass:7,mid:3,treble:6,presence:5,reverb:1},
+    notes:'Kurt Cobain scooped the mids heavily for this tone. The Boss DS-2 Turbo Distortion was used for additional gain.',
+    difficulty:2,difficultyNote:'Great beginner song. Simple power chords with heavy gain and mid-scoop.',
+    effects:['🎛 Boss DS-2 Turbo Distortion','🌊 Electro-Harmonix Small Clone Chorus'],
+    toneChar:['Grunge','Mid-scooped','Raw','Loud','Distorted','Punk','Simple','Powerful','Noisy','Thick']},
+  'back-in-black-acdc':{song:'Back in Black',artist:'AC/DC',type:'RIFF TONE',genre:'ROCK',decade:'1980S',instrument:'Guitar',versions:312,likes:52,researchedTimes:934,
+    originalGuitar:'1974 Gibson SG (Standard)',originalAmp:'Marshall 1959 Super Lead 100-watt (cranked)',
+    ampSettings:{gain:7,bass:5,mid:8,treble:7,presence:8,reverb:1},
+    notes:"Angus Young's classic tone. The Marshall was cranked to near full volume for natural power amp distortion.",
+    difficulty:2,difficultyNote:'Simple but iconic riff. Focus on tight palm muting and pick attack.',
+    effects:['🔊 None (amp only)'],
+    toneChar:['Raw','Crunchy','Classic','Loud','Mid-heavy','Natural','Warm','Rock','Punchy','Vintage']},
+  'eruption-van-halen':{song:'Eruption',artist:'Van Halen',type:'SOLO TONE',genre:'ROCK',decade:'1970S',instrument:'Guitar',versions:156,likes:67,researchedTimes:1102,
+    originalGuitar:'Frankenstrat (custom-built by Eddie Van Halen)',originalAmp:"Marshall 1959 Super Lead (modified 'brown sound' setup)",
+    ampSettings:{gain:8,bass:6,mid:6,treble:7,presence:7,reverb:2},
+    notes:"Eddie Van Halen's revolutionary 1978 solo. The 'brown sound' was achieved through a variac-controlled Marshall.",
+    difficulty:5,difficultyNote:'Extremely difficult. Two-hand tapping at speed requires extensive practice.',
+    effects:['🌊 MXR Phase 90','⏱ Echoplex EP-3','⚡ Variac (power reduction)'],
+    toneChar:['Bright','Singing','Harmonics','Tapping','Brown','Vintage','Warm','Dynamic','Expressive','Legendary']},
+  'nothing-else-matters-metallica':{song:'Nothing Else Matters',artist:'Metallica',type:'CLEAN TONE',genre:'METAL',decade:'1990S',instrument:'Guitar',versions:289,likes:33,researchedTimes:678,
+    originalGuitar:'Kirk Hammett Gibson Les Paul Custom',originalAmp:'Mesa/Boogie Mark IIC+ (clean channel)',
+    ampSettings:{gain:2,bass:5,mid:6,treble:6,presence:4,reverb:3},
+    notes:'Clean fingerpicked intro on the clean channel. Gain increases for the heavier sections.',
+    difficulty:2,difficultyNote:'Great intro for fingerpicking. The clean tone is warm and full.',
+    effects:['🌊 Light chorus','🔊 Slight reverb'],
+    toneChar:['Clean','Warm','Full','Fingerpicked','Dynamic','Emotional','Acoustic-like','Gentle','Melodic','Balanced']},
+};
+
+const isPaid = localStorage.getItem('tf_paid') === 'true';
+const urlParams = new URLSearchParams(window.location.search);
+if(urlParams.get('subscribed')==='true') localStorage.setItem('tf_paid','true');
+
+const id = urlParams.get('id') || 'hotel-california-eagles';
+const tone = tones[id] || tones['hotel-california-eagles'];
+
+document.title = tone.song + ' | ToneFit';
+
+let liked = false;
+
+function goToPlans() {
+  localStorage.setItem('tf_redirect', window.location.href);
+  window.location.href = '/plans';
+}
+
+function toggleLike() {
+  liked = !liked;
+  const btn = document.getElementById('likeBtn');
+  btn.classList.toggle('liked', liked);
+  btn.innerHTML = liked ? '👍 ' + (tone.likes + 1) + ' Liked!' : '👍 ' + tone.likes + ' Like this tone';
+}
+
+function renderMain() {
+  const settings = tone.ampSettings;
+  const settingKeys = Object.keys(settings);
+  const firstTwo = settingKeys.slice(0,2);
+  const restKeys = settingKeys.slice(2);
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="tone-type">${tone.type}</div>
+    <h1 class="tone-title">${tone.song}</h1>
+    <p class="tone-artist">${tone.artist}</p>
+    <div class="tone-tags">
+      <span class="tag tag-grey">🎸 ${tone.instrument}</span>
+      <span class="tag tag-genre">${tone.genre}</span>
+      <span class="tag tag-decade">${tone.decade}</span>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">Original Gear</div>
+      <div class="gear-grid">
+        <div class="gear-item">
+          <div class="gear-label">🎸 GUITAR</div>
+          <div class="gear-text">${tone.originalGuitar}</div>
+        </div>
+        <div class="gear-item">
+          <div class="gear-label">🔊 AMP</div>
+          <div class="gear-text">${tone.originalAmp}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">Amp Settings</div>
+      <div class="settings-grid" style="grid-template-columns:repeat(2,1fr)">
+        ${firstTwo.map(k=>`
+          <div class="setting-card">
+            <div class="setting-label">${k.toUpperCase()}</div>
+            <div class="setting-val">${settings[k]}</div>
+            <div class="setting-bar"><div class="setting-fill" style="width:${settings[k]*10}%"></div></div>
+          </div>`).join('')}
+      </div>
+      ${isPaid ? `
+        <div class="settings-grid" style="margin-top:10px;grid-template-columns:repeat(${restKeys.length},1fr)">
+          ${restKeys.map(k=>`
+            <div class="setting-card">
+              <div class="setting-label">${k.toUpperCase()}</div>
+              <div class="setting-val">${settings[k]}</div>
+              <div class="setting-bar"><div class="setting-fill" style="width:${settings[k]*10}%"></div></div>
+            </div>`).join('')}
+        </div>` : `
+        <div class="blur-wrap">
+          <div class="blur-content">
+            <div class="settings-grid" style="margin-top:10px;grid-template-columns:repeat(${restKeys.length},1fr)">
+              ${restKeys.map(k=>`
+                <div class="setting-card">
+                  <div class="setting-label">${k.toUpperCase()}</div>
+                  <div class="setting-val">${settings[k]}</div>
+                  <div class="setting-bar"><div class="setting-fill" style="width:${settings[k]*10}%"></div></div>
+                </div>`).join('')}
+            </div>
+          </div>
+          <div class="unlock-overlay">
+            <p class="unlock-text">See every amp setting, effect, and signal chain detail</p>
+            <button class="unlock-btn" onclick="goToPlans()">Unlock Full Tone Details</button>
+          </div>
+        </div>`}
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">Effects & Signal Chain</div>
+      ${isPaid ? `
+        <div>${tone.effects.map(e=>`<div class="effects-item">${e}</div>`).join('')}</div>` : `
+        <div class="blur-content">
+          ${tone.effects.map(e=>`<div class="effects-item">${e}</div>`).join('')}
+        </div>
+        <p class="effects-note">Full effects chain and signal path included</p>`}
+    </div>`;
+}
+
+function renderSidebar() {
+  const dots = Array.from({length:5},(_,i)=>`<div class="dot ${i<tone.difficulty?'filled':'empty'}"></div>`).join('');
+  document.getElementById('sidebar').innerHTML = `
+    <div class="sidebar-card">
+      <div class="like-row">
+        <button class="like-btn" id="likeBtn" onclick="toggleLike()">👍 ${tone.likes} Like this tone</button>
+      </div>
+    </div>
+    <div class="researched-box" style="margin-bottom:12px">
+      This tone has been researched <strong>${tone.researchedTimes} times</strong> by the community
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-label">NOTES</div>
+      <div class="notes-text">${tone.notes}</div>
+    </div>
+    <div class="sidebar-card">
+      <div class="tone-char-row">
+        <div class="sidebar-label" style="margin-bottom:0">TONE CHARACTER (${tone.toneChar.length})</div>
+        <span style="color:#9CA3AF">∨</span>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-label">DIFFICULTY</div>
+      <div class="difficulty-dots">${dots}</div>
+      <div class="difficulty-note">${tone.difficultyNote}</div>
+    </div>
+    <button class="adapt-btn" onclick="${isPaid ? "window.location.href='/app'" : 'goToPlans()'}">
+      🔊 Adapt to My Gear
+    </button>`;
+}
+
+renderMain();
+renderSidebar();
+</script>
+</body>
+</html>
