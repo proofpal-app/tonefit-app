@@ -1124,6 +1124,31 @@ function loadPreset(val) {
   if(!val) { document.getElementById('presetActive').style.display='none'; return; }
   document.getElementById('presetActive').style.display = 'block';
   document.getElementById('presetActiveText').textContent = 'Using preset: ' + val;
+
+  // Split "Guitar + Amp" and autofill the manual fields
+  const sep = val.indexOf(' + ');
+  const guitarName = sep !== -1 ? val.slice(0, sep) : val;
+  const ampName    = sep !== -1 ? val.slice(sep + 3) : '';
+
+  if (guitarName) {
+    const guitarSel = document.getElementById('guitarSelect');
+    for (let o of guitarSel.options) {
+      if (o.value === guitarName || o.text === guitarName) { o.selected = true; break; }
+    }
+    document.getElementById('selectedGuitarName').textContent = guitarName;
+  }
+
+  if (ampName) {
+    document.getElementById('multiFXInput').value = ampName;
+    document.getElementById('selectedAmpName').textContent = ampName;
+    document.getElementById('multiFXUnitName').textContent = ampName;
+    const ampSel = document.getElementById('ampSelect');
+    for (let o of ampSel.options) {
+      if (o.value === ampName || o.text === ampName) { o.selected = true; break; }
+    }
+  }
+
+  checkResearchReady();
 }
 
 // ── SONGSTERR + BACKING TRACK ──
@@ -1255,9 +1280,20 @@ function saveTone(song, artist) {
   if(btn) { btn.textContent = '✓ Saved!'; btn.style.background = '#16A34A'; }
 }
 // ── HANDLE RESEARCH (paywall check) ──
-function handleResearch() {
+async function handleResearch() {
   const btn = document.getElementById('researchBtn');
   if(btn.classList.contains('dim')) return;
+
+  let isPaid = localStorage.getItem('tf_paid') === 'true';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user?.user_metadata?.paid === true) {
+      isPaid = true;
+      localStorage.setItem('tf_paid', 'true');
+    }
+  } catch(e) {}
+
   if(!isPaid) { openPaywall(); return; }
   runResearch();
 }
