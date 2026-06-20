@@ -237,11 +237,11 @@ main{min-height:100vh;display:flex;align-items:flex-start;justify-content:center
       <button class="quick-pill" onclick="quickSelect(this,'Squier Telecaster')">Squier Telecaster</button>
     </div>
 
-    <button class="cta-btn" id="ctaBtn" disabled>Select a guitar to continue</button>
+    <button class="cta-btn" id="ctaBtn" disabled onclick="goNext()">Select a guitar to continue</button>
 
     <div class="bottom-row">
       <button class="back-btn" onclick="history.back()">Back</button>
-      <button class="add-later">I'll add my gear later</button>
+      <button class="add-later" onclick="skipOnboarding()">I'll set up my gear later</button>
     </div>
 
   </div>
