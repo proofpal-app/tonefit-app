@@ -470,9 +470,7 @@ function toggleGuitar(name, row) {
     selected.push(name);
   }
   row.classList.toggle('selected-row');
-  row.querySelector('.guitar-checkbox').querySelector('svg').style.display = selected.includes(name) ? 'block' : 'none';
-  row.style.background = selected.includes(name) ? '#EFF6FF' : '';
-  row.querySelector('.guitar-row-name').style.color = selected.includes(name) ? '#2563EB' : '';
+  renderGuitarList(guitars.filter(g => currentBrand === 'all' || g.brand === currentBrand));
   updateUI();
 }
 
@@ -518,5 +516,14 @@ function updateUI() {
 }
 
 renderGuitarList(guitars);
+function skipOnboarding() {
+  localStorage.setItem('tonefit_onboarding_done', 'true');
+  window.location.href = '/app';
+}
+
+function goNext() {
+  localStorage.setItem('tonefit_guitars', JSON.stringify(selected));
+  window.location.href = '/onboarding-amp';
+}
 </script>
 </body></html>
