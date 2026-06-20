@@ -408,6 +408,64 @@ footer{background:#0F0F13;color:rgba(255,255,255,0.8);padding:64px 48px 32px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:900px){.results-grid{grid-template-columns:1fr}.manual-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}.trending-cards{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.footer-grid{grid-template-columns:1fr}nav{padding:14px 18px}.app-section{padding:0 16px 60px}.card-body{padding:0 16px 20px}.results-grid{grid-template-columns:1fr}.tone-grid{grid-template-columns:1fr 1fr 1fr}.trending-cards{grid-template-columns:repeat(2,1fr)}.paywall-btns{grid-template-columns:1fr}}
+
+@media(max-width:768px){
+  /* 1. Main app container – single column, full width */
+  .app-section{padding:0 12px 60px}
+  .section-card{border-radius:14px;margin-bottom:14px}
+  .section-card-header{padding:18px 16px 14px;gap:10px}
+  .card-body{padding:0 14px 20px}
+
+  /* 2. Guitar/amp dropdowns – full width, 48px min touch target */
+  .manual-grid{grid-template-columns:1fr;gap:14px}
+  .gear-select{min-height:48px;padding:13px 16px;font-size:16px}
+
+  /* 3. Research & Adapt button – full width, bigger tap area */
+  .research-btn{padding:20px;font-size:18px;border-radius:100px}
+  .extra-btns{grid-template-columns:1fr;gap:10px}
+
+  /* 4. Results cards – full width, stack vertically, reduce padding */
+  .results-grid{grid-template-columns:1fr;gap:16px}
+  .amp-card{padding:16px}
+  .guitar-ctrl-card{padding:16px}
+  .locked-card{padding:32px 20px}
+  .orig-gear-card{margin-bottom:10px}
+
+  /* 5. Amp knobs/bars grid – 3 columns max */
+  .amp-grid{grid-template-columns:repeat(3,1fr)}
+  .ctrl-grid{grid-template-columns:repeat(3,1fr)}
+
+  /* 6. Mode toggle – full width buttons, larger tap area */
+  .mode-toggle{width:100%}
+  .mode-box{width:100%;justify-content:center}
+  .mode-btn{flex:1;padding:13px 12px;font-size:15px}
+
+  /* 7. Navbar – reduce padding */
+  nav{padding:12px 14px}
+  .hamburger{padding:10px 12px}
+  .footer-logo-text{font-size:17px}
+
+  /* 8. Font sizes – reduce headings ~20% on mobile */
+  .hero-title{font-size:clamp(44px,11vw,68px);letter-spacing:-2px}
+  .hero-sub{font-size:16px;margin-bottom:28px}
+  .section-title{font-size:19px;letter-spacing:-0.5px}
+  .trending-title{font-size:22px}
+  .locked-title{font-size:20px}
+  .paywall-heading{font-size:21px}
+
+  /* 9. Preset dropdown – full width */
+  #presetSelect,.preset-dropdown{width:100%}
+
+  /* 10. Horizontal scrolling elements */
+  .trending-cards{overflow-x:auto;display:flex;flex-wrap:nowrap;gap:12px;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+  .trend-card{min-width:190px;flex-shrink:0}
+  .builtin-pills{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .builtin-pill{flex-shrink:0}
+  .step-tracker{overflow-x:auto;padding-bottom:8px;justify-content:flex-start;-webkit-overflow-scrolling:touch}
+  .tone-grid{grid-template-columns:repeat(2,1fr)}
+  .part-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
