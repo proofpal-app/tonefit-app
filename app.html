@@ -913,6 +913,7 @@ footer{background:#0F0F13;color:rgba(255,255,255,0.8);padding:64px 48px 32px}
   <div class="footer-bottom"><p>© 2026 ToneFit. All rights reserved.</p></div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── STATE ──
 if(!localStorage.getItem('tonefit_onboarding_done')) {
@@ -920,6 +921,8 @@ if(!localStorage.getItem('tonefit_onboarding_done')) {
 }
 let currentMode = 'guitar';
 let isPaid = localStorage.getItem('tf_paid') === 'true';
+const { createClient } = supabase;
+const sb = createClient('https://gyjsrhsmsflqjxppmjaz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo');
 const urlParams = new URLSearchParams(window.location.search);
 if(urlParams.get('subscribed')==='true'){ localStorage.setItem('tf_paid','true'); isPaid = true; }
 
@@ -1244,7 +1247,8 @@ function saveTone(song, artist) {
   localStorage.setItem('tf_savedTones', JSON.stringify(tones));
   const btn = document.querySelector('button[onclick*="saveTone"]');
   if(btn) { btn.textContent = '✓ Saved!'; btn.style.background = '#16A34A'; }
-}// ── HANDLE RESEARCH (paywall check) ──
+}
+// ── HANDLE RESEARCH (paywall check) ──
 function handleResearch() {
   const btn = document.getElementById('researchBtn');
   if(btn.classList.contains('dim')) return;
