@@ -1,5 +1,5 @@
 {
- "cleanUrls": false,
+  "cleanUrls": false,
   "trailingSlash": false,
   "rewrites": [
     { "source": "/app", "destination": "/app.html" },
@@ -21,7 +21,7 @@
     { "source": "/gear", "destination": "/gear.html" },
     { "source": "/library", "destination": "/library.html" },
     { "source": "/community", "destination": "/community.html" },
-    { "source": "/tone/:id*", "destination": "/tone-detail.html" },
+    { "source": "/tone", "destination": "/tone-detail.html" },
     { "source": "/google28e11bd7ed77103c.html", "destination": "/google28e11bd7ed77103c.html" },
     { "source": "/404", "destination": "/404.html" }
   ]
