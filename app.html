@@ -915,7 +915,9 @@ footer{background:#0F0F13;color:rgba(255,255,255,0.8);padding:64px 48px 32px}
 
 <script>
 // ── STATE ──
-let currentMode = 'guitar';
+if(!localStorage.getItem('tonefit_onboarding_done')) {
+  window.location.href = '/onboarding-gear';
+}let currentMode = 'guitar';
 let isPaid = localStorage.getItem('tf_paid') === 'true';
 const urlParams = new URLSearchParams(window.location.search);
 if(urlParams.get('subscribed')==='true'){ localStorage.setItem('tf_paid','true'); isPaid = true; }

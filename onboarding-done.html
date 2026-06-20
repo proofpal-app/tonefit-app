@@ -70,6 +70,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 
 </main>
 
 <script>
+  localStorage.setItem('tonefit_onboarding_done', 'true');
 // Build preset name from saved selections
 const guitars = JSON.parse(localStorage.getItem('tonefit_guitars') || '["Squier Stratocaster"]');
 const multifx = JSON.parse(localStorage.getItem('tonefit_multifx') || '["Helix LT"]');
