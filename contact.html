@@ -180,7 +180,7 @@ async function submitRequest() {
   btn.textContent = 'Submitting...';
 
   try {
-    await fetch('https://formspree.io/f/contact@tonefit.com', {
+    await fetch('https://formspree.io/f/xlgkqoqw', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type, name, info, email, _subject: 'ToneFit Feature Request: ' + name })
