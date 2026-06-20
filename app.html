@@ -917,7 +917,8 @@ footer{background:#0F0F13;color:rgba(255,255,255,0.8);padding:64px 48px 32px}
 // ── STATE ──
 if(!localStorage.getItem('tonefit_onboarding_done')) {
   window.location.href = '/onboarding-gear';
-}let currentMode = 'guitar';
+}
+let currentMode = 'guitar';
 let isPaid = localStorage.getItem('tf_paid') === 'true';
 const urlParams = new URLSearchParams(window.location.search);
 if(urlParams.get('subscribed')==='true'){ localStorage.setItem('tf_paid','true'); isPaid = true; }
@@ -1224,7 +1225,26 @@ function setBassTone(t) {
   document.getElementById('bassDistorted').classList.toggle('bass-active-btn', t==='distorted');
 }
 
-// ── HANDLE RESEARCH (paywall check) ──
+function showToast() {
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2)';
+  toast.innerHTML = '✓ Tone adapted to your gear! <span onclick="this.parentElement.remove()" style="cursor:pointer;opacity:0.7;margin-left:8px">✕</span>';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+function saveTone(song, artist) {
+  if(!isPaid) { openPaywall(); return; }
+  const guitar = currentMode==='bass' ? document.getElementById('bassGuitarSelect').value : document.getElementById('guitarSelect').value;
+  const amp = currentMode==='bass' ? document.getElementById('bassAmpSelect').value : (document.getElementById('multiFXInput').value || document.getElementById('ampSelect').value);
+  const tones = JSON.parse(localStorage.getItem('tf_savedTones') || '[]');
+  const exists = tones.find(t => t.song === song && t.artist === artist && t.guitar === guitar);
+  if(exists) { alert('This tone is already saved!'); return; }
+  tones.push({ song, artist, guitar, amp, date: new Date().toLocaleDateString('en-IN'), savedAt: Date.now() });
+  localStorage.setItem('tf_savedTones', JSON.stringify(tones));
+  const btn = document.querySelector('button[onclick*="saveTone"]');
+  if(btn) { btn.textContent = '✓ Saved!'; btn.style.background = '#16A34A'; }
+}// ── HANDLE RESEARCH (paywall check) ──
 function handleResearch() {
   const btn = document.getElementById('researchBtn');
   if(btn.classList.contains('dim')) return;
@@ -1315,10 +1335,58 @@ async function runResearch() {
     const adapted = d.adaptedSettings;
     const adaptedBars = ampKnobs.map(k => { const val = adapted?.ampSettings?.[k] ?? d.ampSettings?.[k] ?? 5; return `<div class="amp-knob"><div class="amp-knob-label">${k.toUpperCase()}</div><div class="amp-knob-val">${val}</div><div class="amp-bar-track"><div class="amp-bar-fill" style="width:${val*10}%;background:var(--accent)"></div></div></div>`; }).join('');
 
+    const gearName = (currentMode==='bass' ? document.getElementById('bassGuitarSelect').value : document.getElementById('guitarSelect').value) + ' + ' + (currentMode==='bass' ? document.getElementById('bassAmpSelect').value : (document.getElementById('multiFXInput').value || document.getElementById('ampSelect').value));
+
     document.getElementById('adaptedResults').innerHTML = `
-      <div class="orig-gear-card" style="border-color:#BFDBFE"><div class="orig-gear-header" style="color:var(--accent)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg><span>Your Gear Setup</span></div><p style="font-size:14px;color:#374151;line-height:1.6;padding:12px 18px">${adapted?.summary || 'Settings adapted for your gear'}</p></div>
-      <div class="amp-card" style="border-color:#BFDBFE;background:#F8FAFF"><div class="amp-header"><div class="amp-title" style="color:var(--accent)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Your Amp Settings</div><span class="orig-badge" style="background:#EFF6FF;color:var(--accent)">Adapted</span></div><div class="amp-grid">${adaptedBars}</div></div>
+      <div style="background:white;border:1.5px solid #BFDBFE;border-radius:16px;padding:20px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="width:44px;height:44px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:white;fill:none;stroke-width:1.8;stroke-linecap:round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div>
+            <div style="font-size:18px;font-weight:900;color:#0D1117">Your Adapted Tone</div>
+            <div style="font-size:13px;color:#6B7280;margin-top:2px">${gearName}</div>
+          </div>
+        </div>
+        <button onclick="saveTone('${song}','${artist}')" style="width:100%;background:var(--accent);color:white;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px">✓ Save This Tone</button>
+        <div style="background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:10px;padding:12px 16px;font-size:13px;color:#92400E;font-weight:600">🎸 Now get the chords for <strong>${song}</strong> by ${artist} <a href="https://www.google.com/search?q=${encodeURIComponent(song+' '+artist+' chords')}" target="_blank" style="color:#92400E">→</a></div>
+      </div>
+
+      ${adapted?.pickupChoice ? `<div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#0D1117;margin-bottom:8px"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>Pickup Choice</div><div style="font-size:15px;color:#374151">${adapted.pickupChoice}</div></div>` : ''}
+
+      ${adapted?.ampPreset ? `<div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:14px;padding:18px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#92400E;margin-bottom:8px">🔊 Amp Configuration</div><div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">RECOMMENDED PRESET</div><div style="font-size:16px;font-weight:800;color:#EA580C">${adapted.ampPreset}</div></div>` : ''}
+
+      <div class="amp-card" style="border-color:#BFDBFE;background:#F8FAFF"><div class="amp-header"><div class="amp-title" style="color:var(--accent)"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Amp Settings</div><span class="orig-badge" style="background:#EFF6FF;color:var(--accent)">Adapted</span></div><div class="amp-grid">${adaptedBars}</div></div>
+
+      <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px">
+        <div style="font-size:14px;font-weight:700;color:#0D1117;margin-bottom:12px">🎸 ${currentMode==='bass'?'Bass':'Guitar'} Controls</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:#F8FAFF;border-radius:10px;padding:14px"><div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px">VOLUME</div><div style="font-size:22px;font-weight:900;color:var(--accent)">${d.guitarControls?.volume||'7-8'}</div></div>
+          <div style="background:#F8FAFF;border-radius:10px;padding:14px"><div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:6px">TONE</div><div style="font-size:22px;font-weight:900;color:var(--accent)">${d.guitarControls?.tone||'6-7'}</div></div>
+        </div>
+      </div>
+
+      ${adapted?.ampEffectsSettings?.length ? `
+      <div style="background:white;border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px">
+        <div style="font-size:14px;font-weight:700;color:#0D1117;margin-bottom:12px">🎛 Effects & Pedals</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">SIGNAL CHAIN</div>
+        <div style="font-size:13px;font-weight:600;color:var(--accent);background:#F8FAFF;border-radius:8px;padding:10px 12px;margin-bottom:14px">${d.signalChain||'Guitar → Amp'}</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9CA3AF;margin-bottom:8px">AMP EFFECTS SETTINGS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          ${adapted.ampEffectsSettings.map(e=>`<div style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:10px;padding:12px"><div style="font-size:14px;font-weight:800;color:#166534;margin-bottom:2px">${e.name}</div><div style="font-size:12px;color:#16A34A">${e.type||''}</div>${e.value?`<div style="font-size:16px;font-weight:900;color:#16A34A">${e.value}</div>`:''}<div style="font-size:12px;color:#6B7280;margin-top:4px">${e.note||''}</div></div>`).join('')}
+        </div>
+        ${adapted?.missingEffects?.length ? `
+        <div style="font-size:11px;font-weight:700;color:#F59E0B;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⚠ MISSING EFFECTS</div>
+        ${adapted.missingEffects.map(e=>`<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><span style="font-size:14px;font-weight:700;color:#0D1117">${e.name}</span><span style="background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px">${e.importance||'nice-to-have'}</span></div><div style="font-size:13px;color:#92400E">${e.note||''}</div></div>`).join('')}` : ''}
+        ${adapted?.playingNotes?.length ? `
+        <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px;padding:12px;margin-top:8px">
+          <div style="font-size:11px;font-weight:700;color:#1D4ED8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🎵 PLAYING NOTES</div>
+          ${adapted.playingNotes.map(n=>`<div style="font-size:13px;color:#1E40AF;margin-bottom:4px">· ${n}</div>`).join('')}
+        </div>` : ''}
+      </div>` : ''}
+
       ${adapted?.tips?.length ? `<div class="sources-card" style="border-color:#BFDBFE"><div class="sources-header" style="color:var(--accent)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Tips for Your Gear</div>${adapted.tips.map(t=>`<div style="font-size:14px;color:#374151;padding:8px 0;border-bottom:1px solid #F3F4F6">💡 ${t}</div>`).join('')}</div>` : ''}`;
+
+    // Show success toast
+    showToast();
 
   } catch(err) {
     document.getElementById('originalResults').innerHTML = `<div style="text-align:center;padding:40px 20px"><div style="font-size:32px;margin-bottom:12px">⚠️</div><div style="font-size:16px;font-weight:700;color:#0D1117;margin-bottom:8px">Research failed</div><div style="font-size:14px;color:#6B7280">${err.message}</div></div>`;
