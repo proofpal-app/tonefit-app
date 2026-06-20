@@ -64,7 +64,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 
 
   <p class="instruction">Your presets are ready to use on the main page. Just select one from the preset dropdown and start matching tones.</p>
 
-  <a href="/app" class="cta-btn">Start Matching Tones</a>
+  <a href="/app" class="cta-btn" id="ctaBtn" onclick="goNext()">Start Matching Tones</a>
 
 </div>
 </main>
@@ -82,5 +82,13 @@ const secondary = multifx[0] || amps[0] || null;
 document.getElementById('presetBox').textContent = secondary
   ? `${primary} + ${secondary}`
   : primary;
+
+function skipOnboarding() {
+  localStorage.setItem('tonefit_onboarding_done', 'true');
+  window.location.href = '/app';
+}
+function goNext() {
+  localStorage.setItem('tonefit_onboarding_done', 'true'); window.location.href = '/app';
+}
 </script>
 </body></html>

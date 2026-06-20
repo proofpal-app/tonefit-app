@@ -156,10 +156,10 @@ main{min-height:100vh;display:flex;align-items:flex-start;justify-content:center
   <div class="quick-label">QUICK SELECT</div>
   <div class="quick-pills" id="quickPills"></div>
 
-  <button class="cta-btn" id="ctaBtn" disabled>Select an amp or multi-FX to continue</button>
+  <button class="cta-btn" id="ctaBtn" disabled onclick="goNext()">Select an amp or multi-FX to continue</button>
   <div class="bottom-row">
     <button class="back-btn" onclick="history.back()">Back</button>
-    <button class="add-later">I'll add my gear later</button>
+    <button class="add-later" onclick="skipOnboarding()">I'll add my gear later</button>
   </div>
 
 </div>
@@ -478,5 +478,14 @@ function updateUI() {
 renderBrandPills();
 renderQuickPills();
 updateUI();
+
+function skipOnboarding() {
+  localStorage.setItem('tonefit_onboarding_done', 'true');
+  window.location.href = '/app';
+}
+function goNext() {
+  localStorage.setItem('tonefit_amps', JSON.stringify(selected));
+  window.location.href = '/onboarding-extras';
+}
 </script>
 </body></html>

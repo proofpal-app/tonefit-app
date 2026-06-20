@@ -74,7 +74,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 
 
   <p class="tailor-note">Tone adaptations will be tailored to your exact gear</p>
 
-  <a href="/onboarding-summary" class="cta-btn">Continue to Summary</a>
+  <a href="/onboarding-summary" class="cta-btn" id="ctaBtn" onclick="goNext()">Continue to Summary</a>
   <button class="back-btn" onclick="history.back()">Back</button>
 
 </div>
@@ -124,6 +124,14 @@ if(allGear.length === 0) {
       </div>
       <div class="gear-check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg></div>
     </div>`).join('');
+}
+
+function skipOnboarding() {
+  localStorage.setItem('tonefit_onboarding_done', 'true');
+  window.location.href = '/app';
+}
+function goNext() {
+  window.location.href = '/onboarding-summary';
 }
 </script>
 </body></html>

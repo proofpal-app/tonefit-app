@@ -59,7 +59,7 @@ main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:8
 
   <div id="summaryCards"></div>
 
-  <a href="/onboarding-done" class="cta-btn">Looks good! Let's go</a>
+  <a href="/onboarding-done" class="cta-btn" id="ctaBtn" onclick="goNext()">Looks good! Let's go</a>
   <button class="back-btn" onclick="history.back()">Back</button>
 
 </div>
@@ -103,5 +103,13 @@ document.getElementById('summaryCards').innerHTML = sections.map(s=>`
       ${s.items.map(i=>`<span class="item-pill">${i}</span>`).join('')}
     </div>
   </div>`).join('');
+
+function skipOnboarding() {
+  localStorage.setItem('tonefit_onboarding_done', 'true');
+  window.location.href = '/app';
+}
+function goNext() {
+  window.location.href = '/onboarding-done';
+}
 </script>
 </body></html>

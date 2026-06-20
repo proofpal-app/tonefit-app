@@ -163,10 +163,10 @@ main{min-height:100vh;display:flex;align-items:flex-start;justify-content:center
 
   <div class="section-divider"></div>
 
-  <button class="cta-btn" id="ctaBtn" disabled>Skip for now</button>
+  <button class="cta-btn" id="ctaBtn" disabled onclick="goNext()">Skip for now</button>
   <div class="bottom-row">
-    <button class="back-btn">Back</button>
-    <button class="skip-btn">Skip for now</button>
+    <button class="back-btn" onclick="history.back()">Back</button>
+    <button class="skip-btn" onclick="skipOnboarding()">Skip for now</button>
   </div>
 
 </div>
@@ -543,5 +543,13 @@ if(savedMultiFX) {
 renderBrandPills();
 renderQuickPills();
 updateUI();
+
+function skipOnboarding() {
+  localStorage.setItem('tonefit_onboarding_done', 'true');
+  window.location.href = '/app';
+}
+function goNext() {
+  window.location.href = '/onboarding-confirm';
+}
 </script>
 </body></html>
