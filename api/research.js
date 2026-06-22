@@ -121,11 +121,16 @@ module.exports = async function handler(req, res) {
     const allText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
     if (!allText) return res.status(500).json({ success: false, error: 'Empty response' });
 
+    const cleanText = allText
+      .replace(/```json\n?/g, '')
+      .replace(/```\n?/g, '')
+      .trim();
+
     let toneData = null;
     try {
-      toneData = JSON.parse(allText);
+      toneData = JSON.parse(cleanText);
     } catch(e) {
-      const matches = allText.match(/\{[\s\S]*\}/g) || [];
+      const matches = cleanText.match(/\{[\s\S]*\}/g) || [];
       matches.sort((a, b) => b.length - a.length);
       for (const match of matches) {
         try {
@@ -139,7 +144,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (!toneData) {
-      console.error('Could not parse tone data from:', allText.substring(0, 300));
+      console.error('Could not parse tone data from:', cleanText.substring(0, 300));
       return res.status(500).json({ success: false, error: 'Could not parse response' });
     }
     return res.status(200).json({ success: true, data: toneData, song, artist });
