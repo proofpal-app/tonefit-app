@@ -138,6 +138,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:fl
 .btn-added{position:absolute;top:12px;right:12px;background:#F3F4F6;color:var(--muted);border:none;width:32px;height:32px;border-radius:8px;font-size:16px;cursor:default;display:flex;align-items:center;justify-content:center}
 @media(max-width:600px){.gear-grid{grid-template-columns:1fr}.modal-grid{grid-template-columns:1fr}.preset-grid{grid-template-columns:1fr}.feature-grid{grid-template-columns:1fr}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <nav>
@@ -599,6 +600,30 @@ if(lsPreset){
     }
   }catch(e){}
 }
+</script>
+<script>
+(async function(){
+  try {
+    const {createClient}=supabase;
+    const sb=createClient('https://gyjsrhsmsflqjxppmjaz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo');
+    const {data:{session}}=await sb.auth.getSession();
+    if(session?.user){
+      const name=session.user.user_metadata?.full_name?.split(' ')[0]||session.user.email?.split('@')[0]||'there';
+      const menuAuth=document.getElementById('menuAuthSection');
+      const menuUser=document.getElementById('menuUserSection');
+      const menuName=document.getElementById('menuUserName');
+      if(menuAuth)menuAuth.style.display='none';
+      if(menuUser)menuUser.style.display='block';
+      if(menuName)menuName.textContent=name;
+      const navAuth=document.getElementById('navAuth');
+      const navUser=document.getElementById('navUser');
+      const navUserName=document.getElementById('navUserName');
+      if(navAuth)navAuth.style.display='none';
+      if(navUser)navUser.style.display='flex';
+      if(navUserName)navUserName.textContent='Hi, '+name;
+    }
+  } catch(e){}
+})();
 </script>
 </body>
 </html>

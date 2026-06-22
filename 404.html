@@ -34,6 +34,7 @@ p{font-size:16px;color:var(--muted);line-height:1.6;margin-bottom:32px}
 .btn-blue{background:var(--blue);color:white;border:none;padding:14px 28px;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
 .btn-outline{background:white;color:var(--text);border:1.5px solid var(--border);padding:14px 28px;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="wrap">
@@ -46,5 +47,29 @@ p{font-size:16px;color:var(--muted);line-height:1.6;margin-bottom:32px}
     <a href="/app" class="btn-outline">Open App</a>
   </div>
 </div>
+<script>
+(async function(){
+  try {
+    const {createClient}=supabase;
+    const sb=createClient('https://gyjsrhsmsflqjxppmjaz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo');
+    const {data:{session}}=await sb.auth.getSession();
+    if(session?.user){
+      const name=session.user.user_metadata?.full_name?.split(' ')[0]||session.user.email?.split('@')[0]||'there';
+      const menuAuth=document.getElementById('menuAuthSection');
+      const menuUser=document.getElementById('menuUserSection');
+      const menuName=document.getElementById('menuUserName');
+      if(menuAuth)menuAuth.style.display='none';
+      if(menuUser)menuUser.style.display='block';
+      if(menuName)menuName.textContent=name;
+      const navAuth=document.getElementById('navAuth');
+      const navUser=document.getElementById('navUser');
+      const navUserName=document.getElementById('navUserName');
+      if(navAuth)navAuth.style.display='none';
+      if(navUser)navUser.style.display='flex';
+      if(navUserName)navUserName.textContent='Hi, '+name;
+    }
+  } catch(e){}
+})();
+</script>
 </body>
 </html>

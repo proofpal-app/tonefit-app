@@ -84,6 +84,7 @@ footer a:hover{color:white}
 @media(max-width:900px){.tone-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.tone-grid{grid-template-columns:1fr}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <nav>
@@ -318,6 +319,30 @@ function renderTones() {
 }
 
 renderTones();
+</script>
+<script>
+(async function(){
+  try {
+    const {createClient}=supabase;
+    const sb=createClient('https://gyjsrhsmsflqjxppmjaz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo');
+    const {data:{session}}=await sb.auth.getSession();
+    if(session?.user){
+      const name=session.user.user_metadata?.full_name?.split(' ')[0]||session.user.email?.split('@')[0]||'there';
+      const menuAuth=document.getElementById('menuAuthSection');
+      const menuUser=document.getElementById('menuUserSection');
+      const menuName=document.getElementById('menuUserName');
+      if(menuAuth)menuAuth.style.display='none';
+      if(menuUser)menuUser.style.display='block';
+      if(menuName)menuName.textContent=name;
+      const navAuth=document.getElementById('navAuth');
+      const navUser=document.getElementById('navUser');
+      const navUserName=document.getElementById('navUserName');
+      if(navAuth)navAuth.style.display='none';
+      if(navUser)navUser.style.display='flex';
+      if(navUserName)navUserName.textContent='Hi, '+name;
+    }
+  } catch(e){}
+})();
 </script>
 </body>
 </html>

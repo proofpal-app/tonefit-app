@@ -96,6 +96,7 @@ footer{background:#0F0F13;color:rgba(255,255,255,.8);padding:64px 48px 32px}
 @media(max-width:768px){.footer-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.tones-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.page-h1{font-size:32px;letter-spacing:-1px}.cta-box{padding:36px 24px}.hero-btns{flex-direction:column;align-items:center}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="menu-overlay" id="menuOverlay"></div>
@@ -110,8 +111,13 @@ footer{background:#0F0F13;color:rgba(255,255,255,.8);padding:64px 48px 32px}
   <div class="menu-section-label">Account</div>
   <a href="/plans" class="menu-item"><span class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg></span>Plans</a>
   <div class="menu-divider"></div>
-  <a href="/login" class="menu-login">Login</a>
-  <a href="/plans" class="menu-signup">Sign Up Free</a>
+  <div id="menuAuthSection">
+  <a href="/login" class="menu-signup">Login</a>
+</div>
+<div id="menuUserSection" style="display:none">
+  <div style="padding:12px 10px;font-size:16px;font-weight:700;color:#0D1117">Hi, <span id="menuUserName">there</span> 👋</div>
+  <a href="/app" class="menu-signup">Open App</a>
+</div>
 </div>
 <nav id="navbar"><button class="hamburger" id="menuOpen" aria-label="Menu"><span></span><span></span><span></span></button></nav>
 
@@ -167,6 +173,30 @@ const songs=[
 ];
 const dots=d=>[1,2,3,4,5].map(n=>`<div class="diff-dot${n<=d?' on':''}"></div>`).join('');
 document.getElementById('tonesGrid').innerHTML=songs.map(([id,s,a,g,amp,t,d,genre,part])=>`<a href="/tone?id=${id}" class="tone-card"><div class="tone-card-genre">${genre} · ${part}</div><div class="tone-card-song">${s}</div><div class="tone-card-artist">${a}</div><div class="tone-card-gear">${g}<br>${amp}</div><div class="tone-card-footer"><span class="tone-badge badge-${t.toLowerCase()}">${t}</span><div class="diff-dots">${dots(d)}</div></div></a>`).join('');
+</script>
+<script>
+(async function(){
+  try {
+    const {createClient}=supabase;
+    const sb=createClient('https://gyjsrhsmsflqjxppmjaz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo');
+    const {data:{session}}=await sb.auth.getSession();
+    if(session?.user){
+      const name=session.user.user_metadata?.full_name?.split(' ')[0]||session.user.email?.split('@')[0]||'there';
+      const menuAuth=document.getElementById('menuAuthSection');
+      const menuUser=document.getElementById('menuUserSection');
+      const menuName=document.getElementById('menuUserName');
+      if(menuAuth)menuAuth.style.display='none';
+      if(menuUser)menuUser.style.display='block';
+      if(menuName)menuName.textContent=name;
+      const navAuth=document.getElementById('navAuth');
+      const navUser=document.getElementById('navUser');
+      const navUserName=document.getElementById('navUserName');
+      if(navAuth)navAuth.style.display='none';
+      if(navUser)navUser.style.display='flex';
+      if(navUserName)navUserName.textContent='Hi, '+name;
+    }
+  } catch(e){}
+})();
 </script>
 </body>
 </html>

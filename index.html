@@ -655,11 +655,13 @@
     </a>
 
     <div class="menu-divider"></div>
-    <div id="navAuth">
-      <a href="/login" class="menu-login">Login</a>
-      <a href="/login" class="menu-signup">Sign Up</a>
-    </div>
-    <div id="navUser" style="display:none;align-items:center;gap:12px"><a href="/app" style="background:#2563EB;color:white;padding:10px 20px;border-radius:100px;font-size:14px;font-weight:700;text-decoration:none">Open App</a><a href="/account" style="font-size:14px;font-weight:600;color:#0D1117;text-decoration:none" id="navUserName">Account</a></div>
+    <div id="menuAuthSection">
+  <a href="/login" class="menu-signup">Login</a>
+</div>
+<div id="menuUserSection" style="display:none">
+  <div style="padding:12px 10px;font-size:16px;font-weight:700;color:#0D1117">Hi, <span id="menuUserName">there</span> 👋</div>
+  <a href="/app" class="menu-signup">Open App</a>
+</div>
   </div>
 
   <!-- NAVBAR -->
@@ -667,6 +669,13 @@
     <button class="hamburger" id="menuOpen" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
+    <div id="navAuth" style="margin-left:auto;display:flex;align-items:center;gap:12px">
+      <a href="/login" style="font-size:15px;font-weight:600;color:#0D1117;text-decoration:none;padding:10px 16px">Login</a>
+    </div>
+    <div id="navUser" style="margin-left:auto;display:none;align-items:center;gap:12px">
+      <a href="/app" style="background:#2563EB;color:white;padding:10px 20px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none">Open App</a>
+      <a href="/account" style="font-size:15px;font-weight:600;color:#0D1117;text-decoration:none;padding:10px 16px" id="navUserName">Hi, Shubh</a>
+    </div>
   </nav>
 
   <!-- FLOATING REVIEWS PILL -->
@@ -964,5 +973,29 @@
     function acceptCookies() { localStorage.setItem('cookies_accepted','true'); document.getElementById('cookieBanner').style.display='none'; }
     function declineCookies() { document.getElementById('cookieBanner').style.display='none'; }
   </script>
+<script>
+(async function(){
+  try {
+    const {createClient}=supabase;
+    const sb=createClient('https://gyjsrhsmsflqjxppmjaz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo');
+    const {data:{session}}=await sb.auth.getSession();
+    if(session?.user){
+      const name=session.user.user_metadata?.full_name?.split(' ')[0]||session.user.email?.split('@')[0]||'there';
+      const menuAuth=document.getElementById('menuAuthSection');
+      const menuUser=document.getElementById('menuUserSection');
+      const menuName=document.getElementById('menuUserName');
+      if(menuAuth)menuAuth.style.display='none';
+      if(menuUser)menuUser.style.display='block';
+      if(menuName)menuName.textContent=name;
+      const navAuth=document.getElementById('navAuth');
+      const navUser=document.getElementById('navUser');
+      const navUserName=document.getElementById('navUserName');
+      if(navAuth)navAuth.style.display='none';
+      if(navUser)navUser.style.display='flex';
+      if(navUserName)navUserName.textContent='Hi, '+name;
+    }
+  } catch(e){}
+})();
+</script>
 </body>
 </html>
