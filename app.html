@@ -1394,21 +1394,46 @@ async function runResearch() {
   setTimeout(() => document.querySelector('.results-grid').scrollIntoView({behavior:'smooth', block:'start'}), 100);
 
   try {
-    const fingerprint = btoa([navigator.userAgent,navigator.language,screen.width+'x'+screen.height,new Date().getTimezoneOffset()].join('|'));
+    const fingerprint = btoa([
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset()
+    ].join('|'));
+
+    let token = '';
+    try {
       const { data: { session } } = await sb.auth.getSession();
-       const token = session?.access_token || '';
-       const res = await fetch('/api/research', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json', 'x-fingerprint': fingerprint, 'Authorization': token ? `Bearer ${token}` : '' },
+      token = session?.access_token || '';
+    } catch(e) {}
+
+    const res = await fetch('/api/research', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-fingerprint': fingerprint,
+        'Authorization': token ? 'Bearer ' + token : ''
+      },
       body: JSON.stringify({ song, artist, guitar, amp, partType, toneType, mode: currentMode })
     });
-    const result = await res.json();
+
+    let result;
+    try {
+      const text = await res.text();
+      console.log('Research response:', text.substring(0, 200));
+      result = JSON.parse(text);
+    } catch(e) {
+      console.error('Failed to parse response:', e);
+      throw new Error('Server returned invalid response. Please try again.');
+    }
+
     if (!result.success && result.error === 'FREE_LIMIT_REACHED') {
       document.getElementById('originalResults').innerHTML = '';
       document.getElementById('adaptedResults').innerHTML = '';
       openPaywall();
       return;
     }
+
     if (!result.success) throw new Error(result.error || 'Research failed');
     const d = result.data;
 
