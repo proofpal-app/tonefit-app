@@ -121,21 +121,27 @@ module.exports = async function handler(req, res) {
     const allText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
     if (!allText) return res.status(500).json({ success: false, error: 'Empty response' });
 
-    const matches = allText.match(/\{[\s\S]*\}/g) || [];
-    matches.sort((a, b) => b.length - a.length);
-
     let toneData = null;
-    for (const match of matches) {
-      try {
-        const parsed = JSON.parse(match);
-        if (parsed.ampSettings || parsed.originalGear || parsed.difficulty) {
-          toneData = parsed;
-          break;
-        }
-      } catch(e) { continue; }
+    try {
+      toneData = JSON.parse(allText);
+    } catch(e) {
+      const matches = allText.match(/\{[\s\S]*\}/g) || [];
+      matches.sort((a, b) => b.length - a.length);
+      for (const match of matches) {
+        try {
+          const parsed = JSON.parse(match);
+          if (parsed.ampSettings || parsed.originalGear || parsed.difficulty) {
+            toneData = parsed;
+            break;
+          }
+        } catch(e2) { continue; }
+      }
     }
 
-    if (!toneData) return res.status(500).json({ success: false, error: 'Could not parse response' });
+    if (!toneData) {
+      console.error('Could not parse tone data from:', allText.substring(0, 300));
+      return res.status(500).json({ success: false, error: 'Could not parse response' });
+    }
     return res.status(200).json({ success: true, data: toneData, song, artist });
 
   } catch(err) {
