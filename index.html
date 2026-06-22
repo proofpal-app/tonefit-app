@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Analytics: Add GA4 tracking ID here -->
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -930,6 +931,24 @@
         }
       } catch(e){}
     })();
+  </script>
+
+  <!-- Cookie consent banner -->
+  <div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:#0F0F13;color:white;padding:16px 24px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div style="font-size:14px;color:rgba(255,255,255,0.75);max-width:600px">We use cookies to improve your experience. By using ToneFit, you agree to our <a href="/privacy" style="color:#60A5FA;text-decoration:none">Privacy Policy</a>.</div>
+    <div style="display:flex;gap:10px;flex-shrink:0">
+      <button onclick="acceptCookies()" style="background:#2563EB;color:white;border:none;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">Got it</button>
+      <button onclick="declineCookies()" style="background:transparent;color:rgba(255,255,255,0.5);border:none;padding:10px;font-size:14px;cursor:pointer;font-family:inherit">Decline</button>
+    </div>
+  </div>
+  <script>
+    (function(){
+      if(!localStorage.getItem('cookies_accepted')) {
+        document.getElementById('cookieBanner').style.display='flex';
+      }
+    })();
+    function acceptCookies() { localStorage.setItem('cookies_accepted','true'); document.getElementById('cookieBanner').style.display='none'; }
+    function declineCookies() { document.getElementById('cookieBanner').style.display='none'; }
   </script>
 </body>
 </html>

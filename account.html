@@ -9,7 +9,7 @@
 <meta property="og:description" content="Manage your ToneFit account, subscription, profile and security settings."/>
 <meta property="og:url" content="https://tonefit.site/account"/>
 <meta property="og:type" content="website"/>
-<link rel="canonical" href="https://tonefit.site/account"/>]
+<link rel="canonical" href="https://tonefit.site/account"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -119,7 +119,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:16px 24px;display:fl
         <div class="section-icon blue">💳</div>
         <div>
           <div class="section-title">Subscription</div>
-          <div class="section-sub">No active plan</div>
+          <div class="section-sub" id="subPlanSub">No active plan</div>
         </div>
       </div>
       <div class="chevron" id="chevronSub">∨</div>
@@ -233,9 +233,23 @@ async function init() {
     document.getElementById('heroAvatar').innerHTML = `<img src="${avatar}" alt="${name}"/>`;
     document.getElementById('profileAvatar').innerHTML = `<img src="${avatar}" alt="${name}"/>`;
   }
+
+  // Subscription status from session metadata
+  const paid = meta.paid === true;
+  const plan = meta.plan || 'free';
+  const planLabel = paid ? (plan === 'expert' ? 'Expert Plan' : plan === 'beginner' ? 'Beginner Plan' : 'Pro Plan') : 'Free Account';
+  document.getElementById('heroPlan').textContent = planLabel;
+  document.getElementById('planName').textContent = planLabel;
+  document.getElementById('planStatus').textContent = paid ? 'Active ✓' : 'Inactive';
+  document.getElementById('subPlanSub').textContent = paid ? 'Active — ' + planLabel : 'No active plan';
+
+  // Stats from localStorage
   const searches = parseInt(localStorage.getItem('tf_searches') || '0');
   document.getElementById('statAdaptations').textContent = searches;
-  document.getElementById('statPresets').textContent = localStorage.getItem('tf_preset') ? '1' : '0';
+  const savedTones = JSON.parse(localStorage.getItem('tf_savedTones') || '[]');
+  document.getElementById('statTones').textContent = savedTones.length;
+  const storedPresets = JSON.parse(localStorage.getItem('tf_presets') || '[]');
+  document.getElementById('statPresets').textContent = storedPresets.length || (localStorage.getItem('tonefit_guitars') ? '1' : '0');
 }
 
 function toggleSection(id) {

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google Analytics: Add GA4 tracking ID here -->
 <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>ToneFit — Guitar Tone Matcher</title>
@@ -799,6 +800,10 @@ footer{background:#0F0F13;color:rgba(255,255,255,0.8);padding:64px 48px 32px}
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Artist is auto-filled when you select a song above
       </div>
+      <div id="recentSearches" style="display:none;margin-top:12px">
+        <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Recent Searches</div>
+        <div id="recentChips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
 
       <!-- GUITAR: Part Type (Riff/Solo) -->
       <div id="partTypeSection">
@@ -1327,12 +1332,41 @@ function setBassTone(t) {
   document.getElementById('bassDistorted').classList.toggle('bass-active-btn', t==='distorted');
 }
 
-function showToast() {
+function showToast(msg) {
   const toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#166534;color:white;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2)';
-  toast.innerHTML = '✓ Tone adapted to your gear! <span onclick="this.parentElement.remove()" style="cursor:pointer;opacity:0.7;margin-left:8px">✕</span>';
+  toast.innerHTML = (msg || '✓ Tone adapted to your gear!') + ' <span onclick="this.parentElement.remove()" style="cursor:pointer;opacity:0.7;margin-left:8px">✕</span>';
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
+}
+
+function shareTone(song, artist) {
+  const url = 'https://tonefit.site/app?song=' + encodeURIComponent(song) + '&artist=' + encodeURIComponent(artist);
+  if (navigator.share) {
+    navigator.share({ title: song + ' tone — ToneFit', text: 'Check out the ' + artist + ' guitar tone for "' + song + '" on ToneFit!', url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('🔗 Link copied to clipboard!'));
+  }
+}
+
+function loadRecentSearches() {
+  const recent = JSON.parse(localStorage.getItem('tf_recent') || '[]');
+  const wrap = document.getElementById('recentSearches');
+  const chips = document.getElementById('recentChips');
+  if (!wrap || !chips) return;
+  if (!recent.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  chips.innerHTML = recent.map(r =>
+    '<button onclick="fillRecent(\'' + r.song.replace(/'/g, "\\'") + '\',\'' + r.artist.replace(/'/g, "\\'") + '\')" style="background:#EFF6FF;color:#1D4ED8;border:1.5px solid #BFDBFE;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">' + r.song + ' — ' + r.artist + '</button>'
+  ).join('');
+}
+
+function fillRecent(song, artist) {
+  const songInput = document.getElementById('songInput');
+  const artistInput = document.getElementById('artistInput');
+  songInput.value = song;
+  artistInput.value = artist;
+  document.getElementById('songClear').style.display = 'block';
 }
 
 function saveTone(song, artist) {
@@ -1362,6 +1396,11 @@ async function runResearch() {
   const song = document.getElementById('songInput').value.trim();
   const artist = document.getElementById('artistInput').value.trim();
   if (!song) return;
+
+  const resBtn = document.getElementById('researchBtn');
+  const resBtnText = document.getElementById('researchBtnText');
+  resBtn.disabled = true;
+  resBtnText.textContent = 'Researching... 🎸';
 
   let guitar, amp, partType, toneType;
   if(currentMode === 'guitar') {
@@ -1440,6 +1479,15 @@ async function runResearch() {
     if (!result.success) throw new Error(result.error || 'Research failed');
     const d = result.data;
 
+    // Save to recent searches
+    try {
+      const recent = JSON.parse(localStorage.getItem('tf_recent') || '[]');
+      const filtered = recent.filter(r => r.song !== song || r.artist !== artist);
+      filtered.unshift({ song, artist, ts: Date.now() });
+      localStorage.setItem('tf_recent', JSON.stringify(filtered.slice(0, 5)));
+      loadRecentSearches();
+    } catch(e) {}
+
     const ampKnobs = ['gain','bass','mid','treble','presence','reverb'];
     const ampBars = ampKnobs.map(k => {
       const val = d.ampSettings?.[k] ?? 5;
@@ -1462,6 +1510,18 @@ async function runResearch() {
       ${sourcesHtml ? `<div class="sources-card"><div class="sources-header"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Sources</div>${sourcesHtml}</div>` : ''}
       ${warningsHtml ? `<div class="warnings-card"><div class="warnings-header"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Warnings</div>${warningsHtml}</div>` : ''}`;
 
+    if (!isPaid) {
+      document.getElementById('adaptedResults').innerHTML = `
+        <div style="background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-radius:16px;padding:40px 24px;text-align:center">
+          <div style="font-size:40px;margin-bottom:16px">🔒</div>
+          <div style="font-size:20px;font-weight:800;color:#1E0A3C;margin-bottom:10px">Unlock Your Adapted Tone</div>
+          <div style="font-size:14px;color:#6D28D9;line-height:1.6;max-width:300px;margin:0 auto 24px">Research complete! Upgrade to see how to adapt this tone to your exact gear.</div>
+          <button onclick="openPaywall()" style="background:#7C3AED;color:white;border:none;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">✨ Upgrade to Unlock</button>
+        </div>`;
+      showToast();
+      return;
+    }
+
     const adapted = d.adaptedSettings;
     const adaptedBars = ampKnobs.map(k => { const val = adapted?.ampSettings?.[k] ?? d.ampSettings?.[k] ?? 5; return `<div class="amp-knob"><div class="amp-knob-label">${k.toUpperCase()}</div><div class="amp-knob-val">${val}</div><div class="amp-bar-track"><div class="amp-bar-fill" style="width:${val*10}%;background:var(--accent)"></div></div></div>`; }).join('');
 
@@ -1476,7 +1536,8 @@ async function runResearch() {
             <div style="font-size:13px;color:#6B7280;margin-top:2px">${gearName}</div>
           </div>
         </div>
-        <button onclick="saveTone('${song}','${artist}')" style="width:100%;background:var(--accent);color:white;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px">✓ Save This Tone</button>
+        <button onclick="saveTone('${song}','${artist}')" style="width:100%;background:var(--accent);color:white;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px">✓ Save This Tone</button>
+        <button onclick="shareTone('${song}','${artist}')" style="width:100%;background:white;color:var(--accent);border:2px solid var(--accent);padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px">🔗 Share Tone</button>
         <div style="background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:10px;padding:12px 16px;font-size:13px;color:#92400E;font-weight:600">🎸 Now get the chords for <strong>${song}</strong> by ${artist} <a href="https://www.google.com/search?q=${encodeURIComponent(song+' '+artist+' chords')}" target="_blank" style="color:#92400E">→</a></div>
       </div>
 
@@ -1521,6 +1582,9 @@ async function runResearch() {
   } catch(err) {
     document.getElementById('originalResults').innerHTML = `<div style="text-align:center;padding:40px 20px"><div style="font-size:32px;margin-bottom:12px">⚠️</div><div style="font-size:16px;font-weight:700;color:#0D1117;margin-bottom:8px">Research failed</div><div style="font-size:14px;color:#6B7280">${err.message}</div></div>`;
     document.getElementById('adaptedResults').innerHTML = '';
+  } finally {
+    resBtn.disabled = false;
+    resBtnText.textContent = 'Research & Adapt';
   }
 }
 
@@ -1563,6 +1627,7 @@ window.addEventListener('load', () => {
   if(goingDirect){ tog.style.background='var(--purple)'; thumb.style.left='calc(100% - 19px)'; document.getElementById('ampDropdownWrap').style.display='none'; document.getElementById('ampInfo').style.display='flex'; setEffects('multifx'); }
   else { tog.style.background='#D1D5DB'; thumb.style.left='3px'; document.getElementById('ampDropdownWrap').style.display='block'; document.getElementById('ampInfo').style.display='none'; setEffects('pedals'); loadPedalsFromStorage(); }
   checkResearchReady();
+  loadRecentSearches();
 });
 </script>
 </body>

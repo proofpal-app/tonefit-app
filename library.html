@@ -139,6 +139,9 @@ async function init() {
   if (urlParams.get('subscribed') === 'true') {
     localStorage.setItem('tf_paid', 'true');
   }
+  if (session?.user?.user_metadata?.paid === true) {
+    localStorage.setItem('tf_paid', 'true');
+  }
   isPaid = localStorage.getItem('tf_paid') === 'true';
   if (isPaid) {
     document.getElementById('paywallState').style.display = 'none';
