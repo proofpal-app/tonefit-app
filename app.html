@@ -989,6 +989,16 @@ const { createClient } = supabase;
 const sb = createClient('https://gyjsrhsmsflqjxppmjaz.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5anNyaHNtc2ZscWp4cHBtamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NjE1NTIsImV4cCI6MjA5NzMzNzU1Mn0.XK888FY7ztGjG6-JA0kpvbqFMSxiPG4b2K56zQHjuOo');
 const urlParams = new URLSearchParams(window.location.search);
 if(urlParams.get('subscribed')==='true'){ localStorage.setItem('tf_paid','true'); isPaid = true; }
+// Check Supabase session at load and update isPaid before any user action
+(async function(){
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user?.user_metadata?.paid === true) {
+      isPaid = true;
+      localStorage.setItem('tf_paid', 'true');
+    }
+  } catch(e) {}
+})();
 
 // ── NAV ──
 const nav = document.getElementById('navbar');
@@ -1337,22 +1347,10 @@ function saveTone(song, artist) {
   const btn = document.querySelector('button[onclick*="saveTone"]');
   if(btn) { btn.textContent = '✓ Saved!'; btn.style.background = '#16A34A'; }
 }
-// ── HANDLE RESEARCH (paywall check) ──
+// ── HANDLE RESEARCH ──
 async function handleResearch() {
   const btn = document.getElementById('researchBtn');
   if(btn.classList.contains('dim')) return;
-
-  let isPaid = localStorage.getItem('tf_paid') === 'true';
-
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session?.user?.user_metadata?.paid === true) {
-      isPaid = true;
-      localStorage.setItem('tf_paid', 'true');
-    }
-  } catch(e) {}
-
-  if(!isPaid) { openPaywall(); return; }
   runResearch();
 }
 
@@ -1510,6 +1508,16 @@ window.addEventListener('load', () => {
   const opt = document.createElement('option');
   opt.value = presetName; opt.textContent = presetName; opt.selected = true;
   presetSel.appendChild(opt);
+  // Load additional presets from tf_presets
+  const storedPresets = JSON.parse(localStorage.getItem('tf_presets') || '[]');
+  storedPresets.forEach(p => {
+    const pName = typeof p === 'string' ? p : ((p.guitar || '') + (p.amp ? ' + ' + p.amp : ''));
+    if(pName && pName !== presetName) {
+      const o = document.createElement('option');
+      o.value = pName; o.textContent = pName;
+      presetSel.appendChild(o);
+    }
+  });
   document.getElementById('presetActiveText').textContent = 'Using preset: ' + presetName;
   document.getElementById('presetActive').style.display = 'block';
   document.getElementById('selectedGuitarName').textContent = guitarName;
