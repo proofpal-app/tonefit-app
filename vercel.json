@@ -23,6 +23,26 @@
     { "source": "/community", "destination": "/community.html" },
     { "source": "/tone", "destination": "/tone-detail.html" },
     { "source": "/google28e11bd7ed77103c.html", "destination": "/google28e11bd7ed77103c.html" },
-    { "source": "/404", "destination": "/404.html" }
+    { "source": "/404", "destination": "/404.html" },
+    { "source": "/tones-rock", "destination": "/tones-rock.html" },
+    { "source": "/tones-metal", "destination": "/tones-metal.html" },
+    { "source": "/tones-blues", "destination": "/tones-blues.html" },
+    { "source": "/tones-classic-rock", "destination": "/tones-classic-rock.html" },
+    { "source": "/tones-grunge", "destination": "/tones-grunge.html" },
+    { "source": "/tones-punk", "destination": "/tones-punk.html" },
+    { "source": "/tones-indie", "destination": "/tones-indie.html" },
+    { "source": "/tones-pop-rock", "destination": "/tones-pop-rock.html" },
+    { "source": "/artist-pink-floyd", "destination": "/artist-pink-floyd.html" },
+    { "source": "/artist-metallica", "destination": "/artist-metallica.html" },
+    { "source": "/artist-acdc", "destination": "/artist-acdc.html" },
+    { "source": "/artist-led-zeppelin", "destination": "/artist-led-zeppelin.html" },
+    { "source": "/artist-hendrix", "destination": "/artist-hendrix.html" },
+    { "source": "/artist-nirvana", "destination": "/artist-nirvana.html" },
+    { "source": "/artist-eric-clapton", "destination": "/artist-eric-clapton.html" },
+    { "source": "/artist-slash", "destination": "/artist-slash.html" },
+    { "source": "/artist-stevie-ray-vaughan", "destination": "/artist-stevie-ray-vaughan.html" },
+    { "source": "/artist-david-gilmour", "destination": "/artist-david-gilmour.html" },
+    { "source": "/artist-jimmy-page", "destination": "/artist-jimmy-page.html" },
+    { "source": "/artist-angus-young", "destination": "/artist-angus-young.html" }
   ]
 }
