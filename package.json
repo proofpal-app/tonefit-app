@@ -1,5 +1,1 @@
-{
-  "dependencies": {
-    "@supabase/supabase-js": "^2.108.2"
-  }
-}
+{"name":"tonefit-app","version":"1.0.0","dependencies":{"@supabase/supabase-js":"^2.108.2"}} 
