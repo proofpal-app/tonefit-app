@@ -1349,8 +1349,11 @@ function saveTone(song, artist) {
 }
 // ── HANDLE RESEARCH ──
 async function handleResearch() {
-  const btn = document.getElementById('researchBtn');
-  if(btn.classList.contains('dim')) return;
+  const song = document.getElementById('songInput').value.trim();
+  if(!song) {
+    alert('Please search for a song first!');
+    return;
+  }
   runResearch();
 }
 
