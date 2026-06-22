@@ -1,4 +1,4 @@
-const { createClient } = require('@supabase/supabase-js');
+﻿const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -29,8 +29,8 @@ module.exports = async function handler(req, res) {
 
       let plan = 'beginner';
       if (
-        planId === 'pri_01kvcj3vt1snrym410dz16jh06' ||
-        planId === 'pri_01kvcj65rtdv19p68kbn1jsvvh'
+        planId === 'pri_01kvr6rrtx0abhtwms7v85b1mg' ||
+        planId === 'pri_01kvr6stxs1an1mybn82k7xtnb'
       ) {
         plan = 'expert';
       }
