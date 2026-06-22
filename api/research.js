@@ -99,8 +99,32 @@ You MUST respond with ONLY valid JSON. No text, no markdown, no explanation. Jus
       })
     });
 
-    const data = await response.json();
-    if (!response.ok) return res.status(500).json({ error: data.error?.message || 'API error' });
+    // Read body as text first — if the API returns an HTML error page,
+    // calling response.json() directly throws "unexpected character at line 1 column 1"
+    const responseText = await response.text();
+    console.log('API response status:', response.status);
+    console.log('API response data:', responseText.substring(0, 500));
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch(jsonErr) {
+      console.error('Anthropic API returned non-JSON:', response.status, responseText.substring(0, 300));
+      return res.status(500).json({
+        success: false,
+        error: `Anthropic API returned a non-JSON response (HTTP ${response.status}). Check that ANTHROPIC_API_KEY is set correctly in Vercel environment variables.`
+      });
+    }
+
+    if (!response.ok) {
+      console.error('Anthropic API error:', data.error);
+      return res.status(500).json({ success: false, error: data.error?.message || 'API error' });
+    }
+
+    if (data.error) {
+      console.error('Anthropic API error:', data.error);
+      return res.status(500).json({ success: false, error: data.error.message || 'API error' });
+    }
 
     const allText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
     if (!allText) return res.status(500).json({ error: 'Empty response' });
